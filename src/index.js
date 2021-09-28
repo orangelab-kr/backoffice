@@ -1,34 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { RenderAfterNavermapsLoaded } from 'react-naver-maps';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { Dashboard, RequiredLogin } from './components';
 import './index.css';
 import {
-  AccessKeys,
-  AccessKeysDetails,
-  DiscountGroupsDetails,
-  DiscountGroups,
+  Helmets,
+  HelmetsDetails,
+  Kickboards,
+  KickboardsDetails,
   Login,
-  Logs,
-  Main,
   NotFound,
   PermissionGroups,
   PermissionGroupsDetails,
-  Rides,
-  RidesDetails,
-  Settings,
+  Services,
+  ServicesDetails,
   Users,
   UsersDetails,
-  Webhooks,
-  WebhooksDetails,
 } from './pages';
-import { RenderAfterNavermapsLoaded } from 'react-naver-maps';
-
-// export const baseURL =
-//   window.location.host === 'backoffice.hikick.kr'
-//     ? 'https://backoffic.hikick.kr/v1'
-//     : 'https://openapi.staging.hikick.kr/v1';
-export const baseURL = 'http://localhost:3000/v1';
 
 ReactDOM.render(
   <div className="App">
@@ -43,63 +32,48 @@ ReactDOM.render(
               <Route path="/auth/login" component={Login} />
             </Switch>
           </Route>
-          <Route path="*" component={NotFound} />
           <Route path="/">
             <RequiredLogin>
               <Dashboard>
                 <Switch>
-                  <Route path="/dashboard" exact>
-                    <Redirect to="/dashboard/main" />
+                  <Route path="/" exact>
+                    <Redirect to="/kickboards" />
                   </Route>
-                  <Route path="/dashboard/main">
-                    <Main />
-                  </Route>
-                  <Route path="/dashboard/users" exact>
+                  <Route path="/users" exact>
                     <Users />
                   </Route>
-                  <Route path="/dashboard/users/:userId">
+                  <Route path="/users/:userId">
                     <UsersDetails />
                   </Route>
-                  <Route path="/dashboard/rides" exact>
-                    <Rides />
+                  <Route path="/services" exact>
+                    <Services />
                   </Route>
-                  <Route path="/dashboard/rides/:rideId">
-                    <RidesDetails />
+                  <Route path="/services/:serviceId">
+                    <ServicesDetails />
                   </Route>
-                  <Route path="/dashboard/accessKeys" exact>
-                    <AccessKeys />
-                  </Route>
-                  <Route path="/dashboard/accessKeys/:platformAccessKeyId">
-                    <AccessKeysDetails />
-                  </Route>
-                  <Route path="/dashboard/permissionGroups" exact>
+                  <Route path="/permissionGroups" exact>
                     <PermissionGroups />
                   </Route>
-                  <Route path="/dashboard/permissionGroups/:permissionGroupId">
+                  <Route path="/permissionGroups/:permissionGroupId">
                     <PermissionGroupsDetails />
                   </Route>
-                  <Route path="/dashboard/webhooks" exact>
-                    <Webhooks />
+                  <Route path="/helmets" exact>
+                    <Helmets />
                   </Route>
-                  <Route path="/dashboard/webhooks/:requestId">
-                    <WebhooksDetails />
+                  <Route path="/helmets/:helmetId">
+                    <HelmetsDetails />
                   </Route>
-                  <Route path="/dashboard/discountGroups" exact>
-                    <DiscountGroups />
+                  <Route path="/kickboards" exact>
+                    <Kickboards />
                   </Route>
-                  <Route path="/dashboard/discountGroups/:discountGroupId">
-                    <DiscountGroupsDetails />
-                  </Route>
-                  <Route path="/dashboard/logs">
-                    <Logs />
-                  </Route>
-                  <Route path="/dashboard/settings">
-                    <Settings />
+                  <Route path="/kickboards/:kickboardCode">
+                    <KickboardsDetails />
                   </Route>
                 </Switch>
               </Dashboard>
             </RequiredLogin>
           </Route>
+          <Route path="*" component={NotFound} />
         </Switch>
       </BrowserRouter>
     </RenderAfterNavermapsLoaded>
