@@ -23,10 +23,10 @@ import {
   Radio,
   Result,
   Row,
+  Select,
   Tabs,
   Tag,
   Typography,
-  Select,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
@@ -35,7 +35,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { Link, useParams, withRouter } from 'react-router-dom';
-import { Client, useDebounce, useInterval } from '../tools';
+import { getClient, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
@@ -67,7 +67,8 @@ export const RidesDetails = withRouter(() => {
     if (!rideId) return;
     setLoading(true);
 
-    Client.get(`/ride/rides/${rideId}`)
+    getClient('openapi-ride')
+      .then((c) => c.get(`/ride/rides/${rideId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => {
         setRide(data.ride);
@@ -88,7 +89,8 @@ export const RidesDetails = withRouter(() => {
   const onSearchDiscountGroups = (search) => {
     setLoading(true);
     const params = { search };
-    Client.get('/discount/discountGroups', { params })
+    getClient('openapi-discount')
+      .then((c) => c.get('/discountGroups', { params }))
       .finally(() => setLoading(false))
       .then(({ data }) => setDiscountGroups(data.discountGroups));
   };
@@ -108,16 +110,16 @@ export const RidesDetails = withRouter(() => {
   const onSearchDiscounts = (discountGroupId, search) => {
     setLoading(true);
     const params = { search, take: 10, showUsed: false };
-    Client.get(`/discount/discountGroups/${discountGroupId}`, { params })
+    getClient('openapi-discount')
+      .then((c) => c.get(`/discountGroups/${discountGroupId}`, { params }))
       .finally(() => setLoading(false))
       .then(({ data }) => setDiscounts(data.discounts));
   };
 
   const onChangeDiscount = ({ discountId, discountGroupId }) => {
-    Client.post(`/ride/rides/${rideId}/discount`, {
-      discountId,
-      discountGroupId,
-    })
+    const body = { discountId, discountGroupId };
+    getClient('openapi-ride')
+      .then((c) => c.post(`/ride/rides/${rideId}/discount`, body))
       .finally(() => setLoading(false))
       .then(() => {
         message.success('할인을 변경하였습니다.');
@@ -129,7 +131,8 @@ export const RidesDetails = withRouter(() => {
   const loadRidePayments = () => {
     setLoading(true);
 
-    Client.get(`/ride/rides/${rideId}/payments`)
+    getClient('openapi-ride')
+      .then((c) => c.get(`/ride/rides/${rideId}/payments`))
       .finally(() => setLoading(false))
       .then(({ data }) => setRidePayments(data.payments));
   };
@@ -147,7 +150,8 @@ export const RidesDetails = withRouter(() => {
   const refundRidePayment = (paymentId) => {
     setLoading(true);
 
-    Client.delete(`/ride/rides/${rideId}/payments/${paymentId}`)
+    getClient('openapi-ride')
+      .then((c) => c.delete(`/rides/${rideId}/payments/${paymentId}`))
       .finally(() => setLoading(false))
       .then(() => loadRidePayments());
   };
@@ -155,7 +159,8 @@ export const RidesDetails = withRouter(() => {
   const onAddPayment = (paymentInfo) => {
     setLoading(true);
 
-    Client.post(`/ride/rides/${rideId}/payments`, paymentInfo)
+    getClient('openapi-ride')
+      .then((c) => c.post(`/rides/${rideId}/payments`, paymentInfo))
       .finally(() => setLoading(false))
       .then(() => {
         loadRidePayments();
@@ -166,11 +171,10 @@ export const RidesDetails = withRouter(() => {
   const getTimeline = () => {
     setLoading(true);
 
-    Client.get(`/ride/rides/${rideId}/timeline`)
+    getClient('openapi-ride')
+      .then((c) => c.get(`/ride/rides/${rideId}/timeline`))
       .finally(() => setLoading(false))
-      .then(({ data }) => {
-        setTimeline(data.timeline);
-      });
+      .then(({ data }) => setTimeline(data.timeline));
   };
 
   const calculateTerminatePricing = () => {
@@ -178,15 +182,15 @@ export const RidesDetails = withRouter(() => {
     const terminatedAt =
       terminateForm.getFieldValue('terminatedAt') || moment();
     if (!latitude || !longitude) return;
+    const params = {
+      latitude: debouncedTerminateLocation._lat,
+      longitude: debouncedTerminateLocation._lng,
+      terminatedAt: terminatedAt.format(),
+    };
 
     setLoading(true);
-    Client.get(`/ride/rides/${rideId}/pricing`, {
-      params: {
-        latitude: debouncedTerminateLocation._lat,
-        longitude: debouncedTerminateLocation._lng,
-        terminatedAt: terminatedAt.format(),
-      },
-    })
+    getClient('openapi-ride')
+      .then((c) => c.get(`/rides/${rideId}/pricing`, { params }))
       .finally(() => setLoading(false))
       .then(({ data }) => setTerminateReceipt(data.pricing));
   };
@@ -203,14 +207,15 @@ export const RidesDetails = withRouter(() => {
       return;
     }
 
-    Client.delete(`/ride/rides/${rideId}`, {
-      params: {
-        latitude: debouncedTerminateLocation._lat,
-        longitude: debouncedTerminateLocation._lng,
-        terminatedAt: terminatedAt.format(),
-        terminatedType: 'ADMIN_REQUESTED',
-      },
-    })
+    const params = {
+      latitude: debouncedTerminateLocation._lat,
+      longitude: debouncedTerminateLocation._lng,
+      terminatedAt: terminatedAt.format(),
+      terminatedType: 'ADMIN_REQUESTED',
+    };
+
+    getClient('openapi-ride')
+      .then((c) => c.delete(`/rides/${rideId}`, { params }))
       .finally(() => setLoading(false))
       .then(() => {
         loadRide();
@@ -222,7 +227,8 @@ export const RidesDetails = withRouter(() => {
     setLoading(true);
 
     const action = !lightsOn ? 'on' : 'off';
-    Client.get(`/ride/rides/${rideId}/lights/${action}`)
+    getClient('openapi-ride')
+      .then((c) => c.get(`/rides/${rideId}/lights/${action}`))
       .finally(() => setLoading(false))
       .then(() => setLightsOn(!lightsOn));
   };
@@ -231,7 +237,8 @@ export const RidesDetails = withRouter(() => {
     setLoading(true);
 
     const action = !lockOn ? 'on' : 'off';
-    Client.get(`/ride/rides/${rideId}/lock/${action}`)
+    getClient('openapi-ride')
+      .then((c) => c.get(`/rides/${rideId}/lock/${action}`))
       .finally(() => setLoading(false))
       .then(() => setLockOn(!lockOn));
   };
@@ -597,7 +604,7 @@ export const RidesDetails = withRouter(() => {
                             '적용 안함'
                           ) : (
                             <Link
-                              to={`/dashboard/discountGroups/${ride.discountGroupId}`}
+                              to={`/discountGroups/${ride.discountGroupId}`}
                             >
                               {ride.discountId}
                             </Link>
@@ -755,7 +762,7 @@ export const RidesDetails = withRouter(() => {
                     <Descriptions.Item label="생년월일">
                       {dayjs(ride.birthday).format('YYYY년 MM월 DD일')}
                     </Descriptions.Item>
-                    <Descriptions.Item label="사용자 ID" span={2}>
+                    <Descriptions.Item label="관리자 ID" span={2}>
                       <Typography.Text copyable={true}>
                         {ride.userId}
                       </Typography.Text>

@@ -1,20 +1,19 @@
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
   Col,
   Form,
   Input,
+  message,
   Popconfirm,
   Row,
   Typography,
-  message,
 } from 'antd';
-import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
-
-import { Client } from '../tools';
 import { PermissionGroupsSelect } from '../components';
+import { getClient } from '../tools';
 
 const { Title } = Typography;
 
@@ -28,33 +27,35 @@ export const UsersDetails = withRouter(({ history }) => {
   const loadUser = () => {
     if (!userId) return;
     setLoading(true);
-
-    Client.get(`/platform/users/${userId}`)
+    getClient('backoffice')
+      .then((c) => c.get(`/users/${userId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => {
-        setUser(data.platformUser);
-        form.setFieldsValue(data.platformUser);
+        setUser(data.user);
+        form.setFieldsValue(data.user);
       });
   };
 
   const deleteUser = () => {
     setLoading(true);
-    Client.delete(`/platform/users/${userId}`)
+    getClient('backoffice')
+      .then((c) => c.delete(`/users/${userId}`))
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
-        history.push(`/dashboard/users`);
+        history.push(`/users`);
       });
   };
 
   const onSave = (body) => {
     setLoading(true);
-    Client.post(`/platform/users/${userId}`, body)
+    getClient('backoffice')
+      .then((c) => c.post(`/users/${userId}`, body))
       .finally(() => setLoading(false))
       .then(({ data }) => {
         message.success(`${userId ? '수정' : '생성'}되었습니다.`);
         if (data.platformUserId) {
-          history.push(`/dashboard/users/${data.platformUserId}`);
+          history.push(`/users/${data.platformUserId}`);
         }
       });
   };
@@ -66,7 +67,9 @@ export const UsersDetails = withRouter(({ history }) => {
         <Form layout="vertical" onFinish={onSave} form={form}>
           <Row justify="space-between" style={{ marginBottom: 20 }}>
             <Col>
-              <Title level={3}>{userId ? user.name : '새로운 사용자'}</Title>
+              <Title level={3}>
+                {userId ? user.username : '새로운 관리자'}
+              </Title>
             </Col>
             <Col>
               <Row gutter={[4, 0]}>
@@ -100,7 +103,7 @@ export const UsersDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="name" label="사용자 이름">
+          <Form.Item name="username" label="관리자 이름">
             <Input disabled={isLoading} />
           </Form.Item>
           <Form.Item name="email" label="이메일">

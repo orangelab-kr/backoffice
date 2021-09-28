@@ -1,17 +1,15 @@
-import { Button, Card, Col, Input, Row, Table, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-
-import { Client } from '../tools';
-import { Link } from 'react-router-dom';
 import { UserAddOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Input, Row, Table, Typography } from 'antd';
 import dayjs from 'dayjs';
-import { withRouter } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { getClient } from '../tools';
 
 const { Title } = Typography;
 const { Search } = Input;
 
 export const Users = withRouter(({ history }) => {
-  const [dataSource, setDataSource] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -20,13 +18,13 @@ export const Users = withRouter(({ history }) => {
   const columns = [
     {
       title: 'UUID',
-      dataIndex: 'platformUserId',
-      render: (value) => <Link to={`/dashboard/users/${value}`}>{value}</Link>,
+      dataIndex: 'userId',
+      render: (value) => <Link to={`/users/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'username',
+      key: 'username',
     },
     {
       title: '이메일',
@@ -42,9 +40,7 @@ export const Users = withRouter(({ history }) => {
       title: '권한 그룹',
       dataIndex: 'permissionGroup',
       render: (permissionGroup) => (
-        <Link
-          to={`/dashboard/permissionGroups/${permissionGroup.permissionGroupId}`}
-        >
+        <Link to={`/permissionGroups/${permissionGroup.permissionGroupId}`}>
           {permissionGroup.name}
         </Link>
       ),
@@ -64,11 +60,12 @@ export const Users = withRouter(({ history }) => {
       search,
     };
 
-    Client.get('/platform/users', { params })
+    getClient('backoffice')
+      .then((c) => c.get('/users', { params }))
       .finally(() => setLoading(false))
       .then((res) => {
-        const { platformUsers, total } = res.data;
-        setDataSource(platformUsers);
+        const { users, total } = res.data;
+        setUsers(users);
         setTotal(total);
       });
   };
@@ -90,7 +87,7 @@ export const Users = withRouter(({ history }) => {
       <Card>
         <Row justify="space-between">
           <Col>
-            <Title level={3}>사용자 목록</Title>
+            <Title level={3}>관리자 목록</Title>
           </Col>
           <Col>
             <Row>
@@ -103,9 +100,9 @@ export const Users = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/dashboard/users/add">
+                <Link to="/users/add">
                   <Button icon={<UserAddOutlined />} type="primary">
-                    사용자 추가
+                    관리자 추가
                   </Button>
                 </Link>
               </Col>
@@ -114,8 +111,8 @@ export const Users = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={dataSource}
-          rowKey="platformUserId"
+          dataSource={users}
+          rowKey="userId"
           loading={isLoading}
           scroll={{ x: '100%' }}
           pagination={{
