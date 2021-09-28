@@ -1,13 +1,10 @@
 import {
-  DeploymentUnitOutlined,
-  HistoryOutlined,
+  BlockOutlined,
+  CarOutlined,
+  CrownOutlined,
   HomeOutlined,
-  KeyOutlined,
   LockOutlined,
-  PercentageOutlined,
-  SettingOutlined,
-  SolutionOutlined,
-  UserOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React from 'react';
@@ -35,38 +32,23 @@ export const Dashboard = withRouter(({ history, children }) => {
           mode="inline"
           onClick={onClick}
         >
-          <Menu.Item key="/dashboard/main" icon={<HomeOutlined />}>
+          <Menu.Item key="/main" icon={<HomeOutlined />}>
             대시보드
           </Menu.Item>
-          <Menu.Item key="/dashboard/users" icon={<UserOutlined />}>
-            사용자
+          <Menu.Item key="/kickboards" icon={<CarOutlined />}>
+            킥보드
           </Menu.Item>
-          <Menu.Item key="/dashboard/accessKeys" icon={<KeyOutlined />}>
-            액세스 키
+          <Menu.Item key="/helmets" icon={<CrownOutlined />}>
+            헬멧
           </Menu.Item>
-          <Menu.Item key="/dashboard/permissionGroups" icon={<LockOutlined />}>
+          <Menu.Item key="/users" icon={<TeamOutlined />}>
+            관리자
+          </Menu.Item>
+          <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>
             권한 그룹
           </Menu.Item>
-          <Menu.Item key="/dashboard/rides" icon={<SolutionOutlined />}>
-            라이드
-          </Menu.Item>
-          <Menu.Item
-            key="/dashboard/discountGroups"
-            icon={<PercentageOutlined />}
-          >
-            할인 그룹
-          </Menu.Item>
-          <Menu.Item
-            key="/dashboard/webhooks"
-            icon={<DeploymentUnitOutlined />}
-          >
-            웹훅
-          </Menu.Item>
-          <Menu.Item key="/dashboard/logs" icon={<HistoryOutlined />}>
-            로그
-          </Menu.Item>
-          <Menu.Item key="/dashboard/settings" icon={<SettingOutlined />}>
-            설정
+          <Menu.Item key="/services" icon={<BlockOutlined />}>
+            서비스
           </Menu.Item>
         </Menu>
       </Sider>

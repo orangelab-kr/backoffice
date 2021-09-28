@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-
-import { Client } from "../tools";
-import { Select } from "antd";
-import _ from "lodash";
+import { Select } from 'antd';
+import _ from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { getClient } from '../tools';
 
 const { Option } = Select;
 
@@ -10,17 +9,17 @@ export const PermissionsSelect = ({ id, isLoading, onChange, value }) => {
   const [permissions, setPermissions] = useState([]);
   const requestSearch = (search = value) => {
     if (search instanceof Array) return;
-    Client.get("/platform/permissions", {
-      params: {
-        search,
-        take: 10,
-        skip: 0,
-        orderByField: "name",
-        orderBySort: "asc",
-      },
-    }).then(({ data }) => {
-      setPermissions(data.permissions);
-    });
+    const params = {
+      search,
+      take: 10,
+      skip: 0,
+      orderByField: 'name',
+      orderBySort: 'asc',
+    };
+
+    getClient('backoffice')
+      .then((c) => c.get('/permissions', { params }))
+      .then(({ data }) => setPermissions(data.permissions));
   };
 
   const delayedSearch = useRef(_.debounce(requestSearch, 500)).current;
