@@ -1,22 +1,20 @@
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-  Alert,
   Button,
   Card,
   Col,
   Form,
   Input,
+  message,
   Popconfirm,
   Row,
   Typography,
-  message,
 } from 'antd';
-import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import clipboard from 'copy-to-clipboard';
 import React, { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
-
-import { Client } from '../tools';
 import { PermissionsSelect } from '../components';
-import clipboard from 'copy-to-clipboard';
+import { getClient } from '../tools';
 
 const { Title } = Typography;
 
@@ -42,11 +40,11 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
     if (!permissionGroupId) return;
     setLoading(true);
 
-    Client.get(`/platform/permissionGroups/${permissionGroupId}`)
+    getClient('backoffice')
+      .then((c) => c.get(`/permissionGroups/${permissionGroupId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => {
         const { permissionGroup } = data;
-
         permissionGroup.permissions = permissionGroup.permissions.map(
           ({ permissionId, name }) => ({
             key: permissionId,
@@ -62,11 +60,12 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
 
   const deletePermissionGroup = () => {
     setLoading(true);
-    Client.delete(`/permissionGroups/${permissionGroupId}`)
+    getClient('backoffice')
+      .then((c) => c.delete(`/permissionGroups/${permissionGroupId}`))
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
-        history.push(`/dashboard/permissionGroups`);
+        history.push(`/permissionGroups`);
       });
   };
 
@@ -74,13 +73,15 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
     setLoading(true);
     body.permissionIds = body.permissions.map(({ value }) => value);
     delete body.permissions;
-    Client.post(`/platform/permissionGroups/${permissionGroupId}`, body)
+
+    getClient('backoffice')
+      .then((c) => c.post(`/permissionGroups/${permissionGroupId}`, body))
       .finally(() => setLoading(false))
       .then(({ data }) => {
         message.success(`${permissionGroupId ? '수정' : '생성'}되었습니다.`);
 
         if (data.permissionGroupId) {
-          history.push(`/dashboard/permissionGroups/${data.permissionGroupId}`);
+          history.push(`/permissionGroups/${data.permissionGroupId}`);
         }
       });
   };
@@ -96,56 +97,40 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
                 {permissionGroupId ? permissionGroup.name : '새로운 권한 그룹'}
               </Title>
             </Col>
-            {permissionGroup.platformId && (
-              <>
-                <Col>
-                  <Row gutter={[4, 0]}>
-                    {permissionGroupId && (
-                      <Col>
-                        <Popconfirm
-                          title="정말로 삭제하시겠습니까?"
-                          okText="네"
-                          cancelText="아니요"
-                          onConfirm={deletePermissionGroup}
-                        >
-                          <Button
-                            icon={<DeleteOutlined />}
-                            loading={isLoading}
-                            type="primary"
-                            danger
-                          />
-                        </Popconfirm>
-                      </Col>
-                    )}
-                    <Col>
+            <Col>
+              <Row gutter={[4, 0]}>
+                {permissionGroupId && (
+                  <Col>
+                    <Popconfirm
+                      title="정말로 삭제하시겠습니까?"
+                      okText="네"
+                      cancelText="아니요"
+                      onConfirm={deletePermissionGroup}
+                    >
                       <Button
-                        icon={
-                          permissionGroupId ? (
-                            <SaveOutlined />
-                          ) : (
-                            <PlusOutlined />
-                          )
-                        }
+                        icon={<DeleteOutlined />}
                         loading={isLoading}
                         type="primary"
-                        htmlType="submit"
-                      >
-                        {permissionGroupId ? '저장하기' : '생성하기'}
-                      </Button>
-                    </Col>
-                  </Row>
+                        danger
+                      />
+                    </Popconfirm>
+                  </Col>
+                )}
+                <Col>
+                  <Button
+                    icon={
+                      permissionGroupId ? <SaveOutlined /> : <PlusOutlined />
+                    }
+                    loading={isLoading}
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    {permissionGroupId ? '저장하기' : '생성하기'}
+                  </Button>
                 </Col>
-              </>
-            )}
+              </Row>
+            </Col>
           </Row>
-          {!isLoading && !permissionGroup.platformId && (
-            <Alert
-              showIcon
-              style={{ marginBottom: 10 }}
-              message="커스텀 그룹 권한이 아니기 때문에 수정이 불가능합니다."
-              type="warning"
-            />
-          )}
           {permissionGroupId && (
             <Form.Item name="permissionGroupId" label="권한 그룹 ID">
               <Input
@@ -156,15 +141,13 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
             </Form.Item>
           )}
           <Form.Item name="name" label="이름">
-            <Input disabled={isLoading || !permissionGroup.platformId} />
+            <Input disabled={isLoading} />
           </Form.Item>
           <Form.Item name="description" label="설명">
-            <Input disabled={isLoading || !permissionGroup.platformId} />
+            <Input disabled={isLoading} />
           </Form.Item>
           <Form.Item name="permissions" label="권한 목록">
-            <PermissionsSelect
-              isLoading={isLoading || !permissionGroup.platformId}
-            />
+            <PermissionsSelect isLoading={isLoading} />
           </Form.Item>
         </Form>
       </Card>

@@ -1,30 +1,25 @@
-import { ApiOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { ApiOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Input, Row, Table, Tag, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-
-import { Client } from '../tools';
-import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { withRouter } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { getClient } from '../tools';
 
 const { Title } = Typography;
 const { Search } = Input;
 
 export const PermissionGroups = withRouter(({ history }) => {
-  const [dataSource, setDataSource] = useState([]);
+  const [permissionGroups, setPermissionGroups] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
-
   const columns = [
     {
       title: 'UUID',
       dataIndex: 'permissionGroupId',
-      render: (value) => (
-        <Link to={`/dashboard/permissionGroups/${value}`}>{value}</Link>
-      ),
+      render: (value) => <Link to={`/permissionGroups/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
@@ -53,12 +48,6 @@ export const PermissionGroups = withRouter(({ history }) => {
       ),
     },
     {
-      title: '커스텀',
-      dataIndex: 'platformId',
-      render: (platformId) =>
-        platformId && <CheckCircleOutlined style={{ color: 'green' }} />,
-    },
-    {
       title: '생성 일자',
       dataIndex: 'createdAt',
       render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
@@ -73,11 +62,12 @@ export const PermissionGroups = withRouter(({ history }) => {
       search,
     };
 
-    Client.get('/platform/permissionGroups', { params })
+    getClient('backoffice')
+      .then((c) => c.get('/permissionGroups', { params }))
       .finally(() => setLoading(false))
-      .then((res) => {
-        const { permissionGroups, total } = res.data;
-        setDataSource(permissionGroups);
+      .then(({ data }) => {
+        const { permissionGroups, total } = data;
+        setPermissionGroups(permissionGroups);
         setTotal(total);
       });
   };
@@ -112,13 +102,13 @@ export const PermissionGroups = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/dashboard/permissionGroups/add">
+                <Link to="/permissionGroups/add">
                   <Button
                     icon={<ApiOutlined />}
                     type="primary"
                     disabled={isLoading}
                   >
-                    권한 그룹 추가
+                    권한그룹 추가
                   </Button>
                 </Link>
               </Col>
@@ -127,7 +117,7 @@ export const PermissionGroups = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={dataSource}
+          dataSource={permissionGroups}
           rowKey="permissionGroupId"
           loading={isLoading}
           scroll={{ x: '100%' }}
