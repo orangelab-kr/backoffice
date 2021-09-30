@@ -4,6 +4,7 @@ import {
   CrownOutlined,
   HomeOutlined,
   LockOutlined,
+  PropertySafetyOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
@@ -19,12 +20,7 @@ export const Dashboard = withRouter(({ history, children }) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider
-        collapsible
-        width={150}
-        defaultCollapsed={true}
-        collapsedWidth={50}
-      >
+      <Sider collapsible width={180} collapsedWidth={50}>
         <div className="logo" />
         <Menu
           theme="dark"
@@ -41,7 +37,10 @@ export const Dashboard = withRouter(({ history, children }) => {
           <Menu.Item key="/helmets" icon={<CrownOutlined />}>
             헬멧
           </Menu.Item>
-          <Menu.Item key="/admins" icon={<TeamOutlined />}>
+          <Menu.Item key="/users" icon={<TeamOutlined />}>
+            사용자
+          </Menu.Item>
+          <Menu.Item key="/admins" icon={<PropertySafetyOutlined />}>
             관리자
           </Menu.Item>
           <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>

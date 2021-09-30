@@ -25,6 +25,11 @@ import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Marker, NaverMap } from 'react-naver-maps';
 import { useParams, withRouter } from 'react-router-dom';
+import {
+  KickboardBatteryLockSwitch,
+  KickboardLightsSwitch,
+  KickboardStatusSwitch,
+} from '../components';
 import { getClient } from '../tools';
 
 export const KickboardsDetails = withRouter(({ history }) => {
@@ -282,7 +287,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
       </Col>
       {kickboardCode && (
         <>
-          <Col lg={12} span={24}>
+          <Col xl={12} span={24}>
             <Card>
               <Row justify="space-between">
                 <Col>
@@ -327,25 +332,23 @@ export const KickboardsDetails = withRouter(({ history }) => {
                     <Progress percent={status.power.iot.battery} steps={10} />
                   </Descriptions.Item>
                   <Descriptions.Item label="킥보드 상태" span={1}>
-                    {status.isEnabled ? (
-                      <Badge status="processing" text="켜짐" />
-                    ) : (
-                      <Badge status="default" text="꺼짐" />
-                    )}
+                    <KickboardStatusSwitch
+                      kickboard={kickboard}
+                      status={status}
+                      onClick={loadKickboardStatus}
+                    />
                   </Descriptions.Item>
                   <Descriptions.Item label="배터리 잠금" span={1}>
-                    {status.isBatteryLocked ? (
-                      <Badge status="processing" text="잠금" />
-                    ) : (
-                      <Badge status="warning" text="해제" />
-                    )}
+                    <KickboardBatteryLockSwitch
+                      kickboard={kickboard}
+                      status={status}
+                    />
                   </Descriptions.Item>
                   <Descriptions.Item label="라이트" span={1}>
-                    {status.isLightsOn ? (
-                      <Badge status="processing" text="작동 중" />
-                    ) : (
-                      <Badge status="default" text="꺼짐" />
-                    )}
+                    <KickboardLightsSwitch
+                      kickboard={kickboard}
+                      status={status}
+                    />
                   </Descriptions.Item>
                   <Descriptions.Item label="컨트롤러" span={1}>
                     {status.isControllerChecked ? (
@@ -425,7 +428,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
               )}
             </Card>
           </Col>
-          <Col lg={12} span={24}>
+          <Col xl={12} span={24}>
             <Card>
               <Row justify="space-between">
                 <Col>
