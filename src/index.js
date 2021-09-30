@@ -5,6 +5,8 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { Dashboard, RequiredLogin } from './components';
 import './index.css';
 import {
+  Admins,
+  AdminsDetails,
   Helmets,
   HelmetsDetails,
   Kickboards,
@@ -15,8 +17,8 @@ import {
   PermissionGroupsDetails,
   Services,
   ServicesDetails,
-  Admins,
-  AdminsDetails,
+  Users,
+  UsersDetails,
 } from './pages';
 
 ReactDOM.render(
@@ -44,6 +46,12 @@ ReactDOM.render(
                   </Route>
                   <Route path="/admins/:userId">
                     <AdminsDetails />
+                  </Route>
+                  <Route path="/users" exact>
+                    <Users />
+                  </Route>
+                  <Route path="/users/:userId">
+                    <UsersDetails />
                   </Route>
                   <Route path="/services" exact>
                     <Services />

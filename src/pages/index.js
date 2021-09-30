@@ -1,3 +1,5 @@
+export * from './Admins';
+export * from './AdminsDetails';
 export * from './Helmets';
 export * from './HelmetsDetails';
 export * from './Kickboards';
@@ -11,5 +13,5 @@ export * from './RidesDetails';
 export * from './Services';
 export * from './ServicesDetails';
 export * from './Settings';
-export * from './Admins';
-export * from './AdminsDetails';
+export * from './Users';
+export * from './UsersDetails';

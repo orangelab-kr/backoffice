@@ -4,3 +4,4 @@ export * from './PermissionGroupsSelect';
 export * from './PermissionsSelect';
 export * from './RequiredLogin';
 export * from './ServicesCreate';
+export * from './User';
