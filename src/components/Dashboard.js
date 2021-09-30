@@ -1,4 +1,5 @@
 import {
+  ApartmentOutlined,
   BlockOutlined,
   CarOutlined,
   CrownOutlined,
@@ -39,6 +40,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/users" icon={<TeamOutlined />}>
             사용자
+          </Menu.Item>
+          <Menu.Item key="/platforms" icon={<ApartmentOutlined />}>
+            플랫폼
           </Menu.Item>
           <Menu.Item key="/admins" icon={<PropertySafetyOutlined />}>
             관리자

@@ -9,6 +9,8 @@ export * from './Main';
 export * from './NotFound';
 export * from './PermissionGroups';
 export * from './PermissionGroupsDetails';
+export * from './Platforms';
+export * from './PlatformsDetails';
 export * from './RidesDetails';
 export * from './Services';
 export * from './ServicesDetails';

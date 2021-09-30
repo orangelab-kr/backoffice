@@ -15,6 +15,8 @@ import {
   NotFound,
   PermissionGroups,
   PermissionGroupsDetails,
+  Platforms,
+  PlatformsDetails,
   Services,
   ServicesDetails,
   Users,
@@ -70,6 +72,12 @@ ReactDOM.render(
                   </Route>
                   <Route path="/helmets/:helmetId">
                     <HelmetsDetails />
+                  </Route>
+                  <Route path="/platforms" exact>
+                    <Platforms />
+                  </Route>
+                  <Route path="/platforms/:platformId">
+                    <PlatformsDetails />
                   </Route>
                   <Route path="/kickboards" exact>
                     <Kickboards />
