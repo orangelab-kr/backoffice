@@ -3,15 +3,15 @@ import { withRouter } from 'react-router';
 import { getClient } from '../tools';
 
 export const RequiredLogin = withRouter(({ children, history }) => {
-  const [user, setUser] = useState(null);
+  const [admin, setAdmin] = useState(null);
 
-  const loadUser = () => {
+  const loadAdmin = () => {
     getClient('backoffice')
       .then((c) => c.get('/auth'))
-      .then(({ data }) => setUser(data.user))
+      .then(({ data }) => setAdmin(data.user))
       .catch(() => history.push('/auth/login'));
   };
 
-  useEffect(loadUser, [history]);
-  return <>{user && children}</>;
+  useEffect(loadAdmin, [history]);
+  return <>{admin && children}</>;
 });

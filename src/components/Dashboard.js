@@ -41,7 +41,7 @@ export const Dashboard = withRouter(({ history, children }) => {
           <Menu.Item key="/helmets" icon={<CrownOutlined />}>
             헬멧
           </Menu.Item>
-          <Menu.Item key="/users" icon={<TeamOutlined />}>
+          <Menu.Item key="/admins" icon={<TeamOutlined />}>
             관리자
           </Menu.Item>
           <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>

@@ -8,8 +8,8 @@ import { getClient } from '../tools';
 const { Title } = Typography;
 const { Search } = Input;
 
-export const Users = withRouter(({ history }) => {
-  const [users, setUsers] = useState([]);
+export const Admins = withRouter(({ history }) => {
+  const [admins, setAdmins] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -19,12 +19,12 @@ export const Users = withRouter(({ history }) => {
     {
       title: 'UUID',
       dataIndex: 'userId',
-      render: (value) => <Link to={`/users/${value}`}>{value}</Link>,
+      render: (value) => <Link to={`/admins/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
-      dataIndex: 'username',
-      key: 'username',
+      dataIndex: 'adminname',
+      key: 'adminname',
     },
     {
       title: '이메일',
@@ -52,7 +52,7 @@ export const Users = withRouter(({ history }) => {
     },
   ];
 
-  const requestUsers = () => {
+  const requestAdmins = () => {
     setLoading(true);
     const params = {
       take,
@@ -65,7 +65,7 @@ export const Users = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then((res) => {
         const { users, total } = res.data;
-        setUsers(users);
+        setAdmins(users);
         setTotal(total);
       });
   };
@@ -73,15 +73,15 @@ export const Users = withRouter(({ history }) => {
   const onPagnationChange = (page, pageSize) => {
     setTake(pageSize);
     setSkip(page * pageSize);
-    requestUsers();
+    requestAdmins();
   };
 
   const onSearch = (search) => {
     setSearch(search);
-    requestUsers();
+    requestAdmins();
   };
 
-  useEffect(requestUsers, [search, skip, take]);
+  useEffect(requestAdmins, [search, skip, take]);
   return (
     <>
       <Card>
@@ -100,7 +100,7 @@ export const Users = withRouter(({ history }) => {
                 />
               </Col>
               <Col>
-                <Link to="/users/add">
+                <Link to="/admins/add">
                   <Button icon={<UserAddOutlined />} type="primary">
                     관리자 추가
                   </Button>
@@ -111,13 +111,13 @@ export const Users = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={users}
+          dataSource={admins}
           rowKey="userId"
           loading={isLoading}
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

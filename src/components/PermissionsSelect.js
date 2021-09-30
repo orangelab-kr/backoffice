@@ -2,7 +2,6 @@ import { Select } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { getClient } from '../tools';
-
 const { Option } = Select;
 
 export const PermissionsSelect = ({ id, isLoading, onChange, value }) => {

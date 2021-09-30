@@ -123,7 +123,7 @@ export const PermissionGroups = withRouter(({ history }) => {
           scroll={{ x: '100%' }}
           pagination={{
             onChange: onPagnationChange,
-            onShowSizeChange: true,
+            onShowSizeChange: setTake,
             total,
           }}
         />

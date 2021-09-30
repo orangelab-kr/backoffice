@@ -15,8 +15,8 @@ import {
   PermissionGroupsDetails,
   Services,
   ServicesDetails,
-  Users,
-  UsersDetails,
+  Admins,
+  AdminsDetails,
 } from './pages';
 
 ReactDOM.render(
@@ -39,11 +39,11 @@ ReactDOM.render(
                   <Route path="/" exact>
                     <Redirect to="/kickboards" />
                   </Route>
-                  <Route path="/users" exact>
-                    <Users />
+                  <Route path="/admins" exact>
+                    <Admins />
                   </Route>
-                  <Route path="/users/:userId">
-                    <UsersDetails />
+                  <Route path="/admins/:userId">
+                    <AdminsDetails />
                   </Route>
                   <Route path="/services" exact>
                     <Services />

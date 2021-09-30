@@ -11,6 +11,5 @@ export * from './RidesDetails';
 export * from './Services';
 export * from './ServicesDetails';
 export * from './Settings';
-export * from './Users';
-export * from './UsersDetails';
-
+export * from './Admins';
+export * from './AdminsDetails';

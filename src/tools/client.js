@@ -5,44 +5,40 @@ import { OPCODE } from './opcode';
 const clients = {};
 
 export async function getCredentials(serviceId) {
-  const sessionId = localStorage.getItem(`hikick-${serviceId}-session-id`);
-  const endpoint = localStorage.getItem(`hikick-${serviceId}-endpoint`);
-  if (sessionId && endpoint) return { sessionId, endpoint };
   if (serviceId === 'backoffice') {
+    const sessionId = localStorage.getItem('hikick-backoffice-session-id');
     const endpoint =
       window.location.host === 'backoffice.hikick.kr'
         ? 'https://backoffice-api.hikick.kr/v1'
         : 'https://backoffice-api.staging.hikick.kr/v1';
 
-    localStorage.setItem(`hikick-${serviceId}-endpoint`, endpoint);
     return { endpoint, sessionId };
   }
 
+  let endpoint;
+  let sessionId;
   const client = await getClient('backoffice');
   if (!endpoint) {
     const { data } = await client.get(`/services/${serviceId}`);
-    localStorage.setItem(`hikick-${serviceId}-endpoint`, data.service.endpoint);
+    endpoint = data.service.endpoint;
   }
 
   if (!sessionId) {
     const { data } = await client.get(`/services/${serviceId}/generate`);
-    localStorage.setItem(`hikick-${serviceId}-session-id`, data.accessToken);
+    sessionId = data.accessToken;
   }
+
+  return { endpoint, sessionId };
 }
 
 export async function getClient(serviceId) {
   const client = axios.create();
-  if (clients[serviceId]) {
-    console.log('캐시됨!', serviceId);
+  if (serviceId !== 'backoffice' && clients[serviceId]) {
     return clients[serviceId];
   }
 
-  await getCredentials(serviceId);
-  const sessionKey = `hikick-${serviceId}-session-id`;
-  const endpointKey = `hikick-${serviceId}-endpoint`;
+  const { sessionId, endpoint } = await getCredentials(serviceId);
   function getInterceptorRequest(config) {
-    const sessionId = localStorage.getItem(sessionKey);
-    const endpoint = localStorage.getItem(endpointKey);
     config.baseURL = endpoint;
     config.headers = { authorization: `Bearer ${sessionId}` };
 

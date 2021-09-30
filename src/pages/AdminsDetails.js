@@ -17,33 +17,33 @@ import { getClient } from '../tools';
 
 const { Title } = Typography;
 
-export const UsersDetails = withRouter(({ history }) => {
-  const [user, setUser] = useState({ name: '로딩 중...' });
+export const AdminsDetails = withRouter(({ history }) => {
+  const [admin, setAdmin] = useState({ name: '로딩 중...' });
   const params = useParams();
   const userId = params.userId !== 'add' ? params.userId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadUser = () => {
+  const loadAdmin = () => {
     if (!userId) return;
     setLoading(true);
     getClient('backoffice')
       .then((c) => c.get(`/users/${userId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => {
-        setUser(data.user);
+        setAdmin(data.user);
         form.setFieldsValue(data.user);
       });
   };
 
-  const deleteUser = () => {
+  const deleteAdmin = () => {
     setLoading(true);
     getClient('backoffice')
       .then((c) => c.delete(`/users/${userId}`))
       .finally(() => setLoading(false))
       .then(() => {
         message.success(`삭제되었습니다.`);
-        history.push(`/users`);
+        history.push(`/admins`);
       });
   };
 
@@ -54,13 +54,13 @@ export const UsersDetails = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then(({ data }) => {
         message.success(`${userId ? '수정' : '생성'}되었습니다.`);
-        if (data.platformUserId) {
-          history.push(`/users/${data.platformUserId}`);
+        if (data.userId) {
+          history.push(`/admins/${data.userId}`);
         }
       });
   };
 
-  useEffect(loadUser, [form, userId]);
+  useEffect(loadAdmin, [form, userId]);
   return (
     <>
       <Card>
@@ -68,7 +68,7 @@ export const UsersDetails = withRouter(({ history }) => {
           <Row justify="space-between" style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
-                {userId ? user.username : '새로운 관리자'}
+                {userId ? admin.username : '새로운 관리자'}
               </Title>
             </Col>
             <Col>
@@ -79,7 +79,7 @@ export const UsersDetails = withRouter(({ history }) => {
                       title="정말로 삭제하시겠습니까?"
                       okText="네"
                       cancelText="아니요"
-                      onConfirm={deleteUser}
+                      onConfirm={deleteAdmin}
                     >
                       <Button
                         icon={<DeleteOutlined />}
@@ -118,7 +118,7 @@ export const UsersDetails = withRouter(({ history }) => {
           <Form.Item name="permissionGroupId" label="권한 그룹">
             <PermissionGroupsSelect
               isLoading={isLoading}
-              defaultPermissionGroup={user.permissionGroup}
+              defaultPermissionGroup={admin.permissionGroup}
             />
           </Form.Item>
         </Form>

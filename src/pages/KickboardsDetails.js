@@ -114,6 +114,20 @@ export const KickboardsDetails = withRouter(({ history }) => {
   return (
     <Row gutter={[4, 4]}>
       <Col span={24}>
+        {kickboard && kickboard.disconnectedAt && (
+          <div style={{ margin: '10px 0 10px 0' }}>
+            <Alert
+              message="경고! 연결이 끊긴 킥보드입니다."
+              description={`해당 킥보드는 ${dayjs(
+                kickboard.disconnectedAt
+              ).format(
+                'YYYY년 MM월 DD일 hh시 mm분 ss초'
+              )} 이후 연결이 끊겼습니다.`}
+              type="warning"
+              closable
+            />
+          </div>
+        )}
         <Card>
           <Form
             layout="vertical"
@@ -159,21 +173,6 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Row>
               </Col>
             </Row>
-            {kickboard && kickboard.disconnectedAt && (
-              <Col span={24}>
-                <Alert
-                  message="경고! 연결이 끊긴 킥보드입니다."
-                  description={`해당 킥보드는 ${dayjs(
-                    kickboard.disconnectedAt
-                  ).format(
-                    'YYYY년 MM월 DD일 hh시 mm분 ss초'
-                  )} 이후 연결이 끊겼습니다.`}
-                  type="warning"
-                  closable
-                />
-              </Col>
-            )}
-
             <Row gutter={[4, 4]} justify="space-between">
               <Col flex={1}>
                 <Form.Item
@@ -283,7 +282,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
       </Col>
       {kickboardCode && (
         <>
-          <Col span={12}>
+          <Col lg={12} span={24}>
             <Card>
               <Row justify="space-between">
                 <Col>
@@ -301,7 +300,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Col>
               </Row>
               {status ? (
-                <Descriptions bordered size="small">
+                <Descriptions bordered size="small" layout="horizontal">
                   <Descriptions.Item label="킥보드 속도" span={2}>
                     <Progress
                       percent={status.speed}
@@ -348,13 +347,6 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       <Badge status="default" text="꺼짐" />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="부저" span={1}>
-                    {status.isBuzzerOn ? (
-                      <Badge status="processing" text="작동 중" />
-                    ) : (
-                      <Badge status="default" text="꺼짐" />
-                    )}
-                  </Descriptions.Item>
                   <Descriptions.Item label="컨트롤러" span={1}>
                     {status.isControllerChecked ? (
                       <Badge status="processing" text="정상" />
@@ -376,6 +368,13 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       <Badge status="warning" text="경고" />
                     )}
                   </Descriptions.Item>
+                  <Descriptions.Item label="부저" span={1}>
+                    {status.isBuzzerOn ? (
+                      <Badge status="processing" text="작동 중" />
+                    ) : (
+                      <Badge status="default" text="꺼짐" />
+                    )}
+                  </Descriptions.Item>
                   <Descriptions.Item label="EBS 브레이크" span={1}>
                     {status.isEBSBrakeOn ? (
                       <Badge status="processing" text="작동 중" />
@@ -390,7 +389,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       <Badge status="default" text="감지 안됨" />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="위치" span={3}>
+                  <Descriptions.Item label="위치" span={4}>
                     <NaverMap
                       id="current-location"
                       style={{
@@ -426,7 +425,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
               )}
             </Card>
           </Col>
-          <Col span={12}>
+          <Col lg={12} span={24}>
             <Card>
               <Row justify="space-between">
                 <Col>
