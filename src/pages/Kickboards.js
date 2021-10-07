@@ -8,7 +8,7 @@ const { Title } = Typography;
 const { Search } = Input;
 
 export const Kickboards = withRouter(({ history }) => {
-  const [dataSource, setDataSource] = useState([]);
+  const [kickboards, setKickboards] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -40,8 +40,8 @@ export const Kickboards = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then((res) => {
         const { kickboards, total } = res.data;
-        setDataSource(kickboards);
-        setTotal(total);
+        setKickboards(kickboards);
+        setTotal(total - take);
       });
   };
 
@@ -87,7 +87,7 @@ export const Kickboards = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={dataSource}
+          dataSource={kickboards}
           rowKey="kickboardCode"
           loading={isLoading}
           scroll={{ x: '100%' }}

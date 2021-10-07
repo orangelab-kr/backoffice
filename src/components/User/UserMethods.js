@@ -51,9 +51,7 @@ export const UserMethods = withRouter(({ history, user }) => {
                   <Col>
                     <b>연결 시점: </b>
                     <Typography.Text copyable={true}>
-                      {dayjs(method.createdAt).format(
-                        'YYYY년 M월 D일 H시 m분 s초'
-                      )}
+                      {dayjs(method.createdAt).format('YYYY년 M월 D일 H시 m분')}
                     </Typography.Text>
                   </Col>
                   <Col>

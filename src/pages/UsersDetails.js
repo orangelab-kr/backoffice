@@ -9,12 +9,18 @@ import {
   message,
   Popconfirm,
   Row,
-  Typography,
+  Typography
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
-import { UserMethods, UserPhonePopup, UserSessions } from '../components';
+import {
+  UserCoupon,
+  UserMethods,
+  UserPasses,
+  UserPhonePopup,
+  UserSessions
+} from '../components';
 import { getClient } from '../tools';
 
 const { Title } = Typography;
@@ -141,12 +147,22 @@ export const UsersDetails = withRouter(({ history }) => {
       </Col>
       {user && (
         <Col xl={12} span={24}>
-          <UserMethods user={user} />
+          <UserCoupon user={user} />
         </Col>
       )}
       {user && (
         <Col xl={12} span={24}>
           <UserSessions user={user} />
+        </Col>
+      )}
+      {user && (
+        <Col xl={12} span={24}>
+          <UserMethods user={user} />
+        </Col>
+      )}
+      {user && (
+        <Col xl={12} span={24}>
+          <UserPasses user={user} />
         </Col>
       )}
     </Row>

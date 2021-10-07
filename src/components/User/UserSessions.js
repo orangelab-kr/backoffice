@@ -86,16 +86,14 @@ export const UserSessions = withRouter(({ history, user }) => {
                     <b>로그인 시점: </b>
                     <Typography.Text copyable={true}>
                       {dayjs(session.createdAt).format(
-                        'YYYY년 M월 D일 H시 m분 s초'
+                        'YYYY년 M월 D일 H시 m분'
                       )}
                     </Typography.Text>
                   </Col>
                   <Col>
                     <b>마지막 시점: </b>
                     <Typography.Text copyable={true}>
-                      {dayjs(session.usedAt).format(
-                        'YYYY년 M월 D일 H시 m분 s초'
-                      )}
+                      {dayjs(session.usedAt).format('YYYY년 M월 D일 H시 m분')}
                     </Typography.Text>
                   </Col>
                   <Col>

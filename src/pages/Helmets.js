@@ -68,7 +68,7 @@ export const Helmets = withRouter(({ history }) => {
       .then((res) => {
         const { helmets, total } = res.data;
         setDataSource(helmets);
-        setTotal(total);
+        setTotal(total - take);
       });
   };
 

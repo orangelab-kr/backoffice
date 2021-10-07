@@ -68,7 +68,7 @@ export const PermissionGroups = withRouter(({ history }) => {
       .then(({ data }) => {
         const { permissionGroups, total } = data;
         setPermissionGroups(permissionGroups);
-        setTotal(total);
+        setTotal(total - take);
       });
   };
 
@@ -87,7 +87,7 @@ export const PermissionGroups = withRouter(({ history }) => {
   return (
     <>
       <Card>
-        <Row justify="space-between">
+        <Row justify="space-between" gutter={[4, 4]}>
           <Col>
             <Title level={3}>권한 그룹 목록</Title>
           </Col>

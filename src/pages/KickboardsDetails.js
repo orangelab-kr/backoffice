@@ -418,9 +418,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                     </NaverMap>
                   </Descriptions.Item>
                   <Descriptions.Item label="업데이트 일자" span={2}>
-                    {dayjs(status.createdAt).format(
-                      'YYYY년 MM월 DD일 H시 m분 s초'
-                    )}
+                    {dayjs(status.createdAt).format('YYYY년 MM월 DD일 H시 m분')}
                   </Descriptions.Item>
                 </Descriptions>
               ) : (
@@ -466,7 +464,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                   ))}
                   <Descriptions.Item label="업데이트 일자">
                     {dayjs(battery.updatedAt).format(
-                      'YYYY년 MM월 DD일 H시 m분 s초'
+                      'YYYY년 MM월 DD일 H시 m분'
                     )}
                   </Descriptions.Item>
                 </Descriptions>

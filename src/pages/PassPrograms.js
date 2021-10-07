@@ -7,8 +7,8 @@ import { getClient } from '../tools';
 const { Title } = Typography;
 const { Search } = Input;
 
-export const Users = withRouter(({ history }) => {
-  const [admins, setUsers] = useState([]);
+export const PassPrograms = withRouter(({ history }) => {
+  const [passPrograms, setPassPrograms] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
@@ -17,37 +17,52 @@ export const Users = withRouter(({ history }) => {
   const columns = [
     {
       title: 'UUID',
-      dataIndex: 'userId',
-      render: (value) => <Link to={`/users/${value}`}>{value}</Link>,
+      dataIndex: 'passProgramId',
+      render: (value) => <Link to={`/passPrograms/${value}`}>{value}</Link>,
     },
     {
       title: '이름',
-      dataIndex: 'realname',
-      key: 'realname',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      title: '이메일',
-      dataIndex: 'email',
-      key: 'email',
+      title: '판매 여부',
+      dataIndex: 'isSale',
+      render: (value) => (value ? '허용' : '금지'),
     },
     {
-      title: '전화번호',
-      dataIndex: 'phoneNo',
-      key: 'phoneNo',
+      title: '연장 가능',
+      dataIndex: 'allowRenew',
+      render: (value) => (value ? '허용' : '금지'),
     },
     {
-      title: '생년월일',
-      dataIndex: 'birthday',
-      render: (birthday) => dayjs(birthday).format('YYYY년 MM월 DD일'),
+      title: '가격',
+      dataIndex: 'price',
+      render: (value) => (value ? `${value.toLocaleString()}원` : '없음'),
+    },
+    {
+      title: '만료',
+      dataIndex: 'validity',
+      render: (value) => (value ? `${value / 1000}초` : '만료 없음'),
+    },
+    {
+      title: '쿠폰 그룹',
+      dataIndex: 'couponGroupId',
+      render: (value) => <Link to={`/couponGroups/${value}`}>{value}</Link>,
     },
     {
       title: '생성 일자',
       dataIndex: 'createdAt',
       render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
     },
+    {
+      title: '수정 일자',
+      dataIndex: 'updatedAt',
+      render: (updatedAt) => dayjs(updatedAt).format('YYYY년 MM월 DD일'),
+    },
   ];
 
-  const requestUsers = () => {
+  const requestPassPrograms = () => {
     setLoading(true);
     const params = {
       take,
@@ -56,11 +71,11 @@ export const Users = withRouter(({ history }) => {
     };
 
     getClient('coreservice-accounts')
-      .then((c) => c.get('/users', { params }))
+      .then((c) => c.get('/passPrograms', { params }))
       .finally(() => setLoading(false))
       .then((res) => {
-        const { users, total } = res.data;
-        setUsers(users);
+        const { passPrograms, total } = res.data;
+        setPassPrograms(passPrograms);
         setTotal(total - take);
       });
   };
@@ -68,21 +83,21 @@ export const Users = withRouter(({ history }) => {
   const onPagnationChange = (page, pageSize) => {
     setTake(pageSize);
     setSkip(page * pageSize);
-    requestUsers();
+    requestPassPrograms();
   };
 
   const onSearch = (search) => {
     setSearch(search);
-    requestUsers();
+    requestPassPrograms();
   };
 
-  useEffect(requestUsers, [search, skip, take]);
+  useEffect(requestPassPrograms, [search, skip, take]);
   return (
     <>
       <Card>
         <Row justify="space-between">
           <Col>
-            <Title level={3}>사용자 목록</Title>
+            <Title level={3}>패스 프로그램 목록</Title>
           </Col>
           <Col>
             <Row gutter={[4, 4]} justify="center">
@@ -110,8 +125,8 @@ export const Users = withRouter(({ history }) => {
         </Row>
         <Table
           columns={columns}
-          dataSource={admins}
-          rowKey="userId"
+          dataSource={passPrograms}
+          rowKey="passProgramId"
           loading={isLoading}
           scroll={{ x: 1000 }}
           pagination={{

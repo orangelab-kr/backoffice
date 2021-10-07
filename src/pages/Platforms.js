@@ -50,7 +50,7 @@ export const Platforms = withRouter(({ history }) => {
       .then((res) => {
         const { platforms, total } = res.data;
         setPlatforms(platforms);
-        setTotal(total);
+        setTotal(total - take);
       });
   };
 

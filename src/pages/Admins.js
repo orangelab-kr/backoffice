@@ -66,7 +66,7 @@ export const Admins = withRouter(({ history }) => {
       .then((res) => {
         const { users, total } = res.data;
         setAdmins(users);
-        setTotal(total);
+        setTotal(total - take);
       });
   };
 

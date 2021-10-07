@@ -335,7 +335,7 @@ export const RidesDetails = withRouter(() => {
                                   showTime
                                   style={{ width: '100%' }}
                                   onChange={calculateTerminatePricing}
-                                  format="YYYY년 MM월 DD일 H시 m분 s초"
+                                  format="YYYY년 MM월 DD일 H시 m분"
                                 />
                               </Form.Item>
                             </Col>
@@ -516,13 +516,13 @@ export const RidesDetails = withRouter(() => {
                         </Descriptions.Item>
                         <Descriptions.Item label="시작 일자" span={2}>
                           {dayjs(ride.startedAt).format(
-                            'YYYY년 M월 D일 H시 m분 s초'
+                            'YYYY년 M월 D일 H시 m분'
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label="종료 일자" span={2}>
                           {ride.terminatedAt
                             ? dayjs(ride.terminatedAt).format(
-                                'YYYY년 M월 D일 H시 m분 s초'
+                                'YYYY년 M월 D일 H시 m분'
                               )
                             : '라이드 중...'}
                         </Descriptions.Item>
@@ -982,7 +982,7 @@ export const RidesDetails = withRouter(() => {
                           </Descriptions.Item>
                           <Descriptions.Item label="계산 일자" span={3}>
                             {dayjs(ride.receipt.updatedAt).format(
-                              'YYYY년 M월 D일 H시 m분 s초'
+                              'YYYY년 M월 D일 H시 m분'
                             )}
                           </Descriptions.Item>
                         </Descriptions>
@@ -1029,7 +1029,7 @@ export const RidesDetails = withRouter(() => {
                                       <b>요청 시점: </b>
                                       <Typography.Text copyable={true}>
                                         {dayjs(ride.createdAt).format(
-                                          'M월 D일 H시 m분 s초'
+                                          'M월 D일 H시 m분'
                                         )}
                                       </Typography.Text>
                                     </Col>
@@ -1038,7 +1038,7 @@ export const RidesDetails = withRouter(() => {
                                       <Typography.Text copyable={true}>
                                         {ride.processedAt
                                           ? dayjs(ride.processedAt).format(
-                                              'M월 D일 H시 m분 s초'
+                                              'M월 D일 H시 m분'
                                             )
                                           : '처리 되지 않음'}
                                       </Typography.Text>
@@ -1064,7 +1064,7 @@ export const RidesDetails = withRouter(() => {
                                       {!payment.refundedAt
                                         ? '환불'
                                         : dayjs(ride.processedAt).format(
-                                            '환불됨: M월 D일 H시 m분 s초'
+                                            '환불됨: M월 D일 H시 m분'
                                           )}
                                     </Button>
                                   </Popconfirm>
