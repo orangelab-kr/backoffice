@@ -1,20 +1,10 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Input, Row, Table, Typography } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
-const { Title } = Typography;
-const { Search } = Input;
-
-export const Platforms = withRouter(({ history }) => {
-  const [platforms, setPlatforms] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
-  const [total, setTotal] = useState(0);
-  const [take, setTake] = useState(10);
-  const [skip, setSkip] = useState(0);
+export const Platforms = () => {
   const columns = [
     {
       title: 'UUID',
@@ -36,77 +26,17 @@ export const Platforms = withRouter(({ history }) => {
     },
   ];
 
-  const requestPlatforms = () => {
-    setLoading(true);
-    const params = {
-      take,
-      skip,
-      search,
-    };
+  const onRequest = (opts) =>
+    getClient('openapi-platform').then((c) => c.get('/platforms', opts));
 
-    getClient('openapi-platform')
-      .then((c) => c.get('/platforms', { params }))
-      .finally(() => setLoading(false))
-      .then((res) => {
-        const { platforms, total } = res.data;
-        setPlatforms(platforms);
-        setTotal(total - take);
-      });
-  };
-
-  const onPagnationChange = (page, pageSize) => {
-    setTake(pageSize);
-    setSkip(page * pageSize);
-    requestPlatforms();
-  };
-
-  const onSearch = (search) => {
-    setSkip(0);
-    setSearch(search);
-    requestPlatforms();
-  };
-
-  useEffect(requestPlatforms, [search, skip, take]);
   return (
-    <>
-      <Card>
-        <Row justify="space-between">
-          <Col>
-            <Title level={3}>플랫폼 목록</Title>
-          </Col>
-          <Col>
-            <Row>
-              <Col>
-                <Search
-                  placeholder="검색"
-                  onSearch={onSearch}
-                  loading={isLoading}
-                  enterButton
-                />
-              </Col>
-              <Col>
-                <Link to="/platforms/add">
-                  <Button icon={<PlusOutlined />} type="primary">
-                    플랫폼 추가
-                  </Button>
-                </Link>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        <Table
-          columns={columns}
-          dataSource={platforms}
-          rowKey="platformId"
-          loading={isLoading}
-          scroll={{ x: '100%' }}
-          pagination={{
-            onChange: onPagnationChange,
-            onShowSizeChange: setTake,
-            total,
-          }}
-        />
-      </Card>
-    </>
+    <BackofficeTable
+      title="플랫폼 목록"
+      hasSearch={true}
+      columns={columns}
+      dataSourceKey="platforms"
+      scroll={{ x: 1000 }}
+      onRequest={onRequest}
+    />
   );
-});
+};

@@ -1,20 +1,12 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Card, Col, Input, Row, Table, Typography, Tag, Button } from 'antd';
+import { Button, Card, Col, Row, Table, Tag } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
-const { Title } = Typography;
-const { Search } = Input;
-
-export const Helmets = withRouter(({ history }) => {
-  const [dataSource, setDataSource] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
-  const [total, setTotal] = useState(0);
-  const [take, setTake] = useState(10);
-  const [skip, setSkip] = useState(0);
+export const Helmets = () => {
   const columns = [
     {
       title: '헬멧 맥주소',
@@ -54,77 +46,24 @@ export const Helmets = withRouter(({ history }) => {
     },
   ];
 
-  const requestHelmets = () => {
-    setLoading(true);
-    const params = {
-      take,
-      skip,
-      search,
-    };
+  const onRequest = (opts) =>
+    getClient('openapi-kickboard').then((c) => c.get('/helmets', opts));
 
-    getClient('openapi-kickboard')
-      .then((c) => c.get('/helmets', { params }))
-      .finally(() => setLoading(false))
-      .then((res) => {
-        const { helmets, total } = res.data;
-        setDataSource(helmets);
-        setTotal(total - take);
-      });
-  };
-
-  const onPagnationChange = (page, pageSize) => {
-    setTake(pageSize);
-    setSkip(page * pageSize);
-    requestHelmets();
-  };
-
-  const onSearch = (search) => {
-    setSkip(0);
-    setSearch(search);
-    requestHelmets();
-  };
-
-  useEffect(requestHelmets, [search, skip, take]);
   return (
-    <>
-      <Card>
-        <Row justify="space-between">
-          <Col>
-            <Title level={3}>헬멧 목록</Title>
-          </Col>
-          <Col>
-            <Row>
-              <Col>
-                <Search
-                  placeholder="검색"
-                  onSearch={onSearch}
-                  loading={isLoading}
-                  enterButton
-                />
-              </Col>
-              <Col>
-                <Link to="/helmets/add">
-                  <Button icon={<PlusOutlined />} type="primary">
-                    헬멧 추가
-                  </Button>
-                </Link>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          rowKey="macAddress"
-          loading={isLoading}
-          scroll={{ x: '100%' }}
-          pagination={{
-            onChange: onPagnationChange,
-            onShowSizeChange: setTake,
-            total,
-          }}
-        />
-      </Card>
-    </>
+    <BackofficeTable
+      title="헬멧 목록"
+      hasSearch={true}
+      columns={columns}
+      onRequest={onRequest}
+      scroll={{ x: 1000 }}
+      dataSourceKey="helmets"
+      buttons={
+        <Link to="/helmets/add">
+          <Button icon={<PlusOutlined />} type="primary">
+            헬멧 추가
+          </Button>
+        </Link>
+      }
+    />
   );
-});
+};
