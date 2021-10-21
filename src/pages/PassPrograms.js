@@ -1,6 +1,5 @@
-import { Card, Col, Row, Table } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';

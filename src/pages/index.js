@@ -1,6 +1,7 @@
 export * from './Admins';
 export * from './AdminsDetails';
 export * from './CouponGroups';
+export * from './CouponGroupsDetails';
 export * from './Helmets';
 export * from './HelmetsDetails';
 export * from './Kickboards';

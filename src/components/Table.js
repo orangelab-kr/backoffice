@@ -45,7 +45,7 @@ export const BackofficeTable = ({
         const dataSource = data[dataSourceKey];
         if (dataSource.length <= 0 && skip > 0) return setSkip(0);
         setDataSource(data[dataSourceKey]);
-        setTotal(data.total - params.take);
+        setTotal(data.total);
       });
   };
 
@@ -71,6 +71,7 @@ export const BackofficeTable = ({
               <Col>
                 <Input.Search
                   placeholder="검색"
+                  defaultValue={search}
                   loading={isLoading}
                   onSearch={onSearch}
                   enterButton

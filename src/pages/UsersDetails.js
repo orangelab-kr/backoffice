@@ -9,7 +9,7 @@ import {
   message,
   Popconfirm,
   Row,
-  Typography
+  Typography,
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -19,7 +19,8 @@ import {
   UserMethods,
   UserPasses,
   UserPhonePopup,
-  UserSessions
+  UserRides,
+  UserSessions,
 } from '../components';
 import { getClient } from '../tools';
 
@@ -33,7 +34,7 @@ export const UsersDetails = withRouter(({ history }) => {
   const [isLoading, setLoading] = useState(false);
   const [showPhoneChange, setShowPhoneChange] = useState(false);
 
-  const loadAdmin = () => {
+  const loadUser = () => {
     if (!userId) return;
     setLoading(true);
     getClient('coreservice-accounts')
@@ -70,10 +71,10 @@ export const UsersDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadAdmin, [form, userId]);
+  useEffect(loadUser, [form, userId]);
   return (
     <Row gutter={[4, 4]}>
-      <Col span={24}>
+      <Col xl={12} span={24}>
         {showPhoneChange && (
           <UserPhonePopup
             user={user}
@@ -81,7 +82,7 @@ export const UsersDetails = withRouter(({ history }) => {
             onCancel={() => setShowPhoneChange(false)}
           />
         )}
-        <Card>
+        <Card style={{ height: 500 }}>
           <Form layout="vertical" onFinish={onSave} form={form}>
             <Row justify="space-between" style={{ marginBottom: 20 }}>
               <Col>
@@ -145,6 +146,11 @@ export const UsersDetails = withRouter(({ history }) => {
           </Form>
         </Card>
       </Col>
+      {user && (
+        <Col xl={12} span={24}>
+          <UserRides user={user} />
+        </Col>
+      )}
       {user && (
         <Col xl={12} span={24}>
           <UserCoupon user={user} />

@@ -9,6 +9,7 @@ import {
   Admins,
   AdminsDetails,
   CouponGroups,
+  CouponGroupsDetails,
   Helmets,
   HelmetsDetails,
   Kickboards,
@@ -82,6 +83,9 @@ ReactDOM.render(
                     </Route>
                     <Route path="/couponGroups" exact>
                       <CouponGroups />
+                    </Route>
+                    <Route path="/couponGroups/:couponGroupId">
+                      <CouponGroupsDetails />
                     </Route>
                     <Route path="/platforms" exact>
                       <Platforms />

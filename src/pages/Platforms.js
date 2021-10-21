@@ -1,3 +1,5 @@
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -37,6 +39,13 @@ export const Platforms = () => {
       dataSourceKey="platforms"
       scroll={{ x: 1000 }}
       onRequest={onRequest}
+      buttons={
+        <Link to="/platforms/add">
+          <Button icon={<PlusOutlined />} type="primary">
+            플랫폼 추가
+          </Button>
+        </Link>
+      }
     />
   );
 };

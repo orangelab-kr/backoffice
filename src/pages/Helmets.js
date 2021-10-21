@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Row, Table, Tag } from 'antd';
+import { Button, Tag } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
@@ -37,6 +37,12 @@ export const Helmets = () => {
         ) : (
           <Tag color="red">알 수 없음</Tag>
         ),
+    },
+    {
+      title: '킥보드',
+      dataIndex: 'kickboard',
+      render: (kickboard) =>
+        kickboard ? kickboard.kickboardCode : '연결 안함',
     },
     {
       title: '최초 등록일자',
