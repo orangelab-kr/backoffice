@@ -48,6 +48,7 @@ export const AdminsDetails = withRouter(({ history }) => {
   };
 
   const onSave = (body) => {
+    if (isLoading) return;
     setLoading(true);
     getClient('backoffice')
       .then((c) => c.post(`/users/${userId}`, body))
@@ -60,7 +61,7 @@ export const AdminsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadAdmin, [form, userId]);
+  useEffect(loadAdmin, [form, isLoading, userId]);
   return (
     <>
       <Card>

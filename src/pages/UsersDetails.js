@@ -82,7 +82,7 @@ export const UsersDetails = withRouter(({ history }) => {
             onCancel={() => setShowPhoneChange(false)}
           />
         )}
-        <Card style={{ height: 500 }}>
+        <Card style={{ height: 495 }}>
           <Form layout="vertical" onFinish={onSave} form={form}>
             <Row justify="space-between" style={{ marginBottom: 20 }}>
               <Col>

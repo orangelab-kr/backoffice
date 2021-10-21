@@ -21,35 +21,43 @@ export const BackofficeList = ({
   renderItem,
 }) => {
   const take = 6;
+  const scrollableTarget = `scrollableDiv-${Date.now()}`;
   const [isLoading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [search, setSearch] = useState();
-  const onSearch = (search) => {
-    setSearch(search);
-    requestDataSource();
+  const onSearch = (value) => {
+    if (value !== search) {
+      console.log('초기화');
+      setDataSource([]);
+    }
+    setSearch(value);
   };
 
-  const requestDataSource = (take = 6) => {
-    if (isLoading) return;
+  const requestDataSource = () => {
     setLoading(true);
-    const params = { take, skip, search, ...defaultParams };
-
+    const params = { take, skip, search };
     onRequest({ params })
       .finally(() => setLoading(false))
       .then(({ data }) => {
-        setDataSource([...dataSource, ...data[dataSourceKey]]);
+        const newDataSource = data[dataSourceKey];
+        setDataSource((d) => [...d, ...newDataSource]);
         setTotal(data.total);
       });
   };
 
-  const requestMoreData = () => {
-    setSkip(skip + take);
-    requestDataSource();
-  };
+  const requestMoreData = () => setSkip(skip + take);
+  useEffect(requestDataSource, [
+    dataSourceKey,
+    defaultParams,
+    onRequest,
+    search,
+    setSkip,
+    skip,
+    take,
+  ]);
 
-  useEffect(requestDataSource, []);
   return (
     <Card>
       <Row justify="space-between" gutter={[8, 8]}>
@@ -76,7 +84,7 @@ export const BackofficeList = ({
         </Col>
       </Row>
       <div
-        id="scrollableDiv"
+        id={scrollableTarget}
         style={{
           height: 400,
           overflow: 'auto',
@@ -90,7 +98,7 @@ export const BackofficeList = ({
           next={requestMoreData}
           hasMore={!!total && dataSource.length < total}
           loader={<Skeleton active paragraph={{ rows: 1 }} />}
-          scrollableTarget="scrollableDiv"
+          scrollableTarget={scrollableTarget}
           endMessage={
             dataSource.length > 6 && <Divider plain>더이상 없습니다.</Divider>
           }

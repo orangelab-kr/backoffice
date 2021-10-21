@@ -7,9 +7,9 @@ import { getClient } from '../../tools';
 
 export const UserMethods = withRouter(({ history, user }) => {
   const { userId } = user;
-  const onRequest = () =>
+  const onRequest = (opts) =>
     getClient('coreservice-accounts').then((c) =>
-      c.get(`/users/${userId}/methods`)
+      c.get(`/users/${userId}/methods`, opts)
     );
 
   const deleteMethod = () =>

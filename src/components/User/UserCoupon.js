@@ -7,9 +7,9 @@ import { getClient } from '../../tools';
 
 export const UserCoupon = withRouter(({ history, user }) => {
   const { userId } = user;
-  const onRequest = () =>
+  const onRequest = (opts) =>
     getClient('coreservice-payments').then((c) =>
-      c.get(`/users/${userId}/coupons?showUsed=false`)
+      c.get(`/users/${userId}/coupons`, opts)
     );
 
   const deleteCoupon = (couponId) =>
@@ -20,8 +20,10 @@ export const UserCoupon = withRouter(({ history, user }) => {
   return (
     <BackofficeList
       title="쿠폰"
+      hasSearch={true}
       onRequest={onRequest}
       dataSourceKey="coupons"
+      defaultParams={{ showUsed: true }}
       renderItem={(coupon) => (
         <List.Item>
           <Row justify="space-between">
@@ -39,22 +41,22 @@ export const UserCoupon = withRouter(({ history, user }) => {
             <Col>
               <b>등록 시점: </b>
               <Typography.Text copyable={true}>
-                {dayjs(coupon.createdAt).format('YYYY년 M월 D일 H시 m분')}
+                {dayjs(coupon.createdAt).format('YYYY년 M월 DD일 HH시 mm분')}
               </Typography.Text>
             </Col>
             {coupon.expiredAt && (
-              <Col>
+              <Col flex={1}>
                 <b>만료 시점: </b>
                 <Typography.Text copyable={true}>
-                  {dayjs(coupon.expiredAt).format('YYYY년 M월 D일 H시 m분')}
+                  {dayjs(coupon.expiredAt).format('YYYY년 M월 DD일 HH시 mm분')}
                 </Typography.Text>
               </Col>
             )}
             {coupon.usedAt && (
-              <Col>
+              <Col flex={1}>
                 <b>사용 시점: </b>
                 <Typography.Text copyable={true}>
-                  {dayjs(coupon.usedAt).format('YYYY년 M월 D일 H시 m분')}
+                  {dayjs(coupon.usedAt).format('YYYY년 M월 DD일 HH시 mm분')}
                 </Typography.Text>
               </Col>
             )}

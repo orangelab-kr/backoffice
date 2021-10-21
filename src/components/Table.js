@@ -24,21 +24,14 @@ export const BackofficeTable = ({
   const [take, setTake] = useQueryParam('take', withDefault(NumberParam, 10));
   const [skip, setSkip] = useQueryParam('skip', withDefault(NumberParam, 0));
   const [search, setSearch] = useQueryParam('search', StringParam);
-  const onSearch = (search) => {
-    setSearch(search);
-    requestDataSource();
-  };
-
   const onPagnationChange = (page, pageSize) => {
     setTake(pageSize);
     setSkip((page - 1) * pageSize);
-    requestDataSource();
   };
 
   const requestDataSource = () => {
     setLoading(true);
     const params = { take, skip, search, ...defaultParams };
-
     onRequest({ params })
       .finally(() => setLoading(false))
       .then(({ data }) => {
@@ -73,7 +66,7 @@ export const BackofficeTable = ({
                   placeholder="검색"
                   defaultValue={search}
                   loading={isLoading}
-                  onSearch={onSearch}
+                  onSearch={setSearch}
                   enterButton
                 />
               </Col>
@@ -86,7 +79,7 @@ export const BackofficeTable = ({
         <Table
           columns={columns}
           dataSource={dataSource}
-          rowKey={rowKey || columns[0]?.key}
+          rowKey={rowKey || columns[0]?.dataIndex}
           loading={isLoading}
           scroll={scroll}
           pagination={{

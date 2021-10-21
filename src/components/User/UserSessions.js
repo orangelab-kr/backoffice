@@ -23,7 +23,7 @@ export const UserSessions = ({ user }) => {
 
   return (
     <BackofficeList
-      title="로그인 세션"
+      title="세션"
       onRequest={onRequest}
       dataSourceKey="sessions"
       buttons={

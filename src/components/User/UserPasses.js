@@ -7,9 +7,9 @@ import { getClient } from '../../tools';
 
 export const UserPasses = withRouter(({ history, user }) => {
   const { userId } = user;
-  const onRequest = () =>
+  const onRequest = (opts) =>
     getClient('coreservice-accounts').then((c) =>
-      c.get(`/users/${userId}/passes`)
+      c.get(`/users/${userId}/passes`, opts)
     );
 
   const deletePass = (pass) =>
@@ -20,6 +20,7 @@ export const UserPasses = withRouter(({ history, user }) => {
   return (
     <BackofficeList
       title="패스"
+      hasSearch={true}
       onRequest={onRequest}
       dataSourceKey="passes"
       renderItem={(pass) => (
