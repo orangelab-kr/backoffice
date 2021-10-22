@@ -28,10 +28,7 @@ export const BackofficeList = ({
   const [skip, setSkip] = useState(0);
   const [search, setSearch] = useState();
   const onSearch = (value) => {
-    if (value !== search) {
-      console.log('초기화');
-      setDataSource([]);
-    }
+    if (value !== search) setDataSource([]);
     setSearch(value);
   };
 

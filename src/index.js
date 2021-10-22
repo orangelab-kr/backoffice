@@ -21,6 +21,8 @@ import {
   PermissionGroupsDetails,
   Platforms,
   PlatformsDetails,
+  Rides,
+  RidesDetails,
   Services,
   ServicesDetails,
   Users,
@@ -86,6 +88,12 @@ ReactDOM.render(
                     </Route>
                     <Route path="/couponGroups/:couponGroupId">
                       <CouponGroupsDetails />
+                    </Route>
+                    <Route path="/rides" exact>
+                      <Rides />
+                    </Route>
+                    <Route path="/rides/:rideId">
+                      <RidesDetails />
                     </Route>
                     <Route path="/platforms" exact>
                       <Platforms />

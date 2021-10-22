@@ -3,6 +3,7 @@ import {
   BlockOutlined,
   CarOutlined,
   CrownOutlined,
+  HistoryOutlined,
   HomeOutlined,
   LockOutlined,
   PropertySafetyOutlined,
@@ -40,6 +41,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/users" icon={<TeamOutlined />}>
             사용자
+          </Menu.Item>
+          <Menu.Item key="/rides" icon={<HistoryOutlined />}>
+            라이드
           </Menu.Item>
           <Menu.Item key="/passPrograms" icon={<PropertySafetyOutlined />}>
             패스 프로그램

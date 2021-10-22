@@ -14,6 +14,7 @@ export * from './PermissionGroups';
 export * from './PermissionGroupsDetails';
 export * from './Platforms';
 export * from './PlatformsDetails';
+export * from './Rides';
 export * from './RidesDetails';
 export * from './Services';
 export * from './ServicesDetails';

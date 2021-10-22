@@ -32,7 +32,9 @@ export const UserRides = withRouter(({ history, user }) => {
               <Typography.Text>
                 {dayjs(ride.createdAt).format('YYYY년 M월 D일 H시 m분')}
                 {' ~ '}
-                {dayjs(ride.endedAT).format('D일 H시 m분')}
+                {ride.endedAt
+                  ? dayjs(ride.endedAt).format('D일 H시 m분')
+                  : '탑승 중'}
               </Typography.Text>
             </Col>
             <Col>
