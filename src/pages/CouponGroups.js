@@ -34,7 +34,7 @@ export const CouponGroups = withRouter(({ history }) => {
     {
       title: '만료',
       dataIndex: 'validity',
-      render: (value) => (value ? `${value / 1000}초` : '만료 없음'),
+      render: (value) => (value ? `${value}초` : '만료 없음'),
     },
     {
       title: '생성 일자',
