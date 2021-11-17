@@ -1,3 +1,6 @@
+import { CopyOutlined } from '@ant-design/icons';
+import { Button, message } from 'antd';
+import clipboard from 'copy-to-clipboard';
 import dayjs from 'dayjs';
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -5,6 +8,21 @@ import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
 export const Services = withRouter(({ history }) => {
+  const copyAccessKey = (serviceId) => async () => {
+    const key = `service-generate-${Date.now()}`;
+    message.loading({ content: '액세스토큰 정보 발급 중...', key });
+    const accessToken = await getClient('backoffice')
+      .then((c) => c.get(`/services/${serviceId}/generate`))
+      .then((res) => res.data.accessToken);
+
+    message.success({
+      content: '액세스토큰이 클립보드에 저장되었습니다.',
+      key,
+    });
+
+    clipboard(accessToken);
+  };
+
   const columns = [
     {
       title: '서비스 ID',
@@ -20,6 +38,19 @@ export const Services = withRouter(({ history }) => {
         <a href={endpoint} target="_blank" rel="noopener noreferrer">
           {endpoint}
         </a>
+      ),
+    },
+    {
+      title: '액세스토큰 복사',
+      dataIndex: 'serviceId',
+      render: (serviceId) => (
+        <Button
+          size="small"
+          icon={<CopyOutlined />}
+          onClick={copyAccessKey(serviceId)}
+        >
+          복사
+        </Button>
       ),
     },
     {
