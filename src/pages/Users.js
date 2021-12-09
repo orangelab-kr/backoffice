@@ -1,20 +1,28 @@
 import dayjs from 'dayjs';
+import { Avatar } from 'antd';
+
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { BackofficeTable } from '../components';
+import { UserOutlined } from '@ant-design/icons';
 import { getClient } from '../tools';
 
 export const Users = withRouter(({ history }) => {
   const columns = [
     {
-      title: 'UUID',
-      dataIndex: 'userId',
-      render: (value) => <Link to={`/users/${value}`}>{value}</Link>,
-    },
-    {
       title: '이름',
       dataIndex: 'realname',
-      key: 'realname',
+      render: (realname, { userId, profileUrl }) => (
+        <Link to={`/users/${userId}`}>
+          <Avatar
+            size="small"
+            src={profileUrl}
+            icon={<UserOutlined />}
+            style={{ marginRight: 5 }}
+          />
+          {realname}
+        </Link>
+      ),
     },
     {
       title: '이메일',
@@ -36,6 +44,10 @@ export const Users = withRouter(({ history }) => {
       dataIndex: 'createdAt',
       render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
     },
+    {
+      title: 'UUID',
+      dataIndex: 'userId',
+    },
   ];
 
   const onRequest = (opts) =>
@@ -47,6 +59,7 @@ export const Users = withRouter(({ history }) => {
       hasSearch={true}
       columns={columns}
       scroll={{ x: 1100 }}
+      rowKey="userId"
       dataSourceKey="users"
       onRequest={onRequest}
     />

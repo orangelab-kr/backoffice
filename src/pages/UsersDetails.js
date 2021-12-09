@@ -15,7 +15,9 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import {
+  UserCards,
   UserCoupon,
+  UserLicensePopup,
   UserMethods,
   UserPasses,
   UserPhonePopup,
@@ -28,11 +30,13 @@ const { Title } = Typography;
 
 export const UsersDetails = withRouter(({ history }) => {
   const [user, setUser] = useState(null);
+  const [license, setLicense] = useState(null);
   const params = useParams();
   const userId = params.userId !== 'add' ? params.userId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
   const [showPhoneChange, setShowPhoneChange] = useState(false);
+  const [showLicenseChange, setShowLicenseChange] = useState(false);
 
   const loadUser = () => {
     if (!userId) return;
@@ -49,13 +53,21 @@ export const UsersDetails = withRouter(({ history }) => {
       });
   };
 
-  const deleteAdmin = () => {
+  const loadLicense = () => {
+    if (!userId) return;
     setLoading(true);
     getClient('coreservice-accounts')
-      .then((c) => c.delete(`/users/${userId}`))
+      .then((c) => c.get(`/users/${userId}/license`))
+      .then(({ data }) => setLicense(data.license));
+  };
+
+  const deleteUser = () => {
+    setLoading(true);
+    getClient('coreservice-accounts')
+      .then((c) => c.delete(`/users/${userId}/secession`))
       .finally(() => setLoading(false))
       .then(() => {
-        message.success(`삭제되었습니다.`);
+        message.success(`탈퇴되었습니다.`);
         history.push(`/users`);
       });
   };
@@ -72,6 +84,7 @@ export const UsersDetails = withRouter(({ history }) => {
   };
 
   useEffect(loadUser, [form, userId]);
+  useEffect(loadLicense, [userId]);
   return (
     <Row gutter={[4, 4]}>
       <Col xl={12} span={24}>
@@ -80,6 +93,15 @@ export const UsersDetails = withRouter(({ history }) => {
             user={user}
             onChange={form.setFieldsValue}
             onCancel={() => setShowPhoneChange(false)}
+          />
+        )}
+
+        {showLicenseChange && (
+          <UserLicensePopup
+            user={user}
+            license={license}
+            onChange={setLicense}
+            onCancel={() => setShowLicenseChange(false)}
           />
         )}
         <Card style={{ height: 495 }}>
@@ -95,10 +117,10 @@ export const UsersDetails = withRouter(({ history }) => {
                   {userId && (
                     <Col>
                       <Popconfirm
-                        title="정말로 삭제하시겠습니까?"
+                        title="정말로 탈퇴하시겠습니까?"
                         okText="네"
                         cancelText="아니요"
-                        onConfirm={deleteAdmin}
+                        onConfirm={deleteUser}
                       >
                         <Button
                           icon={<DeleteOutlined />}
@@ -128,18 +150,32 @@ export const UsersDetails = withRouter(({ history }) => {
             <Form.Item name="email" label="이메일:">
               <Input disabled={isLoading} />
             </Form.Item>
-            <Form.Item name="birthday" label="생년월일:">
-              <DatePicker
-                disabled={isLoading}
-                style={{ width: '100%' }}
-                format="YYYY년 MM월 DD일"
-              />
-            </Form.Item>
-            <Form.Item name="phoneNo" label="전화번호:">
+            <Row gutter={[8, 8]}>
+              <Col flex={1}>
+                <Form.Item name="birthday" label="생년월일:">
+                  <DatePicker
+                    disabled={isLoading}
+                    style={{ width: '100%' }}
+                    format="YYYY년 MM월 DD일"
+                  />
+                </Form.Item>
+              </Col>
+              <Col flex={1}>
+                <Form.Item name="phoneNo" label="전화번호:">
+                  <Input
+                    disabled={isLoading}
+                    readOnly={true}
+                    onClick={() => setShowPhoneChange(true)}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Form.Item label="운전면허:">
               <Input
+                value={license ? license.licenseStr : '인증 안됨'}
                 disabled={isLoading}
                 readOnly={true}
-                onClick={() => setShowPhoneChange(true)}
+                onClick={() => setShowLicenseChange(true)}
               />
             </Form.Item>
             <Form.Item hidden={true} name="phone" />
@@ -169,6 +205,11 @@ export const UsersDetails = withRouter(({ history }) => {
       {user && (
         <Col xl={12} span={24}>
           <UserPasses user={user} />
+        </Col>
+      )}
+      {user && (
+        <Col xl={12} span={24}>
+          <UserCards user={user} />
         </Col>
       )}
     </Row>
