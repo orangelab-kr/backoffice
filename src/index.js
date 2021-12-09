@@ -8,6 +8,8 @@ import './index.css';
 import {
   Admins,
   AdminsDetails,
+  Collectors,
+  CollectorsDetails,
   CouponGroups,
   CouponGroupsDetails,
   Helmets,
@@ -16,6 +18,7 @@ import {
   KickboardsDetails,
   Login,
   NotFound,
+  PassProgramsDetails,
   PassPrograms,
   PermissionGroups,
   PermissionGroupsDetails,
@@ -62,6 +65,12 @@ ReactDOM.render(
                     <Route path="/users/:userId">
                       <UsersDetails />
                     </Route>
+                    <Route path="/collectors" exact>
+                      <Collectors />
+                    </Route>
+                    <Route path="/collectors/:userId">
+                      <CollectorsDetails />
+                    </Route>
                     <Route path="/services" exact>
                       <Services />
                     </Route>
@@ -82,6 +91,9 @@ ReactDOM.render(
                     </Route>
                     <Route path="/passPrograms" exact>
                       <PassPrograms />
+                    </Route>
+                    <Route path="/passPrograms/:passProgramId">
+                      <PassProgramsDetails />
                     </Route>
                     <Route path="/couponGroups" exact>
                       <CouponGroups />

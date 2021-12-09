@@ -1,5 +1,6 @@
 export * from './Admins';
 export * from './AdminsDetails';
+export * from './Collectors';
 export * from './CouponGroups';
 export * from './CouponGroupsDetails';
 export * from './Helmets';
@@ -21,3 +22,5 @@ export * from './ServicesDetails';
 export * from './Settings';
 export * from './Users';
 export * from './UsersDetails';
+export * from './CollectorsDetails';
+export * from './PassProgramsDetails';

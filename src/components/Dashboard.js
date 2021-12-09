@@ -5,6 +5,7 @@ import {
   CrownOutlined,
   HistoryOutlined,
   HomeOutlined,
+  InboxOutlined,
   LockOutlined,
   PropertySafetyOutlined,
   TeamOutlined,
@@ -56,6 +57,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/admins" icon={<PropertySafetyOutlined />}>
             관리자
+          </Menu.Item>
+          <Menu.Item key="/collectors" icon={<InboxOutlined />}>
+            수거팀
           </Menu.Item>
           <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>
             권한 그룹
