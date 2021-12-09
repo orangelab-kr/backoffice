@@ -14,6 +14,7 @@ export const UserRides = withRouter(({ history, user }) => {
   return (
     <BackofficeList
       title="라이드 기록"
+      indexKey="rideId"
       hasSearch={true}
       onRequest={onRequest}
       dataSourceKey="rides"

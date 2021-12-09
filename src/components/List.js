@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import _ from 'lodash';
 
 export const BackofficeList = ({
   title,
@@ -19,6 +20,9 @@ export const BackofficeList = ({
   onRequest,
   dataSourceKey,
   renderItem,
+  refresh,
+  setRefresh,
+  indexKey,
 }) => {
   const take = 6;
   const scrollableTarget = `scrollableDiv-${Date.now()}`;
@@ -33,26 +37,38 @@ export const BackofficeList = ({
   };
 
   const requestDataSource = () => {
+    if (refresh !== undefined && !refresh) return;
     setLoading(true);
-    const params = { take, skip, search };
+    const params = { ...defaultParams, take, skip, search };
     onRequest({ params })
       .finally(() => setLoading(false))
       .then(({ data }) => {
         const newDataSource = data[dataSourceKey];
-        setDataSource((d) => [...d, ...newDataSource]);
+        setDataSource((d) => {
+          let res = [...d, ...newDataSource];
+          if (indexKey) res = _.reverse(_.uniqBy(_.reverse(res), indexKey));
+          return res;
+        });
+
         setTotal(data.total);
+        if (setRefresh) setRefresh(false);
       });
   };
 
-  const requestMoreData = () => setSkip(skip + take);
+  const requestMoreData = () => {
+    if (setRefresh) setRefresh(true);
+    setSkip(skip + take);
+  };
+
   useEffect(requestDataSource, [
     dataSourceKey,
     defaultParams,
+    indexKey,
     onRequest,
+    refresh,
     search,
-    setSkip,
+    setRefresh,
     skip,
-    take,
   ]);
 
   return (

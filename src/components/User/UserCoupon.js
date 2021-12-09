@@ -1,5 +1,15 @@
-import { StopOutlined } from '@ant-design/icons';
-import { Button, Col, List, Popconfirm, Row, Typography } from 'antd';
+import { PlusOutlined, StopOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Col,
+  Dropdown,
+  Input,
+  List,
+  Menu,
+  Popconfirm,
+  Row,
+  Typography,
+} from 'antd';
 import dayjs from 'dayjs';
 import { withRouter } from 'react-router';
 import { BackofficeList } from '..';
@@ -20,10 +30,34 @@ export const UserCoupon = withRouter(({ history, user }) => {
   return (
     <BackofficeList
       title="쿠폰"
+      indexKey="couponId"
       hasSearch={true}
       onRequest={onRequest}
       dataSourceKey="coupons"
       defaultParams={{ showUsed: true }}
+      buttons={
+        <Dropdown
+          overlay={
+            <Menu>
+              <Input />
+              <Menu.Item key="0">
+                <a href="https://www.antgroup.com">1st menu item</a>
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item key="1">
+                <a href="https://www.aliyun.com">2nd menu item</a>
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item key="3">3rd menu item</Menu.Item>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <Button icon={<PlusOutlined />} type="primary">
+            쿠폰 발급
+          </Button>
+        </Dropdown>
+      }
       renderItem={(coupon) => (
         <List.Item>
           <Row justify="space-between">

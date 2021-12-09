@@ -1,28 +1,38 @@
 import { StopOutlined } from '@ant-design/icons';
 import { Button, Col, List, Popconfirm, Row, Typography } from 'antd';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import { withRouter } from 'react-router';
 import { BackofficeList } from '..';
 import { getClient } from '../../tools';
 
 export const UserPasses = withRouter(({ history, user }) => {
   const { userId } = user;
+  const [refresh, setRefresh] = useState(true);
+
   const onRequest = (opts) =>
     getClient('coreservice-accounts').then((c) =>
       c.get(`/users/${userId}/passes`, opts)
     );
 
   const deletePass = (pass) =>
-    getClient('coreservice-accounts').then((c) =>
-      c.delete(`/users/${userId}/passes/${pass.passId}`)
-    );
+    getClient('coreservice-accounts')
+      .then((c) =>
+        c.post(`/users/${userId}/passes/${pass.passId}`, {
+          expiredAt: new Date(),
+        })
+      )
+      .then(() => setRefresh(true));
 
   return (
     <BackofficeList
       title="패스"
+      indexKey="passId"
       hasSearch={true}
       onRequest={onRequest}
       dataSourceKey="passes"
+      refresh={refresh}
+      setRefresh={setRefresh}
       renderItem={(pass) => (
         <List.Item>
           <Row justify="space-between">
@@ -53,13 +63,13 @@ export const UserPasses = withRouter(({ history, user }) => {
             )}
             <Col>
               <Popconfirm
-                title="정말로 패스를 삭제하시겠습니까?"
+                title="정말로 패스를 만료시키시겠습니까?"
                 onConfirm={() => deletePass(pass)}
-                okText="삭제"
+                okText="만료"
                 cancelText="취소"
               >
                 <Button size="small" icon={<StopOutlined />} danger>
-                  삭제
+                  만료
                 </Button>
               </Popconfirm>
             </Col>

@@ -1,31 +1,37 @@
 import { PlusOutlined, StopOutlined } from '@ant-design/icons';
 import { Button, Col, List, Popconfirm, Row, Typography } from 'antd';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import { BackofficeList } from '..';
 import { getClient } from '../../tools';
 
 export const UserSessions = ({ user }) => {
   const { userId } = user;
+  const [refresh, setRefresh] = useState(true);
+
   const onRequest = (opts) =>
     getClient('coreservice-accounts').then((c) =>
       c.get(`/users/${userId}/sessions`, opts)
     );
 
   const generateSession = (opts) =>
-    getClient('coreservice-accounts').then((c) =>
-      c.get(`/users/${userId}/sessions/generate`, opts)
-    );
+    getClient('coreservice-accounts')
+      .then((c) => c.get(`/users/${userId}/sessions/generate`, opts))
+      .then(() => setRefresh(true));
 
   const deleteSession = (sessionId) =>
-    getClient('coreservice-accounts').then((c) =>
-      c.delete(`/users/${userId}/sessions/${sessionId}`)
-    );
+    getClient('coreservice-accounts')
+      .then((c) => c.delete(`/users/${userId}/sessions/${sessionId}`))
+      .then(() => setRefresh(true));
 
   return (
     <BackofficeList
       title="세션"
+      indexKey="sessionId"
       onRequest={onRequest}
       dataSourceKey="sessions"
+      refresh={refresh}
+      setRefresh={setRefresh}
       buttons={
         <Row gutter={[4, 4]}>
           <Col>
@@ -76,7 +82,7 @@ export const UserSessions = ({ user }) => {
             <Col>
               <Popconfirm
                 title="정말로 연결을 해제하시겠습니까?"
-                onConfirm={() => deleteSession('')}
+                onConfirm={() => deleteSession(session.sessionId)}
                 okText="해제"
                 cancelText="취소"
               >

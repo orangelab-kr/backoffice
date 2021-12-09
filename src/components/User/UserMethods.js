@@ -20,6 +20,7 @@ export const UserMethods = withRouter(({ history, user }) => {
   return (
     <BackofficeList
       title="로그인 수단"
+      indexKey="methodId"
       onRequest={onRequest}
       dataSourceKey="methods"
       renderItem={(method) => (
