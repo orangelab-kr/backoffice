@@ -1,3 +1,5 @@
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -64,6 +66,13 @@ export const PassPrograms = withRouter(({ history }) => {
       onRequest={onRequest}
       scroll={{ x: 1500 }}
       dataSourceKey="passPrograms"
+      buttons={
+        <Link to="/passPrograms/add">
+          <Button icon={<PlusOutlined />} type="primary">
+            패스 프로그램 추가
+          </Button>
+        </Link>
+      }
     />
   );
 });

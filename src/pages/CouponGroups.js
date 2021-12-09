@@ -1,3 +1,5 @@
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -59,6 +61,13 @@ export const CouponGroups = withRouter(({ history }) => {
       scroll={{ x: 1300 }}
       onRequest={onRequest}
       dataSourceKey="couponGroups"
+      buttons={
+        <Link to="/couponGroups/add">
+          <Button icon={<PlusOutlined />} type="primary">
+            쿠폰그룹 추가
+          </Button>
+        </Link>
+      }
     />
   );
 });
