@@ -4,6 +4,7 @@ import {
   CarOutlined,
   CrownOutlined,
   FileOutlined,
+  HeatMapOutlined,
   HistoryOutlined,
   HomeOutlined,
   InboxOutlined,
@@ -64,6 +65,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>
             권한 그룹
+          </Menu.Item>
+          <Menu.Item key="/regions" icon={<HeatMapOutlined />}>
+            지역
           </Menu.Item>
           <Menu.Item key="/pricings" icon={<FileOutlined />}>
             가격정책

@@ -25,6 +25,8 @@ import {
   Platforms,
   PlatformsDetails,
   Pricings,
+  Regions,
+  RegionsDetails,
   Rides,
   RidesDetails,
   Services,
@@ -126,6 +128,12 @@ ReactDOM.render(
                     </Route>
                     <Route path="/pricings/:pricingId">
                       <PricingsDetails />
+                    </Route>
+                    <Route path="/regions" exact>
+                      <Regions />
+                    </Route>
+                    <Route path="/regions/:regionId">
+                      <RegionsDetails />
                     </Route>
                   </Switch>
                 </Dashboard>

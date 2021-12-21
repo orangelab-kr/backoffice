@@ -18,6 +18,8 @@ export * from './PermissionGroupsDetails';
 export * from './Platforms';
 export * from './PlatformsDetails';
 export * from './Pricings';
+export * from './Regions';
+export * from './RegionsDetails';
 export * from './Rides';
 export * from './RidesDetails';
 export * from './Services';

@@ -3,6 +3,7 @@ export * from './Kickboard';
 export * from './List';
 export * from './PermissionGroupsSelect';
 export * from './PermissionsSelect';
+export * from './Pricing';
 export * from './RequiredLogin';
 export * from './ServicesCreate';
 export * from './Table';
