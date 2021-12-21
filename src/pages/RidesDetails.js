@@ -35,15 +35,15 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { Link, useParams, withRouter } from 'react-router-dom';
-import { getClient, useDebounce, useInterval } from '../tools';
+import { getClient, useDebounce, useInterval, useToggle } from '../tools';
 
 export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
   const [ridePayments, setRidePayments] = useState([]);
   const [timeline, setTimeline] = useState([]);
-  const [showAddPayment, setShowAddPayment] = useState(false);
-  const [showTerminate, setShowTerminate] = useState(false);
-  const [showChangeDiscount, setShowChangeDiscount] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useToggle(false);
+  const [showTerminate, setShowTerminate] = useToggle(false);
+  const [showChangeDiscount, setShowChangeDiscount] = useToggle(false);
   const [terminateReceipt, setTerminateReceipt] = useState(null);
   const [selectDiscountGroupId, setSelectDiscountGroupId] = useState(null);
   const [lightsOn, setLightsOn] = useState(false);
@@ -123,7 +123,7 @@ export const RidesDetails = withRouter(() => {
       .finally(() => setLoading(false))
       .then(() => {
         message.success('할인을 변경하였습니다.');
-        setShowChangeDiscount(false);
+        setShowChangeDiscount(false)();
         loadRide();
       });
   };
@@ -164,7 +164,7 @@ export const RidesDetails = withRouter(() => {
       .finally(() => setLoading(false))
       .then(() => {
         loadRidePayments();
-        setShowAddPayment(false);
+        setShowAddPayment(false)();
       });
   };
 
@@ -219,7 +219,7 @@ export const RidesDetails = withRouter(() => {
       .finally(() => setLoading(false))
       .then(() => {
         loadRide();
-        setShowTerminate(false);
+        setShowTerminate(false)();
       });
   };
 
@@ -289,7 +289,7 @@ export const RidesDetails = withRouter(() => {
                       <Button
                         icon={<StopOutlined />}
                         disabled={isLoading}
-                        onClick={() => setShowTerminate(true)}
+                        onClick={setShowTerminate(true)}
                         danger
                       >
                         라이드 종료
@@ -302,7 +302,7 @@ export const RidesDetails = withRouter(() => {
                         okText="라이드 종료"
                         cancelText="취소"
                         onOk={terminateForm.submit}
-                        onCancel={() => setShowTerminate(false)}
+                        onCancel={setShowTerminate(false)}
                       >
                         <Form
                           layout="vertical"
@@ -614,7 +614,7 @@ export const RidesDetails = withRouter(() => {
                               <Button
                                 type="link"
                                 shape="circle"
-                                onClick={() => setShowChangeDiscount(true)}
+                                onClick={setShowChangeDiscount(true)}
                                 icon={<EditOutlined />}
                               />
 
@@ -625,7 +625,7 @@ export const RidesDetails = withRouter(() => {
                                 okText="변경"
                                 cancelText="취소"
                                 onOk={changeDiscountForm.submit}
-                                onCancel={() => setShowChangeDiscount(false)}
+                                onCancel={setShowChangeDiscount(false)}
                               >
                                 <Form
                                   layout="vertical"
@@ -786,7 +786,7 @@ export const RidesDetails = withRouter(() => {
                         <Button
                           style={{ margin: 3 }}
                           icon={<PlusOutlined />}
-                          onClick={() => setShowAddPayment(true)}
+                          onClick={setShowAddPayment(true)}
                         >
                           추가 결제
                         </Button>
@@ -796,7 +796,7 @@ export const RidesDetails = withRouter(() => {
                           okText="추가 결제"
                           cancelText="취소"
                           onOk={addPaymentForm.submit}
-                          onCancel={() => setShowAddPayment(false)}
+                          onCancel={setShowAddPayment(false)}
                         >
                           <Form
                             layout="vertical"

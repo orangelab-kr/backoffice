@@ -24,7 +24,7 @@ import {
   UserRides,
   UserSessions,
 } from '../components';
-import { getClient } from '../tools';
+import { getClient, useToggle } from '../tools';
 
 const { Title } = Typography;
 
@@ -35,8 +35,8 @@ export const UsersDetails = withRouter(({ history }) => {
   const userId = params.userId !== 'add' ? params.userId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
-  const [showPhoneChange, setShowPhoneChange] = useState(false);
-  const [showLicenseChange, setShowLicenseChange] = useState(false);
+  const [showPhoneChange, setShowPhoneChange] = useToggle(false);
+  const [showLicenseChange, setShowLicenseChange] = useToggle(false);
 
   const loadUser = () => {
     if (!userId) return;
@@ -92,7 +92,7 @@ export const UsersDetails = withRouter(({ history }) => {
           <UserPhonePopup
             user={user}
             onChange={form.setFieldsValue}
-            onCancel={() => setShowPhoneChange(false)}
+            onCancel={setShowPhoneChange(false)}
           />
         )}
 
@@ -101,7 +101,7 @@ export const UsersDetails = withRouter(({ history }) => {
             user={user}
             license={license}
             onChange={setLicense}
-            onCancel={() => setShowLicenseChange(false)}
+            onCancel={setShowLicenseChange(false)}
           />
         )}
         <Card style={{ height: 495 }}>
@@ -165,7 +165,7 @@ export const UsersDetails = withRouter(({ history }) => {
                   <Input
                     disabled={isLoading}
                     readOnly={true}
-                    onClick={() => setShowPhoneChange(true)}
+                    onClick={setShowPhoneChange(true)}
                   />
                 </Form.Item>
               </Col>
@@ -175,7 +175,7 @@ export const UsersDetails = withRouter(({ history }) => {
                 value={license ? license.licenseStr : '인증 안됨'}
                 disabled={isLoading}
                 readOnly={true}
-                onClick={() => setShowLicenseChange(true)}
+                onClick={setShowLicenseChange(true)}
               />
             </Form.Item>
             <Form.Item hidden={true} name="phone" />

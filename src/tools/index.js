@@ -3,3 +3,4 @@ export * from './error';
 export * from './opcode';
 export * from './useDebounce';
 export * from './useInterval';
+export * from './useToggle';
