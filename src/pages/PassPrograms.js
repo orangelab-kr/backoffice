@@ -2,11 +2,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
-export const PassPrograms = withRouter(({ history }) => {
+export const PassPrograms = () => {
   const columns = [
     {
       title: 'UUID',
@@ -75,4 +75,4 @@ export const PassPrograms = withRouter(({ history }) => {
       }
     />
   );
-});
+};

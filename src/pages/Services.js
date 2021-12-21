@@ -3,11 +3,11 @@ import { Button, message } from 'antd';
 import clipboard from 'copy-to-clipboard';
 import dayjs from 'dayjs';
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
-export const Services = withRouter(({ history }) => {
+export const Services = () => {
   const copyAccessKey = (serviceId) => async () => {
     const key = `service-generate-${Date.now()}`;
     message.loading({ content: '액세스토큰 정보 발급 중...', key });
@@ -80,4 +80,4 @@ export const Services = withRouter(({ history }) => {
       scroll={{ x: 1100 }}
     />
   );
-});
+};

@@ -2,11 +2,11 @@ import { ApiOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
-export const PermissionGroups = withRouter(({ history }) => {
+export const PermissionGroups = () => {
   const columns = [
     {
       title: 'UUID',
@@ -66,4 +66,4 @@ export const PermissionGroups = withRouter(({ history }) => {
       }
     />
   );
-});
+};

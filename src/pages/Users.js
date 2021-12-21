@@ -1,13 +1,12 @@
-import dayjs from 'dayjs';
-import { Avatar } from 'antd';
-
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { BackofficeTable } from '../components';
 import { UserOutlined } from '@ant-design/icons';
+import { Avatar } from 'antd';
+import dayjs from 'dayjs';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
-export const Users = withRouter(({ history }) => {
+export const Users = () => {
   const columns = [
     {
       title: '이름',
@@ -64,4 +63,4 @@ export const Users = withRouter(({ history }) => {
       onRequest={onRequest}
     />
   );
-});
+};

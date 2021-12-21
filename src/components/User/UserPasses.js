@@ -2,11 +2,10 @@ import { StopOutlined } from '@ant-design/icons';
 import { Button, Col, List, Popconfirm, Row, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { withRouter } from 'react-router';
 import { BackofficeList } from '..';
 import { getClient } from '../../tools';
 
-export const UserPasses = withRouter(({ history, user }) => {
+export const UserPasses = ({ user }) => {
   const { userId } = user;
   const [refresh, setRefresh] = useState(true);
 
@@ -78,4 +77,4 @@ export const UserPasses = withRouter(({ history, user }) => {
       )}
     />
   );
-});
+};

@@ -11,11 +11,10 @@ import {
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
-import { withRouter } from 'react-router';
 import { BackofficeList } from '..';
 import { getClient } from '../../tools';
 
-export const UserCoupon = withRouter(({ history, user }) => {
+export const UserCoupon = ({ user }) => {
   const { userId } = user;
   const onRequest = (opts) =>
     getClient('coreservice-payments').then((c) =>
@@ -111,4 +110,4 @@ export const UserCoupon = withRouter(({ history, user }) => {
       )}
     />
   );
-});
+};

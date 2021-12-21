@@ -1,11 +1,10 @@
 import { StopOutlined } from '@ant-design/icons';
 import { Button, Col, List, Popconfirm, Row, Typography } from 'antd';
 import dayjs from 'dayjs';
-import { withRouter } from 'react-router';
 import { BackofficeList } from '..';
 import { getClient } from '../../tools';
 
-export const UserMethods = withRouter(({ history, user }) => {
+export const UserMethods = ({ user }) => {
   const { userId } = user;
   const onRequest = (opts) =>
     getClient('coreservice-accounts').then((c) =>
@@ -56,4 +55,4 @@ export const UserMethods = withRouter(({ history, user }) => {
       )}
     />
   );
-});
+};

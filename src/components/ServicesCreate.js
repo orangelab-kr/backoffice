@@ -1,6 +1,6 @@
 import { Col, Form, Input, message, Modal, Row } from 'antd';
 import React from 'react';
-import { withRouter } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
 
 export const ServicesCreate = withRouter(({ history, onCancel }) => {

@@ -1,12 +1,11 @@
 import { ZoomInOutlined } from '@ant-design/icons';
 import { Button, Col, List, Row, Typography } from 'antd';
 import dayjs from 'dayjs';
-import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { BackofficeList } from '..';
 import { getClient } from '../../tools';
 
-export const UserRides = withRouter(({ history, user }) => {
+export const UserRides = ({ user }) => {
   const { userId } = user;
   const onRequest = (opts) =>
     getClient('coreservice-ride').then((c) => c.get(`/rides`, opts));
@@ -50,4 +49,4 @@ export const UserRides = withRouter(({ history, user }) => {
       )}
     />
   );
-});
+};
