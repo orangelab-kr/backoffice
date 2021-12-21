@@ -18,12 +18,13 @@ import {
   KickboardsDetails,
   Login,
   NotFound,
-  PassProgramsDetails,
   PassPrograms,
+  PassProgramsDetails,
   PermissionGroups,
   PermissionGroupsDetails,
   Platforms,
   PlatformsDetails,
+  Pricings,
   Rides,
   RidesDetails,
   Services,
@@ -31,6 +32,7 @@ import {
   Users,
   UsersDetails,
 } from './pages';
+import { PricingsDetails } from './pages/PricingsDetails';
 
 ReactDOM.render(
   <div className="App">
@@ -118,6 +120,12 @@ ReactDOM.render(
                     </Route>
                     <Route path="/kickboards/:kickboardCode">
                       <KickboardsDetails />
+                    </Route>
+                    <Route path="/pricings" exact>
+                      <Pricings />
+                    </Route>
+                    <Route path="/pricings/:pricingId">
+                      <PricingsDetails />
                     </Route>
                   </Switch>
                 </Dashboard>
