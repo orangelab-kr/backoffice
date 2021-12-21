@@ -16,6 +16,8 @@ export const BackofficeTable = ({
   defaultParams,
   onRequest,
   scroll,
+  refresh,
+  setRefresh,
   dataSourceKey,
 }) => {
   const [isLoading, setLoading] = useState(false);
@@ -30,6 +32,7 @@ export const BackofficeTable = ({
   };
 
   const requestDataSource = () => {
+    if (refresh !== undefined && !refresh) return;
     setLoading(true);
     const params = { take, skip, search, ...defaultParams };
     onRequest({ params })
@@ -39,6 +42,7 @@ export const BackofficeTable = ({
         if (dataSource.length <= 0 && skip > 0) return setSkip(0);
         setDataSource(data[dataSourceKey]);
         setTotal(data.total);
+        if (setRefresh) setRefresh(false);
       });
   };
 
@@ -46,7 +50,9 @@ export const BackofficeTable = ({
     dataSourceKey,
     defaultParams,
     onRequest,
+    refresh,
     search,
+    setRefresh,
     setSkip,
     skip,
     take,
