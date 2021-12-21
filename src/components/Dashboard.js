@@ -9,6 +9,7 @@ import {
   HomeOutlined,
   InboxOutlined,
   LockOutlined,
+  ProfileOutlined,
   PropertySafetyOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -71,6 +72,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key="/pricings" icon={<FileOutlined />}>
             가격정책
+          </Menu.Item>
+          <Menu.Item key="/profiles" icon={<ProfileOutlined />}>
+            프로파일
           </Menu.Item>
           <Menu.Item key="/services" icon={<BlockOutlined />}>
             서비스

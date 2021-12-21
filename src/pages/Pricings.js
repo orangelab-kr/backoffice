@@ -1,13 +1,13 @@
 import { FileAddOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
 
 export const Pricings = () => {
   const NumberView = (unit) => (value) =>
-    value ? `${value.toLocaleString()}${unit}` : '없음';
+    value ? `${value.toLocaleString()}${unit || ''}` : '없음';
 
   const columns = [
     {
