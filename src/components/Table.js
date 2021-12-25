@@ -19,6 +19,7 @@ export const BackofficeTable = ({
   refresh,
   setRefresh,
   dataSourceKey,
+  sidebar,
 }) => {
   const [isLoading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
@@ -82,20 +83,25 @@ export const BackofficeTable = ({
         </Col>
       </Row>
       {columns.length > 0 && (
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          rowKey={rowKey || columns[0]?.dataIndex}
-          loading={isLoading}
-          scroll={scroll}
-          pagination={{
-            current: skip / take + 1,
-            pageSize: take,
-            onChange: onPagnationChange,
-            onShowSizeChange: setTake,
-            total,
-          }}
-        />
+        <Row justify="space-between" gutter={[8, 8]}>
+          <Col flex="auto">
+            <Table
+              columns={columns}
+              dataSource={dataSource}
+              rowKey={rowKey || columns[0]?.dataIndex}
+              loading={isLoading}
+              scroll={scroll}
+              pagination={{
+                current: skip / take + 1,
+                pageSize: take,
+                onChange: onPagnationChange,
+                onShowSizeChange: setTake,
+                total,
+              }}
+            />
+          </Col>
+          {sidebar && <Col span={8}>{sidebar}</Col>}
+        </Row>
       )}
     </Card>
   );

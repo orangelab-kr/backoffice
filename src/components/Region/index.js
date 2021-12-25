@@ -1,2 +1,4 @@
 export * from './RegionGeofence';
+export * from './RegionGeofenceCard';
+export * from './RegionGeofenceList';
 export * from './RegionGeofenceMap';
