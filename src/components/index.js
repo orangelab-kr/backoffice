@@ -4,6 +4,7 @@ export * from './List';
 export * from './PermissionGroupsSelect';
 export * from './PermissionsSelect';
 export * from './Pricing';
+export * from './Region';
 export * from './RequiredLogin';
 export * from './ServicesCreate';
 export * from './Table';
