@@ -1,4 +1,4 @@
-import { CheckOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Row, Typography } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { NaverMap } from 'react-naver-maps';
@@ -19,15 +19,13 @@ export const RegionGeofenceMap = ({
   const { regionId } = region;
   const [polygons, setPolygons] = useState({});
   const [geofences, setGeofences] = useState([]);
-  const [editorMode, setEditorMode] = useState(false);
-  const [beforeGeofence, setBeforeGeofence] = useState();
   const getOpacity = (geofence) =>
     parseInt(geofence.profile.color.substr(7, 2) || '1a', 16) / 255;
 
   useInterval(
     () => {
-      if (!polygons || !geofence || !geofenceForm) return;
-      const { geofenceId } = geofence;
+      if (!geofence || !polygons || !geofenceForm) return;
+      const geofenceId = geofence.geofenceId || 'new';
       const polygon = polygons[geofenceId];
       if (!polygon) return;
       const geojson = polygon.toGeoJson().features[0].geometry;
@@ -61,6 +59,7 @@ export const RegionGeofenceMap = ({
 
   const getGeofences = useCallback(async () => {
     if (refresh !== null && !refresh) return;
+    setGeofences([]);
     setPolygons((polygons) => {
       const values = Object.values(polygons);
       values.forEach((polygon) => polygon.setMap(null));
@@ -79,19 +78,41 @@ export const RegionGeofenceMap = ({
       if (setRefresh) setRefresh(false);
       skip += take;
     }
-
-    setBeforeGeofence();
   }, [mergeGeofences, refresh, regionId, setRefresh]);
+
+  const onClickMap = useCallback(
+    (event) => {
+      if (!geofence) return;
+      if (geofence.geofenceId) return setGeofence();
+
+      // 지도 추가를 위한 부분
+      if (polygons.new) return;
+      const { _lat, _lng } = event.coord;
+      const coordinates = [
+        [_lng - 0.003, _lat - 0.003],
+        [_lng - 0.003, _lat + 0.003],
+        [_lng + 0.003, _lat + 0.003],
+        [_lng + 0.003, _lat - 0.003],
+      ];
+
+      const newPolygon = new naverMaps.Polygon({
+        map,
+        paths: coordinates,
+        zIndex: 1000,
+      });
+
+      newPolygon.setEditable(true);
+      polygons.new = newPolygon;
+    },
+    [geofence, map, naverMaps.Polygon, polygons, setGeofence]
+  );
 
   useEffect(() => getGeofences(), [getGeofences, refresh]);
   useEffect(() => {
     if (!map) return;
-
-    naverMaps.Event.addListener(map, 'click', () => setGeofence());
-    naverMaps.Event.once(map, 'init_stylemap', () => {
-      new naverMaps.drawing.DrawingManager({ map });
-    });
-  }, [map, naverMaps.Event, naverMaps.drawing.DrawingManager, setGeofence]);
+    naverMaps.Event.clearListeners(map, 'click');
+    naverMaps.Event.addListener(map, 'click', onClickMap);
+  }, [map, naverMaps.Event, onClickMap]);
 
   const onClickPolygon = useCallback(
     (geofence) => () => setGeofence(geofence),
@@ -99,20 +120,24 @@ export const RegionGeofenceMap = ({
   );
 
   useEffect(() => {
-    if (!geofences || beforeGeofence === geofence) return;
-    setBeforeGeofence(geofence);
-    if (beforeGeofence) {
-      const beforePolygon = polygons[beforeGeofence.geofenceId];
-      if (beforePolygon) beforePolygon.setEditable(false);
-    }
+    if (!Object.keys(polygons).length) return;
+    Object.values(polygons).forEach((polygon) => {
+      if (polygon.editable) polygon.setEditable(false);
+    });
 
     if (geofence) {
       const polygon = polygons[geofence.geofenceId];
       if (polygon) polygon.setEditable(true);
     }
-  }, [beforeGeofence, geofence, geofences, polygons]);
+
+    if (polygons.new) {
+      polygons.new.setMap(null);
+      delete polygons.new;
+    }
+  }, [geofence, geofences, polygons]);
 
   useEffect(() => {
+    const updatedPolygons = {};
     geofences.forEach((geofence) => {
       const polygon = new naverMaps.Polygon({
         map,
@@ -127,13 +152,20 @@ export const RegionGeofenceMap = ({
 
       const { geofenceId } = geofence;
       const func = onClickPolygon(geofence);
+      naverMaps.Event.clearListeners(polygon, 'click');
       naverMaps.Event.addListener(polygon, 'click', func);
-      setPolygons((polygons) => {
-        polygons[geofenceId] = polygon;
-        return polygons;
-      });
+      updatedPolygons[geofenceId] = polygon;
     });
+
+    setPolygons(updatedPolygons);
   }, [geofences, map, naverMaps.Event, naverMaps.Polygon, onClickPolygon]);
+
+  useEffect(() => {
+    if (!polygons) return;
+    Object.values(polygons).forEach((polygon) =>
+      polygon.setClickable(!geofence || geofence.geofenceId)
+    );
+  }, [geofence, polygons]);
 
   return (
     <Card>
@@ -145,11 +177,12 @@ export const RegionGeofenceMap = ({
         </Col>
         <Col>
           <Button
-            type={editorMode ? 'default' : 'primary'}
-            icon={editorMode ? <CheckOutlined /> : <PlusOutlined />}
-            onClick={() => setEditorMode((editorMode) => !editorMode)}
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setGeofence({})}
+            disabled={geofence && !geofence.geofenceId}
           >
-            {editorMode ? '완료' : '지오펜스 추가'}
+            지오펜스 추가
           </Button>
         </Col>
       </Row>

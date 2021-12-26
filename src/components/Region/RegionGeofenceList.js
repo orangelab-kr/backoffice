@@ -11,20 +11,13 @@ export const RegionGeofenceList = ({
   sidebar,
   refresh,
   setRefresh,
+  deleteGeofence,
 }) => {
   const { regionId } = region;
   const setEnabled = (geofence, enabled) => async () => {
     const { geofenceId } = geofence;
     await getClient('openapi-location').then((c) =>
       c.post(`/regions/${regionId}/geofences/${geofenceId}`, { enabled })
-    );
-
-    setRefresh(true);
-  };
-
-  const deleteGeofence = (geofenceId) => async () => {
-    await getClient('openapi-location').then((c) =>
-      c.delete(`/regions/${regionId}/geofences/${geofenceId}`)
     );
 
     setRefresh(true);
