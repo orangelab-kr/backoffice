@@ -25,25 +25,26 @@ import {
   Row,
   Select,
   Tabs,
-  Tag,
   Typography,
 } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { Link, useParams, withRouter } from 'react-router-dom';
-import { getClient, useDebounce, useInterval, useToggle } from '../tools';
+import { PaymentItem, RefundModal } from '../components';
+import { useDebounce, useInterval, getClient } from '../tools';
 
 export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
+  const [openapiRide, setOpenapiRide] = useState(null);
   const [ridePayments, setRidePayments] = useState([]);
   const [timeline, setTimeline] = useState([]);
-  const [showAddPayment, setShowAddPayment] = useToggle(false);
-  const [showTerminate, setShowTerminate] = useToggle(false);
-  const [showChangeDiscount, setShowChangeDiscount] = useToggle(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showRefund, setShowRefund] = useState(null);
+  const [showTerminate, setShowTerminate] = useState(false);
+  const [showChangeDiscount, setShowChangeDiscount] = useState(false);
   const [terminateReceipt, setTerminateReceipt] = useState(null);
   const [selectDiscountGroupId, setSelectDiscountGroupId] = useState(null);
   const [lightsOn, setLightsOn] = useState(false);
@@ -55,23 +56,49 @@ export const RidesDetails = withRouter(() => {
     _lng: 0,
   });
 
+  const { rideId } = useParams();
   const debouncedTerminateLocation = useDebounce(terminateLocation, 1000);
-  const addPaymentForm = useForm()[0];
-  const terminateForm = useForm()[0];
-  const changeDiscountForm = useForm()[0];
-  const params = useParams();
-  const rideId = params.rideId !== 'add' ? params.rideId : '';
+  const addPaymentForm = Form.useForm()[0];
+  const terminateForm = Form.useForm()[0];
+  const changeDiscountForm = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
+  const createMarkerIcon = ({ idx, createdAt }) => {
+    const displayedTime = dayjs(createdAt).format('YYYY년 M월 D일 H시 m분 s초');
+    const showTime = `this.innerHTML = '${displayedTime}'; this.style.zIndex = 10000;`;
+    const hideTime = `this.innerHTML = '${idx}'; this.style.zIndex = 0;`;
+    return `<div\
+  style="\
+    background-color: #fff;\n
+    border-radius: 10%;\
+    padding: 2px 5px;
+    text-align: center;\
+    font-weight: 700"
+  onMouseOver="${showTime}"
+  onTouchStart="${showTime}"
+  onMouseOut="${hideTime}"
+  onTouchEnd="${hideTime}"
+>${idx}</div>`;
+  };
 
   const loadRide = () => {
     if (!rideId) return;
     setLoading(true);
 
+    getClient('coreservice-ride')
+      .then((c) => c.get(`/rides/${rideId}`))
+      .finally(() => setLoading(false))
+      .then(({ data }) => setRide(data.ride));
+  };
+
+  const loadOpenapiRide = () => {
+    if (!ride?.properties?.openapi?.rideId) return;
+    setLoading(true);
+
     getClient('openapi-ride')
-      .then((c) => c.get(`/ride/rides/${rideId}`))
+      .then((c) => c.get(`/rides/${ride.properties.openapi.rideId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => {
-        setRide(data.ride);
+        setOpenapiRide(data.ride);
         if (!showTerminate) {
           const { latitude, longitude } = data.ride.startedKickboardLocation;
           setSelectDiscountGroupId(data.ride.discountGroupId);
@@ -89,7 +116,7 @@ export const RidesDetails = withRouter(() => {
   const onSearchDiscountGroups = (search) => {
     setLoading(true);
     const params = { search };
-    getClient('openapi-discount')
+    getClient('openapi-ride')
       .then((c) => c.get('/discountGroups', { params }))
       .finally(() => setLoading(false))
       .then(({ data }) => setDiscountGroups(data.discountGroups));
@@ -117,13 +144,17 @@ export const RidesDetails = withRouter(() => {
   };
 
   const onChangeDiscount = ({ discountId, discountGroupId }) => {
-    const body = { discountId, discountGroupId };
     getClient('openapi-ride')
-      .then((c) => c.post(`/ride/rides/${rideId}/discount`, body))
+      .then((c) =>
+        c.post(`/rides/${ride.properties.openapi.rideId}/discount`, {
+          discountId,
+          discountGroupId,
+        })
+      )
       .finally(() => setLoading(false))
       .then(() => {
         message.success('할인을 변경하였습니다.');
-        setShowChangeDiscount(false)();
+        setShowChangeDiscount(false);
         loadRide();
       });
   };
@@ -132,7 +163,7 @@ export const RidesDetails = withRouter(() => {
     setLoading(true);
 
     getClient('openapi-ride')
-      .then((c) => c.get(`/ride/rides/${rideId}/payments`))
+      .then((c) => c.get(`/rides/${ride.properties.openapi.rideId}/payments`))
       .finally(() => setLoading(false))
       .then(({ data }) => setRidePayments(data.payments));
   };
@@ -147,11 +178,18 @@ export const RidesDetails = withRouter(() => {
     getTimeline();
   };
 
-  const refundRidePayment = (paymentId) => {
+  const refundPayment = (paymentId, data) => {
     setLoading(true);
 
     getClient('openapi-ride')
-      .then((c) => c.delete(`/rides/${rideId}/payments/${paymentId}`))
+      .then((c) =>
+        c.delete(
+          `/rides/${ride.properties.openapi.rideId}/payments/${paymentId}`,
+          {
+            data,
+          }
+        )
+      )
       .finally(() => setLoading(false))
       .then(() => loadRidePayments());
   };
@@ -160,11 +198,13 @@ export const RidesDetails = withRouter(() => {
     setLoading(true);
 
     getClient('openapi-ride')
-      .then((c) => c.post(`/rides/${rideId}/payments`, paymentInfo))
+      .then((c) =>
+        c.post(`/rides/${ride.properties.openapi.rideId}/payments`, paymentInfo)
+      )
       .finally(() => setLoading(false))
       .then(() => {
         loadRidePayments();
-        setShowAddPayment(false)();
+        setShowAddPayment(false);
       });
   };
 
@@ -172,9 +212,11 @@ export const RidesDetails = withRouter(() => {
     setLoading(true);
 
     getClient('openapi-ride')
-      .then((c) => c.get(`/ride/rides/${rideId}/timeline`))
+      .then((c) => c.get(`/rides/${ride.properties.openapi.rideId}/timeline`))
       .finally(() => setLoading(false))
-      .then(({ data }) => setTimeline(data.timeline));
+      .then(({ data }) => {
+        setTimeline(data.timeline);
+      });
   };
 
   const calculateTerminatePricing = () => {
@@ -182,15 +224,18 @@ export const RidesDetails = withRouter(() => {
     const terminatedAt =
       terminateForm.getFieldValue('terminatedAt') || moment();
     if (!latitude || !longitude) return;
-    const params = {
-      latitude: debouncedTerminateLocation._lat,
-      longitude: debouncedTerminateLocation._lng,
-      terminatedAt: terminatedAt.format(),
-    };
 
     setLoading(true);
     getClient('openapi-ride')
-      .then((c) => c.get(`/rides/${rideId}/pricing`, { params }))
+      .then((c) =>
+        c.get(`/rides/${ride.properties.openapi.rideId}/pricing`, {
+          params: {
+            latitude: debouncedTerminateLocation._lat,
+            longitude: debouncedTerminateLocation._lng,
+            terminatedAt: terminatedAt.format(),
+          },
+        })
+      )
       .finally(() => setLoading(false))
       .then(({ data }) => setTerminateReceipt(data.pricing));
   };
@@ -207,20 +252,22 @@ export const RidesDetails = withRouter(() => {
       return;
     }
 
-    const params = {
-      latitude: debouncedTerminateLocation._lat,
-      longitude: debouncedTerminateLocation._lng,
-      terminatedAt: terminatedAt.format(),
-      terminatedType: 'ADMIN_REQUESTED',
-    };
-
-    getClient('openapi-ride')
-      .then((c) => c.delete(`/rides/${rideId}`, { params }))
-      .finally(() => setLoading(false))
-      .then(() => {
-        loadRide();
-        setShowTerminate(false)();
-      });
+    getClient('openapi-ride').then((c) =>
+      c
+        .delete(`/rides/${ride.properties.openapi.rideId}`, {
+          params: {
+            latitude: debouncedTerminateLocation._lat,
+            longitude: debouncedTerminateLocation._lng,
+            terminatedAt: terminatedAt.format(),
+            terminatedType: 'ADMIN_REQUESTED',
+          },
+        })
+        .finally(() => setLoading(false))
+        .then(() => {
+          loadRide();
+          setShowTerminate(false);
+        })
+    );
   };
 
   const onLights = () => {
@@ -228,7 +275,9 @@ export const RidesDetails = withRouter(() => {
 
     const action = !lightsOn ? 'on' : 'off';
     getClient('openapi-ride')
-      .then((c) => c.get(`/rides/${rideId}/lights/${action}`))
+      .then((c) =>
+        c.get(`/rides/${ride.properties.openapi.rideId}/lights/${action}`)
+      )
       .finally(() => setLoading(false))
       .then(() => setLightsOn(!lightsOn));
   };
@@ -238,20 +287,30 @@ export const RidesDetails = withRouter(() => {
 
     const action = !lockOn ? 'on' : 'off';
     getClient('openapi-ride')
-      .then((c) => c.get(`/rides/${rideId}/lock/${action}`))
+      .then((c) =>
+        c.get(`/rides/${ride.properties.openapi.rideId}/lock/${action}`)
+      )
       .finally(() => setLoading(false))
       .then(() => setLockOn(!lockOn));
   };
 
-  useEffect(loadRide, [showTerminate, rideId]);
+  useEffect(loadRide, [rideId]);
+  useEffect(loadOpenapiRide, [
+    ride?.properties?.openapi?.rideId,
+    showTerminate,
+  ]);
+
   useEffect(onSearchDiscountGroups, []);
   useEffect(calculateTerminatePricing, [
     debouncedTerminateLocation,
-    rideId,
+    ride?.properties?.openapi?.rideId,
     terminateForm,
   ]);
 
-  useInterval(loadRide, ride && !ride.terminatedAt ? 10000 : null);
+  useInterval(
+    loadRide,
+    openapiRide && !openapiRide.terminatedAt ? 10000 : null
+  );
   return (
     <>
       <Card>
@@ -259,12 +318,12 @@ export const RidesDetails = withRouter(() => {
           <Col span={24}>
             <Row justify="space-between">
               <Col>
-                <Typography.Title level={3} copyable={ride}>
-                  {ride ? ride.rideId : '로딩 중...'}
+                <Typography.Title level={3} copyable={openapiRide}>
+                  {openapiRide ? ride.properties.openapi.rideId : '로딩 중...'}
                 </Typography.Title>
               </Col>
 
-              {ride && !ride.terminatedAt && (
+              {openapiRide && !openapiRide.terminatedAt && (
                 <Col>
                   <Row gutter={[4, 0]} align="middle">
                     <Col>
@@ -289,7 +348,7 @@ export const RidesDetails = withRouter(() => {
                       <Button
                         icon={<StopOutlined />}
                         disabled={isLoading}
-                        onClick={setShowTerminate(true)}
+                        onClick={() => setShowTerminate(true)}
                         danger
                       >
                         라이드 종료
@@ -302,7 +361,7 @@ export const RidesDetails = withRouter(() => {
                         okText="라이드 종료"
                         cancelText="취소"
                         onOk={terminateForm.submit}
-                        onCancel={setShowTerminate(false)}
+                        onCancel={() => setShowTerminate(false)}
                       >
                         <Form
                           layout="vertical"
@@ -314,7 +373,7 @@ export const RidesDetails = withRouter(() => {
                         >
                           <Row gutter={[4, 4]}>
                             <Col span={24}>
-                              {ride && (
+                              {openapiRide && (
                                 <NaverMap
                                   id="terminate-location"
                                   style={{
@@ -335,7 +394,7 @@ export const RidesDetails = withRouter(() => {
                                   showTime
                                   style={{ width: '100%' }}
                                   onChange={calculateTerminatePricing}
-                                  format="YYYY년 MM월 DD일 H시 m분"
+                                  format="YYYY년 MM월 DD일 H시 m분 s초"
                                 />
                               </Form.Item>
                             </Col>
@@ -493,7 +552,7 @@ export const RidesDetails = withRouter(() => {
               )}
             </Row>
           </Col>
-          {ride && (
+          {openapiRide && (
             <>
               <Col span={24}>
                 <Card>
@@ -502,7 +561,7 @@ export const RidesDetails = withRouter(() => {
                     <Tabs.TabPane tab="기본 정보" key="info">
                       <Descriptions bordered size="small">
                         <Descriptions.Item label="현재 상태" span={2}>
-                          {!ride.terminatedAt ? (
+                          {!openapiRide.terminatedAt ? (
                             <Badge status="processing" text="탑승 중..." />
                           ) : (
                             <Badge status="success" text="종료됨" />
@@ -511,23 +570,23 @@ export const RidesDetails = withRouter(() => {
 
                         <Descriptions.Item label="킥보드 코드" span={2}>
                           <Typography.Text copyable={true}>
-                            {ride.kickboardCode}
+                            {openapiRide.kickboardCode}
                           </Typography.Text>
                         </Descriptions.Item>
                         <Descriptions.Item label="시작 일자" span={2}>
-                          {dayjs(ride.startedAt).format(
-                            'YYYY년 M월 D일 H시 m분'
+                          {dayjs(openapiRide.startedAt).format(
+                            'YYYY년 M월 D일 H시 m분 s초'
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label="종료 일자" span={2}>
-                          {ride.terminatedAt
-                            ? dayjs(ride.terminatedAt).format(
-                                'YYYY년 M월 D일 H시 m분'
+                          {openapiRide.terminatedAt
+                            ? dayjs(openapiRide.terminatedAt).format(
+                                'YYYY년 M월 D일 H시 m분 s초'
                               )
                             : '라이드 중...'}
                         </Descriptions.Item>
                         <Descriptions.Item label="시작 위치" span={2}>
-                          {ride.startedKickboardLocation ? (
+                          {openapiRide.startedKickboardLocation ? (
                             <NaverMap
                               id="started-location"
                               style={{
@@ -537,16 +596,16 @@ export const RidesDetails = withRouter(() => {
                               defaultZoom={13}
                               center={
                                 new window.naver.maps.LatLng(
-                                  ride.startedKickboardLocation.latitude,
-                                  ride.startedKickboardLocation.longitude
+                                  openapiRide.startedKickboardLocation.latitude,
+                                  openapiRide.startedKickboardLocation.longitude
                                 )
                               }
                             >
                               <Marker
                                 position={
                                   new window.naver.maps.LatLng(
-                                    ride.startedKickboardLocation.latitude,
-                                    ride.startedKickboardLocation.longitude
+                                    openapiRide.startedKickboardLocation.latitude,
+                                    openapiRide.startedKickboardLocation.longitude
                                   )
                                 }
                               />
@@ -556,9 +615,9 @@ export const RidesDetails = withRouter(() => {
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label="반납 위치" span={2}>
-                          {!ride.terminatedAt ? (
+                          {!openapiRide.terminatedAt ? (
                             '라이드 중...'
-                          ) : ride.terminatedKickboardLocation ? (
+                          ) : openapiRide.terminatedKickboardLocation ? (
                             <NaverMap
                               id="terminated-location"
                               style={{
@@ -568,16 +627,16 @@ export const RidesDetails = withRouter(() => {
                               defaultZoom={13}
                               center={
                                 new window.naver.maps.LatLng(
-                                  ride.terminatedKickboardLocation.latitude,
-                                  ride.terminatedKickboardLocation.longitude
+                                  openapiRide.terminatedKickboardLocation.latitude,
+                                  openapiRide.terminatedKickboardLocation.longitude
                                 )
                               }
                             >
                               <Marker
                                 position={
                                   new window.naver.maps.LatLng(
-                                    ride.terminatedKickboardLocation.latitude,
-                                    ride.terminatedKickboardLocation.longitude
+                                    openapiRide.terminatedKickboardLocation.latitude,
+                                    openapiRide.terminatedKickboardLocation.longitude
                                   )
                                 }
                               />
@@ -587,11 +646,11 @@ export const RidesDetails = withRouter(() => {
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label="반납 사진" span={2}>
-                          {!ride.terminatedAt ? (
+                          {!openapiRide.terminatedAt ? (
                             '라이드 중...'
-                          ) : ride.photo ? (
+                          ) : openapiRide.photo ? (
                             <Image
-                              src={ride.photo}
+                              src={openapiRide.photo}
                               width={100}
                               alt="이미지를 로드할 수 없음"
                             />
@@ -600,21 +659,22 @@ export const RidesDetails = withRouter(() => {
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label="할인 ID" span={1}>
-                          {!ride.discountGroupId || !ride.discountId ? (
+                          {!openapiRide.discountGroupId ||
+                          !openapiRide.discountId ? (
                             '적용 안함'
                           ) : (
                             <Link
-                              to={`/discountGroups/${ride.discountGroupId}`}
+                              to={`/discountGroups/${openapiRide.discountGroupId}`}
                             >
-                              {ride.discountId}
+                              {openapiRide.discountId}
                             </Link>
                           )}
-                          {!ride.terminatedAt && (
+                          {!openapiRide.terminatedAt && (
                             <>
                               <Button
                                 type="link"
                                 shape="circle"
-                                onClick={setShowChangeDiscount(true)}
+                                onClick={() => setShowChangeDiscount(true)}
                                 icon={<EditOutlined />}
                               />
 
@@ -625,15 +685,16 @@ export const RidesDetails = withRouter(() => {
                                 okText="변경"
                                 cancelText="취소"
                                 onOk={changeDiscountForm.submit}
-                                onCancel={setShowChangeDiscount(false)}
+                                onCancel={() => setShowChangeDiscount(false)}
                               >
                                 <Form
                                   layout="vertical"
                                   form={changeDiscountForm}
                                   onFinish={onChangeDiscount}
                                   initialValues={{
-                                    discountGroupId: ride.discountGroupId,
-                                    discountId: ride.discountId,
+                                    discountGroupId:
+                                      openapiRide.discountGroupId,
+                                    discountId: openapiRide.discountId,
                                   }}
                                 >
                                   <Row gutter={[4, 4]}>
@@ -721,13 +782,25 @@ export const RidesDetails = withRouter(() => {
                             height: '400px',
                           }}
                           defaultZoom={14}
-                          center={
+                          defaultCenter={
                             new window.naver.maps.LatLng(
-                              ride.startedKickboardLocation.latitude,
-                              ride.startedKickboardLocation.longitude
+                              openapiRide.startedKickboardLocation.latitude,
+                              openapiRide.startedKickboardLocation.longitude
                             )
                           }
                         >
+                          {timeline.map(
+                            ({ latitude, longitude, createdAt }, idx) => (
+                              <Marker
+                                position={{ lat: latitude, lng: longitude }}
+                                icon={{
+                                  content: createMarkerIcon({ idx, createdAt }),
+                                  anchor: { x: 18, y: 15 },
+                                }}
+                              />
+                            )
+                          )}
+
                           <Polyline
                             path={[
                               ...timeline.map(
@@ -738,10 +811,10 @@ export const RidesDetails = withRouter(() => {
                                   )
                               ),
                             ]}
-                            strokeColor={'#5347AA'}
+                            strokeColor={'#303030'}
                             strokeStyle={'solid'}
                             strokeOpacity={0.5}
-                            strokeWeight={5}
+                            strokeWeight={2}
                           />
                         </NaverMap>
                       )}
@@ -754,22 +827,22 @@ export const RidesDetails = withRouter(() => {
                   <Typography.Title level={4}>탑승자 정보</Typography.Title>
                   <Descriptions bordered size="small">
                     <Descriptions.Item label="이름">
-                      {ride.realname}
+                      {openapiRide.realname}
                     </Descriptions.Item>
                     <Descriptions.Item label="전화번호">
-                      {ride.phone}
+                      {openapiRide.phone}
                     </Descriptions.Item>
                     <Descriptions.Item label="생년월일">
-                      {dayjs(ride.birthday).format('YYYY년 MM월 DD일')}
+                      {dayjs(openapiRide.birthday).format('YYYY년 MM월 DD일')}
                     </Descriptions.Item>
-                    <Descriptions.Item label="관리자 ID" span={2}>
+                    <Descriptions.Item label="사용자 ID" span={2}>
                       <Typography.Text copyable={true}>
-                        {ride.userId}
+                        {openapiRide.userId}
                       </Typography.Text>
                     </Descriptions.Item>
                     <Descriptions.Item label="보험 ID">
-                      <Typography.Text copyable={ride.insuranceId}>
-                        {ride.insuranceId || '보험이 신청되지 않음'}
+                      <Typography.Text copyable={openapiRide.insuranceId}>
+                        {openapiRide.insuranceId || '보험이 신청되지 않음'}
                       </Typography.Text>
                     </Descriptions.Item>
                   </Descriptions>
@@ -779,14 +852,24 @@ export const RidesDetails = withRouter(() => {
                 <Card>
                   <Row justify="space-between">
                     <Col>
-                      <Typography.Title level={4}>결제 정보</Typography.Title>
+                      <Typography.Title level={4}>
+                        결제 정보 ({openapiRide.price.toLocaleString()}원)
+                      </Typography.Title>
                     </Col>
-                    {ride.terminatedAt && (
+                    {showRefund && (
+                      <RefundModal
+                        payment={showRefund}
+                        refundPayment={refundPayment}
+                        onClose={() => setShowRefund(null)}
+                      />
+                    )}
+
+                    {openapiRide.terminatedAt && (
                       <Col>
                         <Button
                           style={{ margin: 3 }}
                           icon={<PlusOutlined />}
-                          onClick={setShowAddPayment(true)}
+                          onClick={() => setShowAddPayment(true)}
                         >
                           추가 결제
                         </Button>
@@ -796,7 +879,7 @@ export const RidesDetails = withRouter(() => {
                           okText="추가 결제"
                           cancelText="취소"
                           onOk={addPaymentForm.submit}
-                          onCancel={setShowAddPayment(false)}
+                          onCancel={() => setShowAddPayment(false)}
                         >
                           <Form
                             layout="vertical"
@@ -885,7 +968,7 @@ export const RidesDetails = withRouter(() => {
                         <Popconfirm
                           title="정말로 모두 환불하시겠습니까?"
                           disabled={isLoading}
-                          onConfirm={() => refundRidePayment('')}
+                          onConfirm={() => refundPayment('')}
                           okText="전체 환불"
                           cancelText="취소"
                         >
@@ -900,177 +983,116 @@ export const RidesDetails = withRouter(() => {
                       </Col>
                     )}
                   </Row>
-                  {ride.terminatedAt ? (
+                  {openapiRide.terminatedAt ? (
                     <Tabs defaultActiveKey="receipt" onChange={onReceiptChange}>
                       <Tabs.TabPane tab="영수증" key="receipt">
                         <Descriptions bordered size="small">
                           <Descriptions.Item label="영수증 ID" span={2}>
                             <Typography.Text copyable={true}>
-                              {ride.receipt.receiptId}
+                              {openapiRide.receipt.receiptId}
                             </Typography.Text>
                           </Descriptions.Item>
                           <Descriptions.Item label="심야 요금" span={1}>
-                            {ride.receipt.isNightly ? '적용 됨' : '적용 안됨'}
+                            {openapiRide.receipt.isNightly
+                              ? '적용 됨'
+                              : '적용 안됨'}
                           </Descriptions.Item>
 
                           <Descriptions.Item
                             label="기본요금 결제 금액"
                             span={1}
                           >
-                            {ride.receipt.standard.price.toLocaleString()}원
+                            {openapiRide.receipt.standard.price.toLocaleString()}
+                            원
                           </Descriptions.Item>
                           <Descriptions.Item
                             label="기본요금 할인 금액"
                             span={1}
                           >
-                            -{ride.receipt.standard.discount.toLocaleString()}원
+                            -
+                            {openapiRide.receipt.standard.discount.toLocaleString()}
+                            원
                           </Descriptions.Item>
                           <Descriptions.Item
                             label="기본요금 최종 금액"
                             span={1}
                           >
-                            {ride.receipt.standard.total.toLocaleString()}원
+                            {openapiRide.receipt.standard.total.toLocaleString()}
+                            원
                           </Descriptions.Item>
 
                           <Descriptions.Item
                             label="분당요금 결제 금액"
                             span={1}
                           >
-                            {ride.receipt.perMinute.price.toLocaleString()}원
+                            {openapiRide.receipt.perMinute.price.toLocaleString()}
+                            원
                           </Descriptions.Item>
                           <Descriptions.Item
                             label="분당요금 할인 금액"
                             span={1}
                           >
-                            -{ride.receipt.perMinute.discount.toLocaleString()}
+                            -
+                            {openapiRide.receipt.perMinute.discount.toLocaleString()}
                             원
                           </Descriptions.Item>
                           <Descriptions.Item
                             label="분당요금 최종 금액"
                             span={1}
                           >
-                            {ride.receipt.perMinute.total.toLocaleString()}원
+                            {openapiRide.receipt.perMinute.total.toLocaleString()}
+                            원
                           </Descriptions.Item>
 
                           <Descriptions.Item
                             label="추가요금 결제 금액"
                             span={1}
                           >
-                            {ride.receipt.surcharge.price.toLocaleString()}원
+                            {openapiRide.receipt.surcharge.price.toLocaleString()}
+                            원
                           </Descriptions.Item>
                           <Descriptions.Item
                             label="추가요금 할인 금액"
                             span={1}
                           >
-                            -{ride.receipt.surcharge.discount.toLocaleString()}
+                            -
+                            {openapiRide.receipt.surcharge.discount.toLocaleString()}
                             원
                           </Descriptions.Item>
                           <Descriptions.Item
                             label="추가요금 최종 금액"
                             span={1}
                           >
-                            {ride.receipt.surcharge.total.toLocaleString()}원
+                            {openapiRide.receipt.surcharge.total.toLocaleString()}
+                            원
                           </Descriptions.Item>
                           <Descriptions.Item label="전체 결제 금액" span={1}>
-                            {ride.receipt.price.toLocaleString()}원
+                            {openapiRide.receipt.price.toLocaleString()}원
                           </Descriptions.Item>
                           <Descriptions.Item label="전체 할인 금액" span={1}>
-                            -{ride.receipt.discount.toLocaleString()}원
+                            -{openapiRide.receipt.discount.toLocaleString()}원
                           </Descriptions.Item>
                           <Descriptions.Item label="최종 금액" span={1}>
-                            {ride.receipt.total.toLocaleString()}원
+                            {openapiRide.receipt.total.toLocaleString()}원
                           </Descriptions.Item>
                           <Descriptions.Item label="계산 일자" span={3}>
-                            {dayjs(ride.receipt.updatedAt).format(
-                              'YYYY년 M월 D일 H시 m분'
+                            {dayjs(openapiRide.receipt.updatedAt).format(
+                              'YYYY년 M월 D일 H시 m분 s초'
                             )}
                           </Descriptions.Item>
                         </Descriptions>
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="결제 내역" key="histories">
                         <List
+                          bordered
                           loading={isLoading}
                           itemLayout="vertical"
                           dataSource={ridePayments}
-                          bordered
                           renderItem={(payment) => (
-                            <List.Item>
-                              <Row justify="space-between">
-                                <Col>
-                                  <Typography.Title
-                                    level={5}
-                                    copyable={true}
-                                    delete={payment.refundedAt}
-                                  >
-                                    {`${payment.amount.toLocaleString()}원 / ${
-                                      payment.description || '설명 없음'
-                                    }`}
-                                  </Typography.Title>
-                                </Col>
-                                <Col>
-                                  {payment.paymentType === 'SERVICE' ? (
-                                    <Tag color="success" style={{ margin: 0 }}>
-                                      서비스 요금
-                                    </Tag>
-                                  ) : (
-                                    <Tag
-                                      color="processing"
-                                      style={{ margin: 0 }}
-                                    >
-                                      추가 요금
-                                    </Tag>
-                                  )}
-                                </Col>
-                              </Row>
-                              <Row justify="space-between">
-                                <Col>
-                                  <Row>
-                                    <Col span={24}>
-                                      <b>요청 시점: </b>
-                                      <Typography.Text copyable={true}>
-                                        {dayjs(ride.createdAt).format(
-                                          'M월 D일 H시 m분'
-                                        )}
-                                      </Typography.Text>
-                                    </Col>
-                                    <Col span={24}>
-                                      <b>처리 시점: </b>
-                                      <Typography.Text copyable={true}>
-                                        {ride.processedAt
-                                          ? dayjs(ride.processedAt).format(
-                                              'M월 D일 H시 m분'
-                                            )
-                                          : '처리 되지 않음'}
-                                      </Typography.Text>
-                                    </Col>
-                                  </Row>
-                                </Col>
-                                <Col>
-                                  <Popconfirm
-                                    title="정말로 환불하시겠습니까?"
-                                    disabled={isLoading || payment.refundedAt}
-                                    onConfirm={() =>
-                                      refundRidePayment(payment.paymentId)
-                                    }
-                                    okText="환불"
-                                    cancelText="취소"
-                                  >
-                                    <Button
-                                      size="small"
-                                      icon={<StopOutlined />}
-                                      disabled={payment.refundedAt}
-                                      danger
-                                    >
-                                      {!payment.refundedAt
-                                        ? '환불'
-                                        : dayjs(ride.processedAt).format(
-                                            '환불됨: M월 D일 H시 m분'
-                                          )}
-                                    </Button>
-                                  </Popconfirm>
-                                </Col>
-                              </Row>
-                            </List.Item>
+                            <PaymentItem
+                              payment={payment}
+                              showRefundModel={() => setShowRefund(payment)}
+                            />
                           )}
                         />
                       </Tabs.TabPane>
