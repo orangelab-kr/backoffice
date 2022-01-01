@@ -127,7 +127,10 @@ export const PricingsDetails = withRouter(({ history }) => {
           <Form.Item name="perMinuteNightlyPrice" label="야간 분당요금">
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="surchargePrice" label="야간 분당요금">
+          <Form.Item name="surchargePrice" label="추가 요금">
+            <InputNumber disabled={isLoading} />
+          </Form.Item>
+          <Form.Item name="helmetLostPrice" label="헬멧 분실 요금">
             <InputNumber disabled={isLoading} />
           </Form.Item>
           <Form.Item name="maxPrice" label="최대 금액">

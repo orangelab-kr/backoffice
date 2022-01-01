@@ -48,6 +48,11 @@ export const Pricings = () => {
       render: NumberView('원'),
     },
     {
+      title: '헬멧 분실 요금',
+      dataIndex: 'helmetLostPrice',
+      render: NumberView('원'),
+    },
+    {
       title: '최대 금액',
       dataIndex: 'maxPrice',
       render: NumberView('원'),
