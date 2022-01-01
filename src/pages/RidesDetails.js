@@ -33,7 +33,7 @@ import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { useParams, withRouter } from 'react-router-dom';
-import { PaymentItem, RefundModal } from '../components';
+import { CouponInfoProvider, PaymentItem, RefundModal } from '../components';
 import { getClient, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
@@ -608,8 +608,16 @@ export const RidesDetails = withRouter(() => {
                             '업로드 하지 않음'
                           )}
                         </Descriptions.Item>
-                        <Descriptions.Item label="할인 ID" span={1}>
-                          {!ride.couponId ? '적용 안함' : ride.couponId}
+                        <Descriptions.Item label="할인" span={1}>
+                          {!ride.couponId ? (
+                            '적용 안함'
+                          ) : (
+                            <CouponInfoProvider
+                              userId={ride.userId}
+                              couponId={ride.couponId}
+                              receipt={openapiRide.receipt}
+                            />
+                          )}
                           {!openapiRide.terminatedAt && (
                             <>
                               <Button
@@ -749,7 +757,10 @@ export const RidesDetails = withRouter(() => {
                   <Row justify="space-between">
                     <Col>
                       <Typography.Title level={4}>
-                        결제 정보 ({openapiRide.price.toLocaleString()}원)
+                        {'결제 정보 / '}
+                        <Typography.Text copyable strong italic type="warning">
+                          총 {openapiRide.price.toLocaleString()}원
+                        </Typography.Text>
                       </Typography.Title>
                     </Col>
                     {showRefund && (

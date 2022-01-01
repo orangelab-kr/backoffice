@@ -18,6 +18,7 @@ export * from './PermissionGroupsDetails';
 export * from './Platforms';
 export * from './PlatformsDetails';
 export * from './Pricings';
+export * from './PricingsDetails';
 export * from './Profiles';
 export * from './ProfilesDetails';
 export * from './Regions';
@@ -29,3 +30,5 @@ export * from './ServicesDetails';
 export * from './Settings';
 export * from './Users';
 export * from './UsersDetails';
+
+

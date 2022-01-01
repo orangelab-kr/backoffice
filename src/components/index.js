@@ -1,4 +1,6 @@
+export * from './CouponInfoProvider';
 export * from './Dashboard';
+export * from './InfoProvider';
 export * from './Kickboard';
 export * from './List';
 export * from './PaymentItem';
@@ -11,4 +13,3 @@ export * from './RequiredLogin';
 export * from './ServicesCreate';
 export * from './Table';
 export * from './User';
-

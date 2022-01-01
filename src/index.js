@@ -24,6 +24,7 @@ import {
   Platforms,
   PlatformsDetails,
   Pricings,
+  PricingsDetails,
   Profiles,
   ProfilesDetails,
   Regions,
@@ -35,7 +36,6 @@ import {
   Users,
   UsersDetails,
 } from './pages';
-import { PricingsDetails } from './pages/PricingsDetails';
 
 ReactDOM.render(
   <div className="App">
