@@ -30,11 +30,11 @@ import {
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
-import { Link, useParams, withRouter } from 'react-router-dom';
+import { useParams, withRouter } from 'react-router-dom';
 import { PaymentItem, RefundModal } from '../components';
-import { useDebounce, useInterval, getClient } from '../tools';
+import { getClient, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
@@ -44,13 +44,9 @@ export const RidesDetails = withRouter(() => {
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showRefund, setShowRefund] = useState(null);
   const [showTerminate, setShowTerminate] = useState(false);
-  const [showChangeDiscount, setShowChangeDiscount] = useState(false);
+  const [showChangeDiscount, setShowChangeCoupon] = useState(false);
   const [terminateReceipt, setTerminateReceipt] = useState(null);
-  const [selectDiscountGroupId, setSelectDiscountGroupId] = useState(null);
-  const [lightsOn, setLightsOn] = useState(false);
-  const [discountGroups, setDiscountGroups] = useState([]);
-  const [discounts, setDiscounts] = useState([]);
-  const [lockOn, setLockOn] = useState(false);
+  const [coupons, setCoupons] = useState([]);
   const [terminateLocation, setTerminateLocationState] = useState({
     _lat: 0,
     _lng: 0,
@@ -60,7 +56,7 @@ export const RidesDetails = withRouter(() => {
   const debouncedTerminateLocation = useDebounce(terminateLocation, 1000);
   const addPaymentForm = Form.useForm()[0];
   const terminateForm = Form.useForm()[0];
-  const changeDiscountForm = Form.useForm()[0];
+  const changeCouponForm = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
   const createMarkerIcon = ({ idx, createdAt }) => {
     const displayedTime = dayjs(createdAt).format('YYYY년 M월 D일 H시 m분 s초');
@@ -80,81 +76,48 @@ export const RidesDetails = withRouter(() => {
 >${idx}</div>`;
   };
 
-  const loadRide = () => {
+  const loadRide = useCallback(async () => {
     if (!rideId) return;
     setLoading(true);
 
-    getClient('coreservice-ride')
+    await getClient('coreservice-ride')
       .then((c) => c.get(`/rides/${rideId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => setRide(data.ride));
-  };
+  }, [rideId]);
 
-  const loadOpenapiRide = () => {
+  const loadOpenapiRide = useCallback(async () => {
     if (!ride?.properties?.openapi?.rideId) return;
     setLoading(true);
 
-    getClient('openapi-ride')
+    const { data } = await getClient('openapi-ride')
       .then((c) => c.get(`/rides/${ride.properties.openapi.rideId}`))
-      .finally(() => setLoading(false))
-      .then(({ data }) => {
-        setOpenapiRide(data.ride);
-        if (!showTerminate) {
-          const { latitude, longitude } = data.ride.startedKickboardLocation;
-          setSelectDiscountGroupId(data.ride.discountGroupId);
-          if (data.ride.discountGroupId) {
-            onSearchDiscounts(data.ride.discountGroupId, '');
-          }
+      .finally(() => setLoading(false));
+    setOpenapiRide(data.ride);
+    if (!showTerminate && data.ride.terminatedKickboardLocation) {
+      const { latitude, longitude } = data.ride.terminatedKickboardLocation;
+      setTerminateLocation(new window.naver.maps.LatLng(latitude, longitude));
+    }
+  }, [ride, showTerminate]);
 
-          setTerminateLocation(
-            new window.naver.maps.LatLng(latitude, longitude)
-          );
-        }
-      });
-  };
-
-  const onSearchDiscountGroups = (search) => {
+  const onSearchCoupons = (search) => {
     setLoading(true);
-    const params = { search };
-    getClient('openapi-ride')
-      .then((c) => c.get('/discountGroups', { params }))
-      .finally(() => setLoading(false))
-      .then(({ data }) => setDiscountGroups(data.discountGroups));
-  };
-
-  const onSearchDiscountGroupsWithDebounce = _.debounce(
-    onSearchDiscountGroups,
-    500
-  );
-
-  const onChangeDiscountGroup = (discountGroupId) => {
-    setSelectDiscountGroupId(discountGroupId);
-    if (!discountGroupId) return;
-    changeDiscountForm.setFieldsValue({ discountId: null });
-    onSearchDiscounts(discountGroupId, '');
-  };
-
-  const onSearchDiscounts = (discountGroupId, search) => {
-    setLoading(true);
+    if (!ride?.userId) return;
     const params = { search, take: 10, showUsed: false };
-    getClient('openapi-discount')
-      .then((c) => c.get(`/discountGroups/${discountGroupId}`, { params }))
+    getClient('coreservice-payments')
+      .then((c) => c.get(`/users/${ride.userId}/coupons`, { params }))
       .finally(() => setLoading(false))
-      .then(({ data }) => setDiscounts(data.discounts));
+      .then(({ data }) => setCoupons(data.coupons));
   };
 
-  const onChangeDiscount = ({ discountId, discountGroupId }) => {
-    getClient('openapi-ride')
-      .then((c) =>
-        c.post(`/rides/${ride.properties.openapi.rideId}/discount`, {
-          discountId,
-          discountGroupId,
-        })
-      )
+  const onSearchCouponsWithDebounce = _.debounce(onSearchCoupons, 500);
+  const onChangeCoupon = ({ couponId }) => {
+    getClient('coreservice-ride')
+      .then((c) => c.post(`/rides/${rideId}/coupon`, { couponId }))
       .finally(() => setLoading(false))
       .then(() => {
         message.success('할인을 변경하였습니다.');
-        setShowChangeDiscount(false);
+        setShowChangeCoupon(false);
         loadRide();
       });
   };
@@ -185,9 +148,7 @@ export const RidesDetails = withRouter(() => {
       .then((c) =>
         c.delete(
           `/rides/${ride.properties.openapi.rideId}/payments/${paymentId}`,
-          {
-            data,
-          }
+          { data }
         )
       )
       .finally(() => setLoading(false))
@@ -252,16 +213,15 @@ export const RidesDetails = withRouter(() => {
       return;
     }
 
-    getClient('openapi-ride').then((c) =>
+    const params = {
+      latitude: debouncedTerminateLocation._lat,
+      longitude: debouncedTerminateLocation._lng,
+      terminatedAt: terminatedAt.format(),
+    };
+
+    getClient('coreservice-ride').then((c) =>
       c
-        .delete(`/rides/${ride.properties.openapi.rideId}`, {
-          params: {
-            latitude: debouncedTerminateLocation._lat,
-            longitude: debouncedTerminateLocation._lng,
-            terminatedAt: terminatedAt.format(),
-            terminatedType: 'ADMIN_REQUESTED',
-          },
-        })
+        .delete(`/rides/${rideId}`, { params })
         .finally(() => setLoading(false))
         .then(() => {
           loadRide();
@@ -273,44 +233,34 @@ export const RidesDetails = withRouter(() => {
   const onLights = () => {
     setLoading(true);
 
-    const action = !lightsOn ? 'on' : 'off';
-    getClient('openapi-ride')
-      .then((c) =>
-        c.get(`/rides/${ride.properties.openapi.rideId}/lights/${action}`)
-      )
+    const action = !ride.isLightsOn ? 'on' : 'off';
+    getClient('coreservice-ride')
+      .then((c) => c.get(`/rides/${rideId}/lights/${action}`))
       .finally(() => setLoading(false))
-      .then(() => setLightsOn(!lightsOn));
+      .then(() => loadRide());
   };
 
   const onLock = () => {
     setLoading(true);
 
-    const action = !lockOn ? 'on' : 'off';
-    getClient('openapi-ride')
-      .then((c) =>
-        c.get(`/rides/${ride.properties.openapi.rideId}/lock/${action}`)
-      )
+    const action = !ride.isLocked ? 'on' : 'off';
+    getClient('coreservice-ride')
+      .then((c) => c.get(`/rides/${rideId}/lock/${action}`))
       .finally(() => setLoading(false))
-      .then(() => setLockOn(!lockOn));
+      .then(() => loadRide());
   };
 
-  useEffect(loadRide, [rideId]);
-  useEffect(loadOpenapiRide, [
-    ride?.properties?.openapi?.rideId,
-    showTerminate,
-  ]);
-
-  useEffect(onSearchDiscountGroups, []);
+  useEffect(loadRide, [loadRide]);
+  useEffect(loadOpenapiRide, [loadOpenapiRide]);
+  useEffect(onSearchCoupons, [ride?.userId]);
   useEffect(calculateTerminatePricing, [
+    ride,
     debouncedTerminateLocation,
-    ride?.properties?.openapi?.rideId,
     terminateForm,
   ]);
 
-  useInterval(
-    loadRide,
-    openapiRide && !openapiRide.terminatedAt ? 10000 : null
-  );
+  useInterval(loadRide, ride && !ride.endedAt ? 10000 : null);
+
   return (
     <>
       <Card>
@@ -323,12 +273,12 @@ export const RidesDetails = withRouter(() => {
                 </Typography.Title>
               </Col>
 
-              {openapiRide && !openapiRide.terminatedAt && (
+              {ride && openapiRide && !openapiRide.terminatedAt && (
                 <Col>
                   <Row gutter={[4, 0]} align="middle">
                     <Col>
                       <Checkbox
-                        checked={lightsOn}
+                        checked={ride.isLightsOn}
                         onChange={onLights}
                         disabled={isLoading}
                       >
@@ -337,7 +287,7 @@ export const RidesDetails = withRouter(() => {
                     </Col>
                     <Col>
                       <Checkbox
-                        checked={lockOn}
+                        checked={ride.isLocked}
                         onChange={onLock}
                         disabled={isLoading}
                       >
@@ -552,7 +502,7 @@ export const RidesDetails = withRouter(() => {
               )}
             </Row>
           </Col>
-          {openapiRide && (
+          {ride && openapiRide && (
             <>
               <Col span={24}>
                 <Card>
@@ -659,22 +609,13 @@ export const RidesDetails = withRouter(() => {
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label="할인 ID" span={1}>
-                          {!openapiRide.discountGroupId ||
-                          !openapiRide.discountId ? (
-                            '적용 안함'
-                          ) : (
-                            <Link
-                              to={`/discountGroups/${openapiRide.discountGroupId}`}
-                            >
-                              {openapiRide.discountId}
-                            </Link>
-                          )}
+                          {!ride.couponId ? '적용 안함' : ride.couponId}
                           {!openapiRide.terminatedAt && (
                             <>
                               <Button
                                 type="link"
                                 shape="circle"
-                                onClick={() => setShowChangeDiscount(true)}
+                                onClick={() => setShowChangeCoupon(true)}
                                 icon={<EditOutlined />}
                               />
 
@@ -684,87 +625,42 @@ export const RidesDetails = withRouter(() => {
                                 okType="primary"
                                 okText="변경"
                                 cancelText="취소"
-                                onOk={changeDiscountForm.submit}
-                                onCancel={() => setShowChangeDiscount(false)}
+                                onOk={changeCouponForm.submit}
+                                onCancel={() => setShowChangeCoupon(false)}
                               >
                                 <Form
                                   layout="vertical"
-                                  form={changeDiscountForm}
-                                  onFinish={onChangeDiscount}
-                                  initialValues={{
-                                    discountGroupId:
-                                      openapiRide.discountGroupId,
-                                    discountId: openapiRide.discountId,
-                                  }}
+                                  form={changeCouponForm}
+                                  onFinish={onChangeCoupon}
+                                  initialValues={{ couponId: ride.couponId }}
                                 >
                                   <Row gutter={[4, 4]}>
                                     <Col span={24}>
                                       <Form.Item
-                                        label="할인 그룹:"
-                                        name="discountGroupId"
+                                        label="쿠폰:"
+                                        name="couponId"
                                         required
                                       >
                                         <Select
                                           showSearch
                                           filterOption={false}
-                                          placeholder={
-                                            '할인 그룹을 선택해주세요.'
-                                          }
-                                          onSearch={
-                                            onSearchDiscountGroupsWithDebounce
-                                          }
-                                          onChange={onChangeDiscountGroup}
+                                          placeholder={'쿠폰을 선택해주세요.'}
+                                          onSearch={onSearchCouponsWithDebounce}
                                           loading={isLoading}
                                         >
                                           <Select.Option>
                                             선택 안함
                                           </Select.Option>
-                                          {discountGroups.map(
-                                            ({ discountGroupId, name }) => (
-                                              <Select.Option
-                                                key={discountGroupId}
-                                              >
-                                                {name}
+                                          {coupons.map(
+                                            ({ couponId, couponGroup }) => (
+                                              <Select.Option key={couponId}>
+                                                {couponGroup.name}
                                               </Select.Option>
                                             )
                                           )}
                                         </Select>
                                       </Form.Item>
                                     </Col>
-                                    {selectDiscountGroupId && (
-                                      <Col span={24}>
-                                        <Form.Item
-                                          label="할인:"
-                                          name="discountId"
-                                          required
-                                          rules={[
-                                            {
-                                              required: true,
-                                              message: '반드시 선택해주세요.',
-                                            },
-                                          ]}
-                                        >
-                                          <Select
-                                            showSearch
-                                            filterOption={false}
-                                            placeholder={'할인을 선택해주세요.'}
-                                            onSearch={(search) =>
-                                              onSearchDiscounts(
-                                                selectDiscountGroupId,
-                                                search
-                                              )
-                                            }
-                                            loading={isLoading}
-                                          >
-                                            {discounts.map(({ discountId }) => (
-                                              <Select.Option key={discountId}>
-                                                {discountId}
-                                              </Select.Option>
-                                            ))}
-                                          </Select>
-                                        </Form.Item>
-                                      </Col>
-                                    )}
                                   </Row>
                                 </Form>
                               </Modal>
