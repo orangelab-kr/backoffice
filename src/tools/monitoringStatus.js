@@ -36,7 +36,7 @@ export const MonitoringStatus = [
     icon: <QuestionCircleOutlined />,
   },
   {
-    type: 'CONFIRM',
+    type: 'CONFIRMED',
     action: MonitoringActionType.OnlySave,
     name: '문제 없는 킥보드',
     icon: <CheckCircleOutlined />,
