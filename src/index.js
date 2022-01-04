@@ -16,6 +16,7 @@ import {
   Kickboards,
   KickboardsDetails,
   Login,
+  Monitoring,
   NotFound,
   PassPrograms,
   PassProgramsDetails,
@@ -140,6 +141,9 @@ ReactDOM.render(
                   </Route>
                   <Route path="/profiles/:profileId">
                     <ProfilesDetails />
+                  </Route>
+                  <Route path="/monitoring" exact>
+                    <Monitoring />
                   </Route>
                 </Switch>
               </Dashboard>

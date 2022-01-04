@@ -31,4 +31,4 @@ export * from './Settings';
 export * from './Users';
 export * from './UsersDetails';
 
-
+export * from './Monitoring';
