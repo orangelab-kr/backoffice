@@ -9,7 +9,6 @@ export * from './HelmetsDetails';
 export * from './Kickboards';
 export * from './KickboardsDetails';
 export * from './Login';
-export * from './Main';
 export * from './NotFound';
 export * from './PassPrograms';
 export * from './PassProgramsDetails';

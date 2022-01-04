@@ -58,6 +58,9 @@ ReactDOM.render(
                   <Route path="/" exact>
                     <Redirect to="/kickboards" />
                   </Route>
+                  <Route path="/monitoring">
+                    <Monitoring />
+                  </Route>
                   <Route path="/admins" exact>
                     <Admins />
                   </Route>
@@ -141,9 +144,6 @@ ReactDOM.render(
                   </Route>
                   <Route path="/profiles/:profileId">
                     <ProfilesDetails />
-                  </Route>
-                  <Route path="/monitoring" exact>
-                    <Monitoring />
                   </Route>
                 </Switch>
               </Dashboard>

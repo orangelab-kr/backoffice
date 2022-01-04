@@ -5,13 +5,12 @@ import {
   CrownOutlined,
   FileOutlined,
   HeatMapOutlined,
-  HistoryOutlined,
-  HomeOutlined,
-  InboxOutlined,
+  HistoryOutlined, InboxOutlined,
   LockOutlined,
+  MonitorOutlined,
   ProfileOutlined,
   PropertySafetyOutlined,
-  TeamOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React from 'react';
@@ -34,8 +33,8 @@ export const Dashboard = withRouter(({ history, children }) => {
           mode="inline"
           onClick={onClick}
         >
-          <Menu.Item key="/main" icon={<HomeOutlined />}>
-            대시보드
+          <Menu.Item key="/monitoring" icon={<MonitorOutlined />}>
+            모니터링
           </Menu.Item>
           <Menu.Item key="/kickboards" icon={<CarOutlined />}>
             킥보드
