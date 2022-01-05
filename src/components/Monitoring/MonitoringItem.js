@@ -6,6 +6,7 @@ import {
   Descriptions,
   Empty,
   Image,
+  message,
   Radio,
   Row,
   Space,
@@ -14,7 +15,7 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { NaverMap } from 'react-naver-maps';
+import { Marker, NaverMap } from 'react-naver-maps';
 import {
   KickboardInfoProvider,
   MonitoringActionItem,
@@ -42,8 +43,11 @@ export const MonitoringItem = ({ ride }) => {
     const monitoringStatus = status.type;
     const body = { monitoringStatus, sendMessage, price };
     await getClient('openapi-ride')
-      .then((c) => c.post(`/rides/${ride.rideId}/monitoring`, body))
+      // .then((c) => c.post(`/rides/${ride.rideId}/monitoring`, body))
+      .then(() => new Promise((r) => setTimeout(r, 1000)))
       .finally(() => setLoading(false));
+
+    message.success('처리되었습니다.');
   };
 
   return (
@@ -90,9 +94,34 @@ export const MonitoringItem = ({ ride }) => {
           <NaverMap
             id={`monitoring-item-${ride.rideId}`}
             mapTypeId={naverMaps.MapTypeId.SATELLITE}
-            // defaultCenter={{lat: ride.terminatedKickboardLocation.}}
             style={{ height: '100%' }}
-          ></NaverMap>
+            defaultZoom={24}
+            defaultCenter={{
+              lat: ride.terminatedKickboardLocation.latitude,
+              lng: ride.terminatedKickboardLocation.longitude,
+            }}
+          >
+            <Marker
+              position={{
+                lat: ride.terminatedKickboardLocation.latitude,
+                lng: ride.terminatedKickboardLocation.longitude,
+              }}
+            />
+
+            {ride.terminatedPhoneLocation && (
+              <Marker
+                icon={{
+                  url: 'https://cdn.hikick.kr/markers/current_location.png',
+                  scaledSize: { width: 18, height: 18 },
+                  anchor: { x: 9, y: 9 },
+                }}
+                position={{
+                  lat: ride.terminatedPhoneLocation.latitude,
+                  lng: ride.terminatedPhoneLocation.longitude,
+                }}
+              />
+            )}
+          </NaverMap>
         </Col>
         <Col xxl={3} span={12}>
           {ride.photo ? (

@@ -50,7 +50,7 @@ export const MonitoringStatus = [
   {
     type: 'WRONG_PICTURE',
     action: MonitoringActionType.SendMessage,
-    name: '수거 지역에 반납된 킥보드',
+    name: '잘못된 반납 사진',
     icon: <CameraOutlined />,
   },
   {

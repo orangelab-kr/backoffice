@@ -9,27 +9,34 @@ import { MonitoringActionType } from '../../tools';
 
 export const MonitoringActionItem = ({ actionType, onClick }) => {
   const form = Form.useForm()[0];
-  const [fields, setFields] = useState({ sendMessage: false, price: 0 });
+  const [fields, setFields] = useState({ sendMessage: true, price: 0 });
   const onChange = () => setFields(form.getFieldsValue());
+  const price =
+    actionType === MonitoringActionType.AddPayment ? fields.price : undefined;
+  const sendMessage =
+    actionType !== MonitoringActionType.OnlySave
+      ? fields.sendMessage
+      : undefined;
+
   const getIcon = () => {
-    if (!fields.sendMessage && !fields.price) return <SaveOutlined />;
-    if (fields.sendMessage && !fields.price) return <MessageOutlined />;
+    if (!sendMessage && !price) return <SaveOutlined />;
+    if (sendMessage && !price) return <MessageOutlined />;
     return <CreditCardOutlined />;
   };
 
   const getText = () => {
-    if (!fields.sendMessage && !fields.price) return '저장';
-    if (fields.sendMessage && !fields.price) return '통보';
-    if (!fields.sendMessage && fields.price) return '결제';
+    if (!sendMessage && !price) return '저장';
+    if (sendMessage && !price) return '통보';
+    if (!sendMessage && price) return '결제';
     return '통보 및 결제';
   };
 
   return (
     <Form
       form={form}
+      onFinish={onClick}
       initialValues={fields}
       onFieldsChange={onChange}
-      onFinish={onClick}
     >
       <Row gutter={[8, 8]} align="middle" justify="end">
         {actionType !== MonitoringActionType.OnlySave && (

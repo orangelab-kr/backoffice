@@ -17,6 +17,7 @@ import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ArrayParam,
+  BooleanParam,
   DateTimeParam,
   NumberParam,
   StringParam,
@@ -38,6 +39,7 @@ export const Monitoring = () => {
     startedAt: DateTimeParam,
     endedAt: DateTimeParam,
     regionId: ArrayParam,
+    onlyPhoto: BooleanParam,
     search: StringParam,
   });
 
@@ -71,17 +73,31 @@ export const Monitoring = () => {
   }, [query, setQuery]);
 
   const onSearch = (form) => {
-    const { monitoringStatus, range, regionId, search } = form;
+    const { monitoringStatus, range, regionId, onlyPhoto, search } = form;
     const startedAt = range && range[0].toDate();
     const endedAt = range && range[1].toDate();
-    setQuery({ monitoringStatus, startedAt, endedAt, regionId, search });
+    setQuery({
+      monitoringStatus,
+      startedAt,
+      endedAt,
+      regionId,
+      onlyPhoto,
+      search,
+    });
   };
 
   useEffect(getRides, [getRides]);
   useEffect(() => searchForm.setFieldsValue(query));
   return (
     <Card>
-      <Typography.Title level={3}>모니터링 시스템</Typography.Title>
+      <Typography.Title level={3}>
+        모니터링 시스템
+        <Typography.Text style={{ fontSize: 15, marginLeft: 5 }}>
+          {!loading && total
+            ? `${total.toLocaleString()}개의 검색결과를 찾았습니다.`
+            : `검색을 진행하고 있습니다.`}
+        </Typography.Text>
+      </Typography.Title>
       <Card style={{ marginBottom: 10 }}>
         <Form onFinish={onSearch} form={searchForm}>
           <Row gutter={[10, 4]} justify="space-between">
