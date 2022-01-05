@@ -65,7 +65,10 @@ export const Monitoring = () => {
 
     setRides(data.rides);
     setTotal(data.total);
-  }, [query]);
+    if (query.take * query.skip > data.total) {
+      setQuery((q) => ({ ...q, skip: 0 }));
+    }
+  }, [query, setQuery]);
 
   const onSearch = (form) => {
     const { monitoringStatus, range, regionId, search } = form;
@@ -100,12 +103,7 @@ export const Monitoring = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={2}>
-              <Form.Item name="onlyPhoto" label="반납사진만">
-                <Switch />
-              </Form.Item>
-            </Col>
-            <Col span={24} lg={8}>
+            <Col span={24} lg={10}>
               <Form.Item name="monitoringStatus" label="구분">
                 <Select mode="multiple" placeholder="미선택시 모든 킥보드">
                   {MonitoringStatus.map(({ type, name, icon }) => (
@@ -116,9 +114,18 @@ export const Monitoring = () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={24} lg={14} xl={12}>
+            <Col span={24} lg={14} xl={10}>
               <Form.Item name="search" label="검색">
                 <Input placeholder="이름, 전화번호, 킥보드 코드" />
+              </Form.Item>
+            </Col>
+            <Col>
+              <Form.Item
+                name="onlyPhoto"
+                label="반납사진"
+                valuePropName="checked"
+              >
+                <Switch />
               </Form.Item>
             </Col>
             <Col span={24} xl={2}>
@@ -137,8 +144,8 @@ export const Monitoring = () => {
 
       {!loading
         ? rides.map((ride) => <MonitoringItem ride={ride} key={ride.rideId} />)
-        : [...Array(3)].map(() => (
-            <Card style={{ margin: '10px 0' }}>
+        : [...Array(3)].map((_, i) => (
+            <Card style={{ margin: '10px 0' }} key={i}>
               <Skeleton />
             </Card>
           ))}

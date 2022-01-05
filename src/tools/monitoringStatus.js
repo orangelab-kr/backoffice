@@ -1,31 +1,19 @@
 import {
   CameraOutlined,
   CheckCircleOutlined,
-  CreditCardOutlined,
   DislikeOutlined,
   ExclamationCircleOutlined,
   EyeInvisibleOutlined,
   FrownOutlined,
-  MessageOutlined,
   QuestionCircleOutlined,
-  SaveOutlined,
   SelectOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
-import { Button } from 'antd';
 
 export const MonitoringActionType = {
-  OnlySave: <Button icon={<SaveOutlined />}>저장</Button>,
-  SendMessage: (
-    <Button type="primary" icon={<MessageOutlined />}>
-      저장 및 통보
-    </Button>
-  ),
-  AddPayment: (
-    <Button type="primary" icon={<CreditCardOutlined />} danger>
-      저장 및 결제
-    </Button>
-  ),
+  OnlySave: 'OnlySave',
+  SendMessage: 'SendMessage',
+  AddPayment: 'AddPayment',
 };
 
 export const MonitoringStatus = [

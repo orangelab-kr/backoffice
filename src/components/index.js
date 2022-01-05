@@ -3,7 +3,7 @@ export * from './Dashboard';
 export * from './InfoProvider';
 export * from './Kickboard';
 export * from './List';
-export * from './MonitoringItem';
+export * from './Monitoring';
 export * from './PaymentItem';
 export * from './PermissionGroupsSelect';
 export * from './PermissionsSelect';
