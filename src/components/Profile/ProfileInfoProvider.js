@@ -4,7 +4,9 @@ import { InfoProvider } from '../InfoProvider';
 
 export const ProfileInfoProvider = ({ profileId }) => {
   const onRequest = (profileId) =>
-    getClient('openapi-location').then((c) => c.get(`/profiles/${profileId}`));
+    getClient('openapi-location', true).then((c) =>
+      c.get(`/profiles/${profileId}`)
+    );
 
   return (
     <InfoProvider

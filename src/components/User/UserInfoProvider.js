@@ -6,7 +6,9 @@ import { InfoProvider } from '../InfoProvider';
 
 export const UserInfoProvider = ({ userId }) => {
   const onRequest = (userId) =>
-    getClient('coreservice-accounts').then((c) => c.get(`/users/${userId}`));
+    getClient('coreservice-accounts', true).then((c) =>
+      c.get(`/users/${userId}`)
+    );
 
   return (
     <InfoProvider

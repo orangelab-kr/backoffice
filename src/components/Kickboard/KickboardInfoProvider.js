@@ -4,7 +4,7 @@ import { InfoProvider } from '../InfoProvider';
 
 export const KickboardInfoProvider = ({ kickboardCode, showKickboardId }) => {
   const onRequest = (kickboardCode) =>
-    getClient('openapi-kickboard').then((c) =>
+    getClient('openapi-kickboard', true).then((c) =>
       c.get(`/kickboards/${kickboardCode}`)
     );
 

@@ -4,7 +4,7 @@ import { getClient } from '../tools';
 
 export const CouponInfoProvider = ({ userId, couponId, receipt }) => {
   const onRequest = (couponId) =>
-    getClient('coreservice-payments').then((c) =>
+    getClient('coreservice-payments', true).then((c) =>
       c.get(`/users/${userId}/coupons/${couponId}`)
     );
 

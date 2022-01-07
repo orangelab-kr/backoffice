@@ -4,7 +4,9 @@ import { InfoProvider } from '../InfoProvider';
 
 export const PricingInfoProvider = ({ pricingId }) => {
   const onRequest = (pricingId) =>
-    getClient('openapi-location').then((c) => c.get(`/pricings/${pricingId}`));
+    getClient('openapi-location', true).then((c) =>
+      c.get(`/pricings/${pricingId}`)
+    );
 
   return (
     <InfoProvider

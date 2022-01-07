@@ -4,7 +4,9 @@ import { InfoProvider } from '../InfoProvider';
 
 export const RegionInfoProvider = ({ regionId }) => {
   const onRequest = (regionId) =>
-    getClient('openapi-location').then((c) => c.get(`/regions/${regionId}`));
+    getClient('openapi-location', true).then((c) =>
+      c.get(`/regions/${regionId}`)
+    );
 
   return (
     <InfoProvider
