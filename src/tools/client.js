@@ -31,7 +31,7 @@ export async function getCredentials(serviceId) {
   return { endpoint, sessionId };
 }
 
-export async function getClient(serviceId) {
+export async function getClient(serviceId, quiet = false) {
   const client = axios.create();
   if (serviceId !== 'backoffice' && clients[serviceId]) {
     return clients[serviceId];
@@ -46,12 +46,12 @@ export async function getClient(serviceId) {
   }
 
   function getInterceptorResponse(res) {
-    if (!res) {
+    if (!quiet && !res) {
       throw new InternalError('서버와 연결할 수 없습니다.');
     }
 
     const { data } = res;
-    if (data.opcode !== OPCODE.SUCCESS) {
+    if (!quiet && data.opcode !== OPCODE.SUCCESS) {
       throw new InternalError(data.message);
     }
 
@@ -59,13 +59,13 @@ export async function getClient(serviceId) {
   }
 
   function getInterceptorResponseError(err) {
-    if (!err.response) {
+    if (!quiet && !err.response) {
       throw new InternalError('서버와 연결할 수 없습니다.');
     }
 
     const { data } = err.response;
     if (data.opcode === OPCODE.SUCCESS) return err;
-    throw new InternalError(data.message);
+    if (!quiet) throw new InternalError(data.message);
   }
 
   client.interceptors.request.use(getInterceptorRequest.bind(this));
