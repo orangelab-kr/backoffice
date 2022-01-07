@@ -16,6 +16,7 @@ import {
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { Marker, NaverMap } from 'react-naver-maps';
+import { MonitoringLog } from '.';
 import {
   KickboardInfoProvider,
   MonitoringActionItem,
@@ -28,6 +29,7 @@ export const MonitoringItem = ({ ride }) => {
   const [status, setStatus] = useState();
   const [collapse, setCollapse] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [refreshLog, setRefreshLog] = useState(false);
   // eslint-disable-next-line no-undef
   const naverMaps = naver && naver.maps;
 
@@ -43,11 +45,17 @@ export const MonitoringItem = ({ ride }) => {
     const monitoringStatus = status.type;
     const body = { monitoringStatus, sendMessage, price };
     await getClient('openapi-ride')
-      // .then((c) => c.post(`/rides/${ride.rideId}/monitoring`, body))
-      .then(() => new Promise((r) => setTimeout(r, 1000)))
+      .then((c) => c.post(`/rides/${ride.rideId}/monitoring`, body))
       .finally(() => setLoading(false));
 
+    setRefreshLog(true);
     message.success('처리되었습니다.');
+  };
+
+  const onCollapseClick = () => {
+    if (collapse) return setCollapse(collapse);
+    setRefreshLog(true);
+    setCollapse(true);
   };
 
   return (
@@ -60,7 +68,7 @@ export const MonitoringItem = ({ ride }) => {
           </Typography.Title>
         </Col>
         <Col>
-          <Button type="primary" onClick={() => setCollapse((c) => !c)}>
+          <Button type="primary" onClick={onCollapseClick}>
             더보기 {collapse ? <CaretUpOutlined /> : <CaretDownOutlined />}
           </Button>
         </Col>
@@ -143,8 +151,8 @@ export const MonitoringItem = ({ ride }) => {
                 value={status ? status.type : ride.monitoringStatus}
               >
                 <Space direction="vertical">
-                  {MonitoringStatus.map(({ type, name, icon }) => (
-                    <Radio value={type} key={type}>
+                  {MonitoringStatus.map(({ type, name, icon, color }) => (
+                    <Radio value={type} key={type} style={{ color }}>
                       {name} {icon}
                     </Radio>
                   ))}
@@ -161,18 +169,11 @@ export const MonitoringItem = ({ ride }) => {
         </Col>
       </Row>
       {collapse && (
-        <Typography.Paragraph>
-          <pre>
-            2021년 11월 13일 15시 30분 / 반납 / 반납이 완료되었습니다.
-            <br />
-            2021년 11월 13일 15시 30분 / 통지 / 미제출된 반납 사진으로 인해 안내
-            문자를 발송하였습니다.
-            <br />
-            2021년 11월 13일 15시 30분 / 수거 / 수거가 완료되었습니다. 수거 통보
-            및 15,000원이 결제되었습니다.
-            <br />
-          </pre>
-        </Typography.Paragraph>
+        <MonitoringLog
+          ride={ride}
+          refresh={refreshLog}
+          setRefresh={setRefreshLog}
+        />
       )}
     </Card>
   );
