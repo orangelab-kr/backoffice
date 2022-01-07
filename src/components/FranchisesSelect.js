@@ -19,7 +19,7 @@ export const FranchisesSelect = ({ id, isLoading, onChange, value }) => {
         ...props,
       };
 
-      getClient('openapi-franchise')
+      getClient('openapi-franchise', true)
         .then((c) => c.get('/franchises', { params }))
         .then(({ data }) => setFranchises(data.franchises));
     },

@@ -16,7 +16,7 @@ export const PermissionGroupsSelect = ({ id, isLoading, onChange, value }) => {
       orderBySort: 'asc',
     };
 
-    getClient('backoffice')
+    getClient('backoffice', true)
       .then((c) => c.get('/permissionGroups', { params }))
       .then(({ data }) => setPermissionGroups(data.permissionGroups));
   };

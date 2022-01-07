@@ -16,7 +16,7 @@ export const PermissionsSelect = ({ id, isLoading, onChange, value }) => {
       orderBySort: 'asc',
     };
 
-    getClient('backoffice')
+    getClient('backoffice', true)
       .then((c) => c.get('/permissions', { params }))
       .then(({ data }) => setPermissions(data.permissions));
   };

@@ -16,7 +16,7 @@ export const PricingSelect = ({ id, isLoading, onChange, value }) => {
       orderBySort: 'asc',
     };
 
-    getClient('openapi-location')
+    getClient('openapi-location', true)
       .then((c) => c.get('/pricings', { params }))
       .then(({ data }) => setPricings(data.pricings));
   };

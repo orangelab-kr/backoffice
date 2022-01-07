@@ -23,7 +23,7 @@ export const RegionSelect = ({
       orderBySort: 'asc',
     };
 
-    getClient('openapi-location')
+    getClient('openapi-location', true)
       .then((c) => c.get('/regions', { params }))
       .then(({ data }) => setRegions(data.regions));
   };

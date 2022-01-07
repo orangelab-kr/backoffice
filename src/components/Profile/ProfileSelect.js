@@ -16,7 +16,7 @@ export const ProfileSelect = ({ id, isLoading, onChange, value }) => {
       orderBySort: 'asc',
     };
 
-    getClient('openapi-location')
+    getClient('openapi-location', true)
       .then((c) => c.get('/profiles', { params }))
       .then(({ data }) => setProfiles(data.profiles));
   };
