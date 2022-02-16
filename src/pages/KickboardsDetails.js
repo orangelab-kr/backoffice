@@ -222,6 +222,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                     <Select.Option value={3}>수거됨</Select.Option>
                     <Select.Option value={4}>미등록</Select.Option>
                     <Select.Option value={5}>비활성화됨</Select.Option>
+                    <Select.Option value={6}>마이킥</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
