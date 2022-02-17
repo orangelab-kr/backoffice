@@ -1,16 +1,18 @@
 import {
   ApartmentOutlined,
   BlockOutlined,
+  CarFilled,
   CarOutlined,
   CrownOutlined,
   FileOutlined,
   HeatMapOutlined,
-  HistoryOutlined, InboxOutlined,
+  HistoryOutlined,
+  InboxOutlined,
   LockOutlined,
   MonitorOutlined,
   ProfileOutlined,
   PropertySafetyOutlined,
-  TeamOutlined
+  TeamOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React from 'react';
@@ -26,56 +28,59 @@ export const Dashboard = withRouter(({ history, children }) => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible width={180} collapsedWidth={50}>
-        <div className="logo" />
+        <div className='logo' />
         <Menu
-          theme="dark"
+          theme='dark'
           defaultSelectedKeys={[currentMenu]}
-          mode="inline"
+          mode='inline'
           onClick={onClick}
         >
-          <Menu.Item key="/monitoring" icon={<MonitorOutlined />}>
+          <Menu.Item key='/monitoring' icon={<MonitorOutlined />}>
             모니터링
           </Menu.Item>
-          <Menu.Item key="/kickboards" icon={<CarOutlined />}>
+          <Menu.Item key='/kickboards' icon={<CarOutlined />}>
             킥보드
           </Menu.Item>
-          <Menu.Item key="/helmets" icon={<CrownOutlined />}>
+          <Menu.Item key='/helmets' icon={<CrownOutlined />}>
             헬멧
           </Menu.Item>
-          <Menu.Item key="/users" icon={<TeamOutlined />}>
+          <Menu.Item key='/users' icon={<TeamOutlined />}>
             사용자
           </Menu.Item>
-          <Menu.Item key="/rides" icon={<HistoryOutlined />}>
+          <Menu.Item key='/mykick' icon={<CarFilled />}>
+            마이킥
+          </Menu.Item>
+          <Menu.Item key='/rides' icon={<HistoryOutlined />}>
             라이드
           </Menu.Item>
-          <Menu.Item key="/passPrograms" icon={<PropertySafetyOutlined />}>
+          <Menu.Item key='/passPrograms' icon={<PropertySafetyOutlined />}>
             패스 프로그램
           </Menu.Item>
-          <Menu.Item key="/couponGroups" icon={<PropertySafetyOutlined />}>
+          <Menu.Item key='/couponGroups' icon={<PropertySafetyOutlined />}>
             쿠폰 그룹
           </Menu.Item>
-          <Menu.Item key="/platforms" icon={<ApartmentOutlined />}>
+          <Menu.Item key='/platforms' icon={<ApartmentOutlined />}>
             플랫폼
           </Menu.Item>
-          <Menu.Item key="/admins" icon={<PropertySafetyOutlined />}>
+          <Menu.Item key='/admins' icon={<PropertySafetyOutlined />}>
             관리자
           </Menu.Item>
-          <Menu.Item key="/collectors" icon={<InboxOutlined />}>
+          <Menu.Item key='/collectors' icon={<InboxOutlined />}>
             수거팀
           </Menu.Item>
-          <Menu.Item key="/permissionGroups" icon={<LockOutlined />}>
+          <Menu.Item key='/permissionGroups' icon={<LockOutlined />}>
             권한 그룹
           </Menu.Item>
-          <Menu.Item key="/regions" icon={<HeatMapOutlined />}>
+          <Menu.Item key='/regions' icon={<HeatMapOutlined />}>
             지역
           </Menu.Item>
-          <Menu.Item key="/pricings" icon={<FileOutlined />}>
+          <Menu.Item key='/pricings' icon={<FileOutlined />}>
             가격정책
           </Menu.Item>
-          <Menu.Item key="/profiles" icon={<ProfileOutlined />}>
+          <Menu.Item key='/profiles' icon={<ProfileOutlined />}>
             프로파일
           </Menu.Item>
-          <Menu.Item key="/services" icon={<BlockOutlined />}>
+          <Menu.Item key='/services' icon={<BlockOutlined />}>
             서비스
           </Menu.Item>
         </Menu>
