@@ -65,9 +65,7 @@ export const MykickDetails = withRouter(({ history }) => {
       .finally(() => setLoading(false))
       .then(({ data }) => {
         message.success(`${rentId ? '수정' : '생성'}되었습니다.`);
-        if (data.rent.rentId) {
-          history.push(`/mykick/${data.rent.rentId}`);
-        }
+        loadMykick();
       });
   };
 
@@ -114,20 +112,6 @@ export const MykickDetails = withRouter(({ history }) => {
           </Row>
           <Row gutter={[8, 8]}>
             <Col span={12}>
-              <Form.Item name='enabled' label='활성화' valuePropName='checked'>
-                <Checkbox disabled={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name='lightOn'
-                label='라이트 켜짐'
-                valuePropName='checked'
-              >
-                <Checkbox disabled={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
               <Form.Item name='name' label='이름'>
                 <Input disabled={isLoading} />
               </Form.Item>
@@ -159,6 +143,11 @@ export const MykickDetails = withRouter(({ history }) => {
               </Form.Item>
             </Col>
             <Col span={12}>
+              <Form.Item name='message' label='취소 또는 일시정지 사유:'>
+                <Input disabled={isLoading} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
               <Form.Item name='expiredAt' label='만료일'>
                 <DatePicker disabled={isLoading} />
               </Form.Item>
@@ -166,6 +155,24 @@ export const MykickDetails = withRouter(({ history }) => {
             <Col span={12}>
               <Form.Item name='remainingMonths' label='남은 개월'>
                 <InputNumber disabled={isLoading} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name='enabled'
+                label='킥보드 켜짐'
+                valuePropName='checked'
+              >
+                <Checkbox disabled={isLoading} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name='lightOn'
+                label='라이트 켜짐'
+                valuePropName='checked'
+              >
+                <Checkbox disabled={isLoading} />
               </Form.Item>
             </Col>
           </Row>

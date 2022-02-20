@@ -32,9 +32,15 @@ export const Mykick = () => {
     {
       title: '킥보드 코드',
       dataIndex: 'kickboardCode',
-      render: (kickboardCode) => (
-        <KickboardInfoProvider kickboardCode={kickboardCode} showKickboardId />
-      ),
+      render: (kickboardCode) =>
+        kickboardCode ? (
+          <KickboardInfoProvider
+            kickboardCode={kickboardCode}
+            showKickboardId
+          />
+        ) : (
+          '미배정'
+        ),
     },
     {
       title: '만료일자',
