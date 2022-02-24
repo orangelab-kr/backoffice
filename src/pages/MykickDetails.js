@@ -1,5 +1,6 @@
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
+  Alert,
   Button,
   Card,
   Checkbox,
@@ -15,8 +16,9 @@ import {
   Typography,
 } from 'antd';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
+import { KickboardSelect } from '../components/Kickboard/KickboardSelect';
 import { MykickPricingSelect } from '../components/MykickPricingSelect';
 import { MykickUserSelect } from '../components/MykickUserSelect';
 import { getClient } from '../tools';
@@ -63,17 +65,23 @@ export const MykickDetails = withRouter(({ history }) => {
     getClient('mykick')
       .then((c) => c.patch(`/rents/${rentId}`, body))
       .finally(() => setLoading(false))
-      .then(({ data }) => {
+      .then(() => {
         message.success(`${rentId ? '수정' : '생성'}되었습니다.`);
         loadMykick();
       });
   };
 
+  const onChangeForm = () => setMykick(form.getFieldsValue());
   useEffect(loadMykick, [form, rentId]);
   return (
     <>
       <Card>
-        <Form layout='vertical' onFinish={onSave} form={form}>
+        <Form
+          layout='vertical'
+          onFinish={onSave}
+          form={form}
+          onChange={onChangeForm}
+        >
           <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>{mykick ? mykick.name : '새로운 마이킥'}</Title>
@@ -128,7 +136,7 @@ export const MykickDetails = withRouter(({ history }) => {
             </Col>
             <Col span={12}>
               <Form.Item name='status' label='상태'>
-                <Select disabled={isLoading}>
+                <Select disabled={isLoading} onChange={onChangeForm}>
                   {Object.entries(MykickStatus).map(([key, obj]) => (
                     <Select.Option key={key} value={key}>
                       {obj.text}
@@ -139,41 +147,67 @@ export const MykickDetails = withRouter(({ history }) => {
             </Col>
             <Col span={12}>
               <Form.Item name='kickboardCode' label='킥보드 코드'>
-                <Input disabled={isLoading} />
+                <KickboardSelect isLoading={isLoading} />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item name='message' label='취소 또는 일시정지 사유:'>
-                <Input disabled={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name='expiredAt' label='만료일'>
-                <DatePicker disabled={isLoading} />
-              </Form.Item>
-            </Col>
+            {mykick && ['Cancelled', 'Suspended'].includes(mykick.status) && (
+              <Col span={12}>
+                <Form.Item
+                  name='message'
+                  label={
+                    mykick.status === 'Cancelled'
+                      ? '취소 사유'
+                      : mykick.status === 'Suspended'
+                      ? '정지 사유'
+                      : '메세지'
+                  }
+                >
+                  <Input disabled={isLoading} />
+                </Form.Item>
+              </Col>
+            )}
+            {mykick && mykick.expiredAt && (
+              <Col span={12}>
+                <Form.Item name='expiredAt' label='만료일'>
+                  <DatePicker disabled={isLoading} />
+                </Form.Item>
+              </Col>
+            )}
             <Col span={12}>
               <Form.Item name='remainingMonths' label='남은 개월'>
                 <InputNumber disabled={isLoading} />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                name='enabled'
-                label='킥보드 켜짐'
-                valuePropName='checked'
-              >
-                <Checkbox disabled={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name='lightOn'
-                label='라이트 켜짐'
-                valuePropName='checked'
-              >
-                <Checkbox disabled={isLoading} />
-              </Form.Item>
+            <Col span={24}>
+              <Card>
+                <Row gutter={[16, 16]}>
+                  <Col span={24}>
+                    <Alert
+                      type='warning'
+                      message='디버깅용'
+                      description='킥보드 상태값으로 가능한 수정하지 않는 것을 권장드립니다.'
+                    />
+                  </Col>
+                  <Col>
+                    <Form.Item
+                      name='enabled'
+                      label='킥보드 켜짐'
+                      valuePropName='checked'
+                    >
+                      <Checkbox disabled={isLoading} />
+                    </Form.Item>
+                  </Col>
+                  <Col>
+                    <Form.Item
+                      name='lightOn'
+                      label='라이트 켜짐'
+                      valuePropName='checked'
+                    >
+                      <Checkbox disabled={isLoading} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
             </Col>
           </Row>
         </Form>

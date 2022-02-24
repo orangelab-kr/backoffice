@@ -46,7 +46,7 @@ export const Mykick = () => {
       title: '만료일자',
       dataIndex: 'expiredAt',
       render: (expiredAt) =>
-        dayjs(expiredAt).format('YYYY년 MM월 DD일 hh시 mm분 ss초'),
+        expiredAt ? dayjs(expiredAt).format('YYYY년 MM월 DD일') : '없음',
     },
     {
       title: '등록일자',
@@ -61,6 +61,7 @@ export const Mykick = () => {
 
   return (
     <BackofficeTable
+      rowKey='rentId'
       title='마이킥 목록'
       hasSearch={true}
       columns={columns}
