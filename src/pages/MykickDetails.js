@@ -19,6 +19,7 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { KickboardSelect } from '../components/Kickboard/KickboardSelect';
+import { MykickUser } from '../components/Mykick/MykickUser';
 import { MykickPricingSelect } from '../components/MykickPricingSelect';
 import { MykickUserSelect } from '../components/MykickUserSelect';
 import { getClient } from '../tools';
@@ -212,6 +213,7 @@ export const MykickDetails = withRouter(({ history }) => {
           </Row>
         </Form>
       </Card>
+      <MykickUser user={mykick?.user} />
     </>
   );
 });
