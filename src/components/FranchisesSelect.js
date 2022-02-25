@@ -4,7 +4,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getClient } from '../tools';
 const { Option } = Select;
 
-export const FranchisesSelect = ({ id, isLoading, onChange, value }) => {
+export const FranchisesSelect = ({
+  id,
+  isLoading,
+  onChange,
+  value,
+  ...options
+}) => {
   const [init, setInit] = useState(false);
   const [franchises, setFranchises] = useState([]);
 
@@ -36,13 +42,14 @@ export const FranchisesSelect = ({ id, isLoading, onChange, value }) => {
   return (
     <Select
       id={id}
-      mode="multiple"
+      mode='multiple'
       value={value}
       showSearch
       disabled={isLoading}
-      optionFilterProp="children"
+      optionFilterProp='children'
       onSearch={delayedSearch}
       onChange={onChange}
+      {...options}
     >
       {franchises.map((franchise) => (
         <Option key={franchise.franchiseId} value={franchise.franchiseId}>

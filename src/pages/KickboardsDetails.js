@@ -29,7 +29,9 @@ import {
   KickboardBatteryLockSwitch,
   KickboardLightsSwitch,
   KickboardStatusSwitch,
+  RegionSelect,
 } from '../components';
+import { FranchisesSelect } from '../components/FranchisesSelect';
 import { getClient } from '../tools';
 
 export const KickboardsDetails = withRouter(({ history }) => {
@@ -122,25 +124,25 @@ export const KickboardsDetails = withRouter(({ history }) => {
         {kickboard && kickboard.disconnectedAt && (
           <div style={{ margin: '10px 0 10px 0' }}>
             <Alert
-              message="경고! 연결이 끊긴 킥보드입니다."
+              message='경고! 연결이 끊긴 킥보드입니다.'
               description={`해당 킥보드는 ${dayjs(
                 kickboard.disconnectedAt
               ).format(
                 'YYYY년 MM월 DD일 hh시 mm분 ss초'
               )} 이후 연결이 끊겼습니다.`}
-              type="warning"
+              type='warning'
               closable
             />
           </div>
         )}
         <Card>
           <Form
-            layout="vertical"
+            layout='vertical'
             onFinish={saveKickboard}
             form={kickboardForm}
             initialValues={{ mode: 0, collect: null, lost: null }}
           >
-            <Row justify="space-between" style={{ marginBottom: 20 }}>
+            <Row justify='space-between' style={{ marginBottom: 20 }}>
               <Col>
                 <Typography.Title level={3} copyable={kickboardCode}>
                   {kickboardCode || '새로운 킥보드'}
@@ -151,15 +153,15 @@ export const KickboardsDetails = withRouter(({ history }) => {
                   {kickboard && (
                     <Col>
                       <Popconfirm
-                        title="정말로 삭제하시겠습니까?"
-                        okText="네"
-                        cancelText="아니요"
+                        title='정말로 삭제하시겠습니까?'
+                        okText='네'
+                        cancelText='아니요'
                         onConfirm={deleteKickboard}
                       >
                         <Button
                           icon={<DeleteOutlined />}
                           loading={isLoading}
-                          type="primary"
+                          type='primary'
                           danger
                         />
                       </Popconfirm>
@@ -169,8 +171,8 @@ export const KickboardsDetails = withRouter(({ history }) => {
                     <Button
                       icon={kickboardCode ? <SaveOutlined /> : <PlusOutlined />}
                       loading={isLoading}
-                      type="primary"
-                      htmlType="submit"
+                      type='primary'
+                      htmlType='submit'
                     >
                       {kickboardCode ? '저장' : '생성'}
                     </Button>
@@ -178,11 +180,11 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Row>
               </Col>
             </Row>
-            <Row gutter={[4, 4]} justify="space-between">
+            <Row gutter={[4, 4]} justify='space-between'>
               <Col flex={1}>
                 <Form.Item
-                  name="kickboardCode"
-                  label="킥보드 코드:"
+                  name='kickboardCode'
+                  label='킥보드 코드:'
                   required
                   rules={[
                     {
@@ -199,22 +201,22 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Form.Item>
               </Col>
               <Col flex={1}>
-                <Form.Item name="kickboardId" label="IMEI:" required>
+                <Form.Item name='kickboardId' label='IMEI:' required>
                   <Input />
                 </Form.Item>
               </Col>
             </Row>
             <Form.Item
-              name="photo"
-              label="반납 사진:"
+              name='photo'
+              label='반납 사진:'
               normalize={(value) => (value.length ? value : null)}
               rules={[{ type: 'url', message: '올바른 주소여야 합니다.' }]}
             >
               <Input />
             </Form.Item>
-            <Row gutter={[4, 4]} justify="space-between">
+            <Row gutter={[4, 4]} justify='space-between'>
               <Col flex={1}>
-                <Form.Item name="mode" label="모드:" required>
+                <Form.Item name='mode' label='모드:' required>
                   <Select>
                     <Select.Option value={0}>사용 가능</Select.Option>
                     <Select.Option value={1}>사용 중</Select.Option>
@@ -227,7 +229,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Form.Item>
               </Col>
               <Col flex={1}>
-                <Form.Item name="lost" label="분실 상태:" required>
+                <Form.Item name='lost' label='분실 상태:' required>
                   <Select>
                     <Select.Option>분실되지 않음</Select.Option>
                     <Select.Option value={3}>1차 분실</Select.Option>
@@ -238,7 +240,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Form.Item>
               </Col>
               <Col flex={1}>
-                <Form.Item name="collect" label="수거 상태:" required>
+                <Form.Item name='collect' label='수거 상태:' required>
                   <Select>
                     <Select.Option>수거대상 아님</Select.Option>
                     <Select.Option value={0}>배터리 교체</Select.Option>
@@ -251,35 +253,13 @@ export const KickboardsDetails = withRouter(({ history }) => {
             </Row>
             <Row gutter={[4, 4]}>
               <Col flex={1}>
-                {/* TODO: Region Id search */}
-                <Form.Item
-                  name="regionId"
-                  label="지역 ID:"
-                  rules={[
-                    {
-                      pattern:
-                        /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/,
-                      message: '올바른 지역 ID이여야 합니다.',
-                    },
-                  ]}
-                >
-                  <Input />
+                <Form.Item name='regionId' label='지역:'>
+                  <RegionSelect />
                 </Form.Item>
               </Col>
               <Col flex={1}>
-                {/* TODO: Franchise Id search */}
-                <Form.Item
-                  name="franchiseId"
-                  label="프렌차이즈 ID:"
-                  rules={[
-                    {
-                      pattern:
-                        /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/,
-                      message: '올바른 프렌차이즈 ID이여야 합니다.',
-                    },
-                  ]}
-                >
-                  <Input />
+                <Form.Item name='franchiseId' label='프렌차이즈 ID:'>
+                  <FranchisesSelect mode={null} />
                 </Form.Item>
               </Col>
             </Row>
@@ -290,7 +270,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
         <>
           <Col xl={12} span={24}>
             <Card>
-              <Row justify="space-between">
+              <Row justify='space-between'>
                 <Col>
                   <Typography.Title level={3}>상태</Typography.Title>
                 </Col>
@@ -298,7 +278,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                   <Button
                     icon={<RedoOutlined />}
                     loading={isLoading}
-                    type="primary"
+                    type='primary'
                     onClick={() => loadKickboardStatus(true)}
                   >
                     새로고침
@@ -306,8 +286,8 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Col>
               </Row>
               {status ? (
-                <Descriptions bordered size="small" layout="horizontal">
-                  <Descriptions.Item label="킥보드 속도" span={2}>
+                <Descriptions bordered size='small' layout='horizontal'>
+                  <Descriptions.Item label='킥보드 속도' span={2}>
                     <Progress
                       percent={status.speed}
                       steps={10}
@@ -315,7 +295,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       format={(percent) => `${percent}KM`}
                     />
                   </Descriptions.Item>
-                  <Descriptions.Item label="GPS 속도" span={2}>
+                  <Descriptions.Item label='GPS 속도' span={2}>
                     <Progress
                       percent={status.gps.speed}
                       steps={10}
@@ -323,79 +303,79 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       format={(percent) => `${percent}KM`}
                     />
                   </Descriptions.Item>
-                  <Descriptions.Item label="킥보드 배터리" span={2}>
+                  <Descriptions.Item label='킥보드 배터리' span={2}>
                     <Progress
                       percent={status.power.scooter.battery}
                       steps={10}
                     />
                   </Descriptions.Item>
-                  <Descriptions.Item label="IoT 배터리" span={2}>
+                  <Descriptions.Item label='IoT 배터리' span={2}>
                     <Progress percent={status.power.iot.battery} steps={10} />
                   </Descriptions.Item>
-                  <Descriptions.Item label="킥보드 상태" span={1}>
+                  <Descriptions.Item label='킥보드 상태' span={1}>
                     <KickboardStatusSwitch
                       kickboard={kickboard}
                       status={status}
                       onClick={loadKickboardStatus}
                     />
                   </Descriptions.Item>
-                  <Descriptions.Item label="배터리 잠금" span={1}>
+                  <Descriptions.Item label='배터리 잠금' span={1}>
                     <KickboardBatteryLockSwitch
                       kickboard={kickboard}
                       status={status}
                     />
                   </Descriptions.Item>
-                  <Descriptions.Item label="라이트" span={1}>
+                  <Descriptions.Item label='라이트' span={1}>
                     <KickboardLightsSwitch
                       kickboard={kickboard}
                       status={status}
                     />
                   </Descriptions.Item>
-                  <Descriptions.Item label="컨트롤러" span={1}>
+                  <Descriptions.Item label='컨트롤러' span={1}>
                     {status.isControllerChecked ? (
-                      <Badge status="processing" text="정상" />
+                      <Badge status='processing' text='정상' />
                     ) : (
-                      <Badge status="warning" text="경고" />
+                      <Badge status='warning' text='경고' />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="배터리" span={1}>
+                  <Descriptions.Item label='배터리' span={1}>
                     {status.isBatteryChecked ? (
-                      <Badge status="processing" text="정상" />
+                      <Badge status='processing' text='정상' />
                     ) : (
-                      <Badge status="warning" text="경고" />
+                      <Badge status='warning' text='경고' />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="IoT" span={1}>
+                  <Descriptions.Item label='IoT' span={1}>
                     {status.isIotChecked ? (
-                      <Badge status="processing" text="정상" />
+                      <Badge status='processing' text='정상' />
                     ) : (
-                      <Badge status="warning" text="경고" />
+                      <Badge status='warning' text='경고' />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="부저" span={1}>
+                  <Descriptions.Item label='부저' span={1}>
                     {status.isBuzzerOn ? (
-                      <Badge status="processing" text="작동 중" />
+                      <Badge status='processing' text='작동 중' />
                     ) : (
-                      <Badge status="default" text="꺼짐" />
+                      <Badge status='default' text='꺼짐' />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="EBS 브레이크" span={1}>
+                  <Descriptions.Item label='EBS 브레이크' span={1}>
                     {status.isEBSBrakeOn ? (
-                      <Badge status="processing" text="작동 중" />
+                      <Badge status='processing' text='작동 중' />
                     ) : (
-                      <Badge status="default" text="꺼짐" />
+                      <Badge status='default' text='꺼짐' />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="넘어짐" span={1}>
+                  <Descriptions.Item label='넘어짐' span={1}>
                     {status.isFallDown ? (
-                      <Badge status="warning" text="감지됨" />
+                      <Badge status='warning' text='감지됨' />
                     ) : (
-                      <Badge status="default" text="감지 안됨" />
+                      <Badge status='default' text='감지 안됨' />
                     )}
                   </Descriptions.Item>
-                  <Descriptions.Item label="위치" span={4}>
+                  <Descriptions.Item label='위치' span={4}>
                     <NaverMap
-                      id="current-location"
+                      id='current-location'
                       style={{
                         width: '100%',
                         height: '300px',
@@ -418,18 +398,18 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       />
                     </NaverMap>
                   </Descriptions.Item>
-                  <Descriptions.Item label="업데이트 일자" span={2}>
+                  <Descriptions.Item label='업데이트 일자' span={2}>
                     {dayjs(status.createdAt).format('YYYY년 MM월 DD일 H시 m분')}
                   </Descriptions.Item>
                 </Descriptions>
               ) : (
-                <Result status="warning" title="아직 상태 정보가 없습니다." />
+                <Result status='warning' title='아직 상태 정보가 없습니다.' />
               )}
             </Card>
           </Col>
           <Col xl={12} span={24}>
             <Card>
-              <Row justify="space-between">
+              <Row justify='space-between'>
                 <Col>
                   <Typography.Title level={3}>배터리</Typography.Title>
                 </Col>
@@ -437,7 +417,7 @@ export const KickboardsDetails = withRouter(({ history }) => {
                   <Button
                     icon={<RedoOutlined />}
                     loading={isLoading}
-                    type="primary"
+                    type='primary'
                     onClick={() => loadKickboardBattery(true)}
                   >
                     새로고침
@@ -445,17 +425,17 @@ export const KickboardsDetails = withRouter(({ history }) => {
                 </Col>
               </Row>{' '}
               {battery ? (
-                <Descriptions bordered size="small">
-                  <Descriptions.Item label="배터리 S/N" span={2}>
+                <Descriptions bordered size='small'>
+                  <Descriptions.Item label='배터리 S/N' span={2}>
                     {battery.batterySN || '없음'}
                   </Descriptions.Item>
-                  <Descriptions.Item label="배터리 셀타입" span={2}>
+                  <Descriptions.Item label='배터리 셀타입' span={2}>
                     {battery.cellType || '없음'}
                   </Descriptions.Item>
-                  <Descriptions.Item label="총 용량" span={2}>
+                  <Descriptions.Item label='총 용량' span={2}>
                     {battery.totalCapacity}
                   </Descriptions.Item>
-                  <Descriptions.Item label="총 시간" span={2}>
+                  <Descriptions.Item label='총 시간' span={2}>
                     {battery.totalTime}
                   </Descriptions.Item>
                   {battery.cells.map((cell, index) => (
@@ -463,14 +443,14 @@ export const KickboardsDetails = withRouter(({ history }) => {
                       {cell}
                     </Descriptions.Item>
                   ))}
-                  <Descriptions.Item label="업데이트 일자">
+                  <Descriptions.Item label='업데이트 일자'>
                     {dayjs(battery.updatedAt).format(
                       'YYYY년 MM월 DD일 H시 m분'
                     )}
                   </Descriptions.Item>
                 </Descriptions>
               ) : (
-                <Result status="warning" title="아직 배터리 정보가 없습니다." />
+                <Result status='warning' title='아직 배터리 정보가 없습니다.' />
               )}
             </Card>
           </Col>
