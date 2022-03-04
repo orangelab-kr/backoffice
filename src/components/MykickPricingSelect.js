@@ -1,6 +1,6 @@
 import { Select } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getClient } from '../tools';
 const { Option } = Select;
 
@@ -17,7 +17,7 @@ export const MykickPricingSelect = ({ id, isLoading, onChange, value }) => {
       };
 
       getClient('mykick', true)
-        .then((c) => c.get('/pricing', { params }))
+        .then((c) => c.get('/pricings', { params }))
         .then(({ data }) => setPricings(data.pricings));
     },
     [value]
@@ -42,7 +42,7 @@ export const MykickPricingSelect = ({ id, isLoading, onChange, value }) => {
     >
       {pricings.map((pricing) => (
         <Option key={pricing.pricingId} value={pricing.pricingId}>
-          {pricing.name}({pricing.periodMonths}개월,
+          {pricing.name}({pricing.periodMonths}개월{', '}
           {pricing.monthlyPrice.toLocaleString()}원)
         </Option>
       ))}

@@ -1,4 +1,8 @@
-import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  PlusSquareOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
 import {
   Alert,
   Button,
@@ -10,29 +14,32 @@ import {
   Input,
   InputNumber,
   message,
-  Popconfirm,
   Row,
   Select,
   Typography,
 } from 'antd';
+import dayjs from 'dayjs';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { KickboardSelect } from '../components/Kickboard/KickboardSelect';
+import { MykickExtend } from '../components/Mykick/MykickExtend';
 import { MykickUser } from '../components/Mykick/MykickUser';
 import { MykickPricingSelect } from '../components/MykickPricingSelect';
 import { MykickUserSelect } from '../components/MykickUserSelect';
-import { getClient } from '../tools';
+import { getClient, useToggle } from '../tools';
 import { MykickStatus } from '../tools/mykickStatus';
 
 const { Title } = Typography;
 
 export const MykickDetails = withRouter(({ history }) => {
-  const [mykick, setMykick] = useState();
+  const [rent, setRent] = useState();
   const params = useParams();
   const rentId = params.rentId !== 'add' ? params.rentId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
+  const [showExtend, setShowExtend] = useToggle(false);
+  const [status, setStatus] = useState();
 
   const loadMykick = () => {
     if (!rentId) return;
@@ -40,24 +47,7 @@ export const MykickDetails = withRouter(({ history }) => {
     getClient('mykick')
       .then((c) => c.get(`/rents/${rentId}`))
       .finally(() => setLoading(false))
-      .then(({ data }) => {
-        setMykick(data.rent);
-        form.setFieldsValue({
-          ...data.rent,
-          expiredAt: moment(data.rent.expiredAt),
-        });
-      });
-  };
-
-  const deletePassProgram = () => {
-    setLoading(true);
-    getClient('mykick')
-      .then((c) => c.delete(`/rents/${rentId}`))
-      .finally(() => setLoading(false))
-      .then(() => {
-        message.success(`삭제되었습니다.`);
-        history.push(`/mykick`);
-      });
+      .then(({ data }) => setRent(data.rent));
   };
 
   const onSave = (body) => {
@@ -72,40 +62,51 @@ export const MykickDetails = withRouter(({ history }) => {
       });
   };
 
-  const onChangeForm = () => setMykick(form.getFieldsValue());
+  const onUpdateRent = () => {
+    if (!rent) return;
+    setStatus(rent.status);
+    form.setFieldsValue({
+      ...rent,
+      expiredAt: moment(rent.expiredAt),
+    });
+  };
+
   useEffect(loadMykick, [form, rentId]);
+  useEffect(onUpdateRent, [form, rent]);
   return (
     <>
       <Card>
-        <Form
-          layout='vertical'
-          onFinish={onSave}
-          form={form}
-          onChange={onChangeForm}
-        >
+        <Form layout='vertical' onFinish={onSave} form={form}>
           <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
-              <Title level={3}>{mykick ? mykick.name : '새로운 마이킥'}</Title>
+              <Title level={3}>{rent ? rent.name : '새로운 마이킥'}</Title>
             </Col>
             <Col>
               <Row gutter={[4, 0]}>
-                {rentId && (
-                  <Col>
-                    <Popconfirm
-                      title='정말로 삭제하시겠습니까?'
-                      okText='네'
-                      cancelText='아니요'
-                      onConfirm={deletePassProgram}
-                    >
+                {showExtend && (
+                  <MykickExtend
+                    rent={rent}
+                    setRent={setRent}
+                    onClose={setShowExtend(false)}
+                  />
+                )}
+                {rent &&
+                  rent.remainingMonths <= 0 &&
+                  dayjs(rent.expiredAt)
+                    .subtract(30, 'days')
+                    .isBefore(dayjs()) && (
+                    <Col>
                       <Button
-                        icon={<DeleteOutlined />}
+                        icon={<PlusSquareOutlined />}
+                        onClick={setShowExtend(true)}
                         loading={isLoading}
                         type='primary'
                         danger
-                      />
-                    </Popconfirm>
-                  </Col>
-                )}
+                      >
+                        계약 연장
+                      </Button>
+                    </Col>
+                  )}
                 <Col>
                   <Button
                     icon={rentId ? <SaveOutlined /> : <PlusOutlined />}
@@ -137,7 +138,7 @@ export const MykickDetails = withRouter(({ history }) => {
             </Col>
             <Col span={12}>
               <Form.Item name='status' label='상태'>
-                <Select disabled={isLoading} onChange={onChangeForm}>
+                <Select disabled={isLoading} onChange={setStatus}>
                   {Object.entries(MykickStatus).map(([key, obj]) => (
                     <Select.Option key={key} value={key}>
                       {obj.text}
@@ -151,14 +152,14 @@ export const MykickDetails = withRouter(({ history }) => {
                 <KickboardSelect isLoading={isLoading} />
               </Form.Item>
             </Col>
-            {mykick && ['Cancelled', 'Suspended'].includes(mykick.status) && (
+            {rent && ['Cancelled', 'Suspended'].includes(status) && (
               <Col span={12}>
                 <Form.Item
                   name='message'
                   label={
-                    mykick.status === 'Cancelled'
+                    status === 'Cancelled'
                       ? '취소 사유'
-                      : mykick.status === 'Suspended'
+                      : status === 'Suspended'
                       ? '정지 사유'
                       : '메세지'
                   }
@@ -167,7 +168,7 @@ export const MykickDetails = withRouter(({ history }) => {
                 </Form.Item>
               </Col>
             )}
-            {mykick && mykick.expiredAt && (
+            {rent && rent.expiredAt && (
               <Col span={12}>
                 <Form.Item name='expiredAt' label='만료일'>
                   <DatePicker disabled={isLoading} />
@@ -213,7 +214,7 @@ export const MykickDetails = withRouter(({ history }) => {
           </Row>
         </Form>
       </Card>
-      <MykickUser user={mykick?.user} />
+      <MykickUser user={rent?.user} />
     </>
   );
 });
