@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { KickboardSelect } from '../components/Kickboard/KickboardSelect';
 import { MykickExtend } from '../components/Mykick/MykickExtend';
+import { MykickPayment } from '../components/Mykick/MykickPayment';
 import { MykickUser } from '../components/Mykick/MykickUser';
 import { MykickPricingSelect } from '../components/MykickPricingSelect';
 import { MykickUserSelect } from '../components/MykickUserSelect';
@@ -74,147 +75,154 @@ export const MykickDetails = withRouter(({ history }) => {
   useEffect(loadMykick, [form, rentId]);
   useEffect(onUpdateRent, [form, rent]);
   return (
-    <>
-      <Card>
-        <Form layout='vertical' onFinish={onSave} form={form}>
-          <Row justify='space-between' style={{ marginBottom: 20 }}>
-            <Col>
-              <Title level={3}>{rent ? rent.name : '새로운 마이킥'}</Title>
-            </Col>
-            <Col>
-              <Row gutter={[4, 0]}>
-                {showExtend && (
-                  <MykickExtend
-                    rent={rent}
-                    setRent={setRent}
-                    onClose={setShowExtend(false)}
-                  />
-                )}
-                {rent &&
-                  rent.remainingMonths <= 0 &&
-                  dayjs(rent.expiredAt)
-                    .subtract(30, 'days')
-                    .isBefore(dayjs()) && (
-                    <Col>
-                      <Button
-                        icon={<PlusSquareOutlined />}
-                        onClick={setShowExtend(true)}
-                        loading={isLoading}
-                        type='primary'
-                        danger
-                      >
-                        계약 연장
-                      </Button>
-                    </Col>
+    <Row gutter={[8, 8]}>
+      <Col>
+        <Card>
+          <Form layout='vertical' onFinish={onSave} form={form}>
+            <Row justify='space-between' style={{ marginBottom: 20 }}>
+              <Col>
+                <Title level={3}>{rent ? rent.name : '새로운 마이킥'}</Title>
+              </Col>
+              <Col>
+                <Row gutter={[4, 0]}>
+                  {showExtend && (
+                    <MykickExtend
+                      rent={rent}
+                      setRent={setRent}
+                      onClose={setShowExtend(false)}
+                    />
                   )}
-                <Col>
-                  <Button
-                    icon={rentId ? <SaveOutlined /> : <PlusOutlined />}
-                    loading={isLoading}
-                    type='primary'
-                    htmlType='submit'
-                  >
-                    {rentId ? '저장하기' : '생성하기'}
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-          <Row gutter={[8, 8]}>
-            <Col span={12}>
-              <Form.Item name='name' label='이름'>
-                <Input disabled={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name={['pricing', 'pricingId']} label='가격표'>
-                <MykickPricingSelect isLoading={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name={['user', 'userId']} label='사용자'>
-                <MykickUserSelect isLoading={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name='status' label='상태'>
-                <Select disabled={isLoading} onChange={setStatus}>
-                  {Object.entries(MykickStatus).map(([key, obj]) => (
-                    <Select.Option key={key} value={key}>
-                      {obj.text}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name='kickboardCode' label='킥보드 코드'>
-                <KickboardSelect isLoading={isLoading} />
-              </Form.Item>
-            </Col>
-            {rent && ['Cancelled', 'Suspended'].includes(status) && (
+                  {rent &&
+                    rent.remainingMonths <= 0 &&
+                    dayjs(rent.expiredAt)
+                      .subtract(30, 'days')
+                      .isBefore(dayjs()) && (
+                      <Col>
+                        <Button
+                          icon={<PlusSquareOutlined />}
+                          onClick={setShowExtend(true)}
+                          loading={isLoading}
+                          type='primary'
+                          danger
+                        >
+                          계약 연장
+                        </Button>
+                      </Col>
+                    )}
+                  <Col>
+                    <Button
+                      icon={rentId ? <SaveOutlined /> : <PlusOutlined />}
+                      loading={isLoading}
+                      type='primary'
+                      htmlType='submit'
+                    >
+                      {rentId ? '저장하기' : '생성하기'}
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Form.Item
-                  name='message'
-                  label={
-                    status === 'Cancelled'
-                      ? '취소 사유'
-                      : status === 'Suspended'
-                      ? '정지 사유'
-                      : '메세지'
-                  }
-                >
+                <Form.Item name='name' label='이름'>
                   <Input disabled={isLoading} />
                 </Form.Item>
               </Col>
-            )}
-            {rent && rent.expiredAt && (
               <Col span={12}>
-                <Form.Item name='expiredAt' label='만료일'>
-                  <DatePicker disabled={isLoading} />
+                <Form.Item name={['pricing', 'pricingId']} label='가격표'>
+                  <MykickPricingSelect isLoading={isLoading} />
                 </Form.Item>
               </Col>
-            )}
-            <Col span={12}>
-              <Form.Item name='remainingMonths' label='남은 개월'>
-                <InputNumber disabled={isLoading} />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Card>
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    <Alert
-                      type='warning'
-                      message='디버깅용'
-                      description='킥보드 상태값으로 가능한 수정하지 않는 것을 권장드립니다.'
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Item
-                      name='enabled'
-                      label='킥보드 켜짐'
-                      valuePropName='checked'
-                    >
-                      <Checkbox disabled={isLoading} />
-                    </Form.Item>
-                  </Col>
-                  <Col>
-                    <Form.Item
-                      name='lightOn'
-                      label='라이트 켜짐'
-                      valuePropName='checked'
-                    >
-                      <Checkbox disabled={isLoading} />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Card>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
-      <MykickUser user={rent?.user} />
-    </>
+              <Col span={12}>
+                <Form.Item name={['user', 'userId']} label='사용자'>
+                  <MykickUserSelect isLoading={isLoading} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name='status' label='상태'>
+                  <Select disabled={isLoading} onChange={setStatus}>
+                    {Object.entries(MykickStatus).map(([key, obj]) => (
+                      <Select.Option key={key} value={key}>
+                        {obj.text}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name='kickboardCode' label='킥보드 코드'>
+                  <KickboardSelect isLoading={isLoading} />
+                </Form.Item>
+              </Col>
+              {rent && ['Cancelled', 'Suspended'].includes(status) && (
+                <Col span={12}>
+                  <Form.Item
+                    name='message'
+                    label={
+                      status === 'Cancelled'
+                        ? '취소 사유'
+                        : status === 'Suspended'
+                        ? '정지 사유'
+                        : '메세지'
+                    }
+                  >
+                    <Input disabled={isLoading} />
+                  </Form.Item>
+                </Col>
+              )}
+              {rent && rent.expiredAt && (
+                <Col span={12}>
+                  <Form.Item name='expiredAt' label='만료일'>
+                    <DatePicker disabled={isLoading} />
+                  </Form.Item>
+                </Col>
+              )}
+              <Col span={12}>
+                <Form.Item name='remainingMonths' label='남은 개월'>
+                  <InputNumber disabled={isLoading} />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Card>
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <Alert
+                        type='warning'
+                        message='디버깅용'
+                        description='킥보드 상태값으로 가능한 수정하지 않는 것을 권장드립니다.'
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Item
+                        name='enabled'
+                        label='킥보드 켜짐'
+                        valuePropName='checked'
+                      >
+                        <Checkbox disabled={isLoading} />
+                      </Form.Item>
+                    </Col>
+                    <Col>
+                      <Form.Item
+                        name='lightOn'
+                        label='라이트 켜짐'
+                        valuePropName='checked'
+                      >
+                        <Checkbox disabled={isLoading} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+      </Col>
+      <Col span={10}>
+        <MykickPayment rent={rent} />
+      </Col>
+      <Col span={14}>
+        <MykickUser user={rent?.user} />
+      </Col>
+    </Row>
   );
 });

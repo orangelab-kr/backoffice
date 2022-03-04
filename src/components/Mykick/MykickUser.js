@@ -41,7 +41,7 @@ export const MykickUser = ({ user }) => {
   if (!user || idcard === undefined) return <></>;
   const birthday = moment(user.birthday);
   return (
-    <Card style={{ marginTop: 10 }}>
+    <Card>
       <Form
         layout='vertical'
         initialValues={{ ...user, birthday, idcard }}
