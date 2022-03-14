@@ -16,6 +16,7 @@ import {
   message,
   Row,
   Select,
+  Tag,
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
@@ -81,7 +82,14 @@ export const MykickDetails = withRouter(({ history }) => {
           <Form layout='vertical' onFinish={onSave} form={form}>
             <Row justify='space-between' style={{ marginBottom: 20 }}>
               <Col>
-                <Title level={3}>{rent ? rent.name : '새로운 마이킥'}</Title>
+                <Title level={3}>
+                  {rent ? rent.name : '새로운 마이킥'}
+                  {rent?.provider && (
+                    <Tag color='blue' style={{ margin: '.3em' }}>
+                      {rent.provider.name}
+                    </Tag>
+                  )}
+                </Title>
               </Col>
               <Col>
                 <Row gutter={[4, 0]}>
