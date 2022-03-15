@@ -24,8 +24,8 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { KickboardSelect } from '../components/Kickboard/KickboardSelect';
-import { MykickExtend } from '../components/Mykick/MykickExtend';
 import { MykickPayment } from '../components/Mykick/MykickPayment';
+import { MykickRenewal } from '../components/Mykick/MykickRenewal';
 import { MykickUser } from '../components/Mykick/MykickUser';
 import { MykickPricingSelect } from '../components/MykickPricingSelect';
 import { MykickUserSelect } from '../components/MykickUserSelect';
@@ -40,7 +40,7 @@ export const MykickDetails = withRouter(({ history }) => {
   const rentId = params.rentId !== 'add' ? params.rentId : '';
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
-  const [showExtend, setShowExtend] = useToggle(false);
+  const [showRenewal, setShowRenewal] = useToggle(false);
   const [status, setStatus] = useState();
 
   const loadMykick = () => {
@@ -93,11 +93,11 @@ export const MykickDetails = withRouter(({ history }) => {
               </Col>
               <Col>
                 <Row gutter={[4, 0]}>
-                  {showExtend && (
-                    <MykickExtend
+                  {showRenewal && (
+                    <MykickRenewal
                       rent={rent}
                       setRent={setRent}
-                      onClose={setShowExtend(false)}
+                      onClose={setShowRenewal(false)}
                     />
                   )}
                   {rent &&
@@ -108,7 +108,7 @@ export const MykickDetails = withRouter(({ history }) => {
                       <Col>
                         <Button
                           icon={<PlusSquareOutlined />}
-                          onClick={setShowExtend(true)}
+                          onClick={setShowRenewal(true)}
                           loading={isLoading}
                           type='primary'
                           danger

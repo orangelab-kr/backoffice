@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getClient } from '../../tools';
 import { MykickPricingSelect } from '../MykickPricingSelect';
 
-export const MykickExtend = ({ rent, setRent, onClose }) => {
+export const MykickRenewal = ({ rent, setRent, onClose }) => {
   const [form] = Form.useForm();
   const { pricingId } = rent.pricing;
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ export const MykickExtend = ({ rent, setRent, onClose }) => {
     setLoading(true);
     const body = form.getFieldsValue();
     const client = await getClient('mykick');
-    const res = await client.post(`/rents/${rent.rentId}/extend`, body);
+    const res = await client.post(`/rents/${rent.rentId}/renewal`, body);
     setRent(res.data.rent);
     onClose();
   };
