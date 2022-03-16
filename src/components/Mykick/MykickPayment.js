@@ -58,7 +58,7 @@ export const MykickPayment = ({ rent }) => {
             <Row justify='space-between'>
               <Col>
                 <Typography.Title level={5} copyable={true}>
-                  {payments.name}
+                  {payments.name} / {payments.amount.toLocaleString()}원
                 </Typography.Title>
               </Col>
             </Row>

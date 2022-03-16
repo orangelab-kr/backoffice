@@ -14,6 +14,7 @@ import {
   Input,
   InputNumber,
   message,
+  Popconfirm,
   Row,
   Select,
   Tag,
@@ -64,6 +65,18 @@ export const MykickDetails = withRouter(({ history }) => {
       });
   };
 
+  const onExtend = () => {
+    if (isLoading) return;
+    setLoading(true);
+    getClient('mykick')
+      .then((c) => c.post(`/rents/${rentId}/extend`))
+      .finally(() => setLoading(false))
+      .then(() => {
+        message.success(`연장되었습니다.`);
+        loadMykick();
+      });
+  };
+
   const onUpdateRent = () => {
     if (!rent) return;
     setStatus(rent.status);
@@ -89,6 +102,9 @@ export const MykickDetails = withRouter(({ history }) => {
                       {rent.provider.name}
                     </Tag>
                   )}
+                  {rent?.addons.map((addon) => (
+                    <Tag color='green'>{addon.name}</Tag>
+                  ))}
                 </Title>
               </Col>
               <Col>
@@ -100,8 +116,7 @@ export const MykickDetails = withRouter(({ history }) => {
                       onClose={setShowRenewal(false)}
                     />
                   )}
-                  {rent &&
-                    rent.remainingMonths <= 0 &&
+                  {rent && rent.remainingMonths <= 0 ? (
                     dayjs(rent.expiredAt)
                       .subtract(30, 'days')
                       .isBefore(dayjs()) && (
@@ -113,10 +128,29 @@ export const MykickDetails = withRouter(({ history }) => {
                           type='primary'
                           danger
                         >
-                          계약 연장
+                          계약 갱신
                         </Button>
                       </Col>
-                    )}
+                    )
+                  ) : (
+                    <Col>
+                      <Popconfirm
+                        title='정말로 연장을 진행하시겠습니까?'
+                        onConfirm={onExtend}
+                        okText='네, 연장합니다.'
+                        cancelText='아니요'
+                      >
+                        <Button
+                          icon={<PlusOutlined />}
+                          loading={isLoading}
+                          type='dashed'
+                          danger
+                        >
+                          연장
+                        </Button>
+                      </Popconfirm>
+                    </Col>
+                  )}
                   <Col>
                     <Button
                       icon={rentId ? <SaveOutlined /> : <PlusOutlined />}

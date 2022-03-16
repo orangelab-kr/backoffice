@@ -46,7 +46,7 @@ export const Mykick = () => {
       title: '제공자',
       dataIndex: 'provider',
       render: (provider) =>
-        provider ? <Tag color='blue'>{provider.name}</Tag> : '제공자 없음',
+        provider ? <Tag color='blue'>{provider.name}</Tag> : '없음',
     },
     {
       title: '만료일자',
