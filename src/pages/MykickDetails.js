@@ -82,6 +82,7 @@ export const MykickDetails = withRouter(({ history }) => {
     setStatus(rent.status);
     form.setFieldsValue({
       ...rent,
+      maxSpeed: rent.maxSpeed || 25,
       expiredAt: moment(rent.expiredAt),
     });
   };
@@ -219,8 +220,13 @@ export const MykickDetails = withRouter(({ history }) => {
                   </Form.Item>
                 </Col>
               )}
-              <Col span={12}>
+              <Col span={6}>
                 <Form.Item name='remainingMonths' label='남은 개월'>
+                  <InputNumber disabled={isLoading} />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name='maxSpeed' label='최대 속도'>
                   <InputNumber disabled={isLoading} />
                 </Form.Item>
               </Col>
