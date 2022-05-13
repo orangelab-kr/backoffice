@@ -82,7 +82,6 @@ export const MykickDetails = withRouter(({ history }) => {
     setStatus(rent.status);
     form.setFieldsValue({
       ...rent,
-      maxSpeed: rent.maxSpeed || 25,
       expiredAt: moment(rent.expiredAt),
     });
   };
