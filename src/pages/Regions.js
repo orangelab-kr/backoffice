@@ -1,5 +1,5 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox } from 'antd';
+import { DeploymentUnitOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, message, Row } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -15,6 +15,12 @@ export const Regions = () => {
     );
 
     setRefresh(true);
+  };
+
+  const onDeployAll = () => {
+    getClient('openapi-location')
+      .then((c) => c.get(`/regions/deploy`))
+      .then(() => message.success(`배포되었습니다.`));
   };
 
   const columns = [
@@ -58,21 +64,34 @@ export const Regions = () => {
 
   return (
     <BackofficeTable
-      title="지역 목록"
-      rowKey="regionId"
+      title='지역 목록'
+      rowKey='regionId'
       hasSearch={true}
       columns={columns}
       onRequest={onRequest}
       scroll={{ x: 1000 }}
       refresh={refresh}
       setRefresh={setRefresh}
-      dataSourceKey="regions"
+      dataSourceKey='regions'
       buttons={
-        <Link to="/regions/add">
-          <Button icon={<PlusOutlined />} type="primary">
-            지역 추가
-          </Button>
-        </Link>
+        <Row gutter={[4, 0]}>
+          <Col>
+            <Button
+              onClick={onDeployAll}
+              icon={<DeploymentUnitOutlined />}
+              type='default'
+            >
+              배포하기
+            </Button>
+          </Col>
+          <Col>
+            <Link to='/regions/add'>
+              <Button icon={<PlusOutlined />} type='primary'>
+                지역 추가
+              </Button>
+            </Link>
+          </Col>
+        </Row>
       }
     />
   );

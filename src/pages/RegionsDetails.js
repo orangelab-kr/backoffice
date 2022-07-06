@@ -1,4 +1,9 @@
-import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  DeploymentUnitOutlined,
+  PlusOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -13,7 +18,7 @@ import {
   Tabs,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { BooleanParam, StringParam, useQueryParam } from 'use-query-params';
 import { PricingSelect, RegionGeofence } from '../components';
@@ -67,41 +72,62 @@ export const RegionsDetails = withRouter(({ history }) => {
       });
   };
 
+  const onDeploy = () => {
+    if (isLoading) return;
+    setLoading(true);
+    getClient('openapi-location')
+      .then((c) => c.get(`/regions/${regionId}/deploy`))
+      .finally(() => setLoading(false))
+      .then(() => message.success(`배포되었습니다.`));
+  };
+
   useEffect(loadRegions, [form, regionId]);
   return (
-    <Tabs activeKey={tab} defaultActiveKey="general" onChange={setTab}>
-      <Tabs.TabPane tab="기본 정보" key="general">
+    <Tabs activeKey={tab} defaultActiveKey='general' onChange={setTab}>
+      <Tabs.TabPane tab='기본 정보' key='general'>
         <Card>
-          <Form layout="vertical" onFinish={onSave} form={form}>
-            <Row justify="space-between" style={{ marginBottom: 20 }}>
+          <Form layout='vertical' onFinish={onSave} form={form}>
+            <Row justify='space-between' style={{ marginBottom: 20 }}>
               <Col>
                 <Title level={3}>{region ? region.name : '새로운 지역'}</Title>
               </Col>
               <Col>
                 <Row gutter={[4, 0]}>
                   {regionId && (
-                    <Col>
-                      <Popconfirm
-                        title="정말로 삭제하시겠습니까?"
-                        okText="네"
-                        cancelText="아니요"
-                        onConfirm={deleteRegions}
-                      >
+                    <>
+                      <Col>
+                        <Popconfirm
+                          title='정말로 삭제하시겠습니까?'
+                          okText='네'
+                          cancelText='아니요'
+                          onConfirm={deleteRegions}
+                        >
+                          <Button
+                            icon={<DeleteOutlined />}
+                            loading={isLoading}
+                            type='primary'
+                            danger
+                          />
+                        </Popconfirm>
+                      </Col>
+                      <Col>
                         <Button
-                          icon={<DeleteOutlined />}
+                          onClick={onDeploy}
+                          icon={<DeploymentUnitOutlined />}
                           loading={isLoading}
-                          type="primary"
-                          danger
-                        />
-                      </Popconfirm>
-                    </Col>
+                          type='default'
+                        >
+                          배포하기
+                        </Button>
+                      </Col>
+                    </>
                   )}
                   <Col>
                     <Button
                       icon={regionId ? <SaveOutlined /> : <PlusOutlined />}
                       loading={isLoading}
-                      type="primary"
-                      htmlType="submit"
+                      type='primary'
+                      htmlType='submit'
                     >
                       {regionId ? '저장하기' : '생성하기'}
                     </Button>
@@ -109,20 +135,20 @@ export const RegionsDetails = withRouter(({ history }) => {
                 </Row>
               </Col>
             </Row>
-            <Form.Item name="enabled" label="활성화" valuePropName="checked">
+            <Form.Item name='enabled' label='활성화' valuePropName='checked'>
               <Checkbox disabled={isLoading} />
             </Form.Item>
-            <Form.Item name="name" label="이름">
+            <Form.Item name='name' label='이름'>
               <Input disabled={isLoading} />
             </Form.Item>
-            <Form.Item name="pricingId" label="가격 정책">
+            <Form.Item name='pricingId' label='가격 정책'>
               <PricingSelect isLoading={isLoading} />
             </Form.Item>
           </Form>
         </Card>
       </Tabs.TabPane>
       <Tabs.TabPane
-        key="geofence"
+        key='geofence'
         disabled={!region}
         tab={
           <>
@@ -132,8 +158,8 @@ export const RegionsDetails = withRouter(({ history }) => {
               onChange={setMap}
               checked={map}
               disabled={tab !== 'geofence'}
-              checkedChildren="지도"
-              unCheckedChildren="목록"
+              checkedChildren='지도'
+              unCheckedChildren='목록'
             />
           </>
         }
