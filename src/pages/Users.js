@@ -1,7 +1,6 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
 import dayjs from 'dayjs';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
@@ -14,7 +13,7 @@ export const Users = () => {
       render: (realname, { userId, profileUrl }) => (
         <Link to={`/users/${userId}`}>
           <Avatar
-            size="small"
+            size='small'
             src={profileUrl}
             icon={<UserOutlined />}
             style={{ marginRight: 5 }}
@@ -54,12 +53,12 @@ export const Users = () => {
 
   return (
     <BackofficeTable
-      title="사용자 목록"
+      title='사용자 목록'
       hasSearch={true}
       columns={columns}
       scroll={{ x: 1100 }}
-      rowKey="userId"
-      dataSourceKey="users"
+      rowKey='userId'
+      dataSourceKey='users'
       onRequest={onRequest}
     />
   );

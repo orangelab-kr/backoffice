@@ -9,14 +9,11 @@ import { getClient } from '../tools';
 export const CouponGroups = () => {
   const columns = [
     {
-      title: 'UUID',
-      dataIndex: 'couponGroupId',
-      render: (value) => <Link to={`/couponGroups/${value}`}>{value}</Link>,
-    },
-    {
       title: '이름',
       dataIndex: 'name',
-      key: 'name',
+      render: (value, couponGroup) => (
+        <Link to={`/couponGroups/${couponGroup.couponGroupId}`}>{value}</Link>
+      ),
     },
     {
       title: '쿠폰 코드',
@@ -48,6 +45,10 @@ export const CouponGroups = () => {
       dataIndex: 'updatedAt',
       render: (updatedAt) => dayjs(updatedAt).format('YYYY년 MM월 DD일'),
     },
+    {
+      title: 'UUID',
+      dataIndex: 'couponGroupId',
+    },
   ];
 
   const onRequest = (opts) =>
@@ -55,15 +56,16 @@ export const CouponGroups = () => {
 
   return (
     <BackofficeTable
-      title="쿠폰그룹 목록"
+      title='쿠폰그룹 목록'
       hasSearch={true}
       columns={columns}
       scroll={{ x: 1300 }}
       onRequest={onRequest}
-      dataSourceKey="couponGroups"
+      dataSourceKey='couponGroups'
+      rowKey='couponGroupId'
       buttons={
-        <Link to="/couponGroups/add">
-          <Button icon={<PlusOutlined />} type="primary">
+        <Link to='/couponGroups/add'>
+          <Button icon={<PlusOutlined />} type='primary'>
             쿠폰그룹 추가
           </Button>
         </Link>

@@ -9,14 +9,11 @@ import { getClient } from '../tools';
 export const PassPrograms = () => {
   const columns = [
     {
-      title: 'UUID',
-      dataIndex: 'passProgramId',
-      render: (value) => <Link to={`/passPrograms/${value}`}>{value}</Link>,
-    },
-    {
       title: '이름',
       dataIndex: 'name',
-      key: 'name',
+      render: (name, passProgram) => (
+        <Link to={`/passPrograms/${passProgram.passProgramId}`}>{name}</Link>
+      ),
     },
     {
       title: '판매 여부',
@@ -53,6 +50,10 @@ export const PassPrograms = () => {
       dataIndex: 'updatedAt',
       render: (updatedAt) => dayjs(updatedAt).format('YYYY년 MM월 DD일'),
     },
+    {
+      title: 'UUID',
+      dataIndex: 'passProgramId',
+    },
   ];
 
   const onRequest = (opts) =>
@@ -60,15 +61,16 @@ export const PassPrograms = () => {
 
   return (
     <BackofficeTable
-      title="패스프로그램 목록"
+      title='패스프로그램 목록'
       hasSearch={true}
       columns={columns}
       onRequest={onRequest}
       scroll={{ x: 1500 }}
-      dataSourceKey="passPrograms"
+      dataSourceKey='passPrograms'
+      rowKey='passProgramId'
       buttons={
-        <Link to="/passPrograms/add">
-          <Button icon={<PlusOutlined />} type="primary">
+        <Link to='/passPrograms/add'>
+          <Button icon={<PlusOutlined />} type='primary'>
             패스 프로그램 추가
           </Button>
         </Link>

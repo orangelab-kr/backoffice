@@ -1,7 +1,6 @@
 import { UserAddOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
@@ -9,14 +8,11 @@ import { getClient } from '../tools';
 export const Admins = () => {
   const columns = [
     {
-      title: 'UUID',
-      dataIndex: 'userId',
-      render: (value) => <Link to={`/admins/${value}`}>{value}</Link>,
-    },
-    {
       title: '이름',
       dataIndex: 'username',
-      key: 'username',
+      render: (username, user) => (
+        <Link to={`/admins/${user.userId}`}>{username}</Link>
+      ),
     },
     {
       title: '이메일',
@@ -42,6 +38,10 @@ export const Admins = () => {
       dataIndex: 'createdAt',
       render: (createdAt) => dayjs(createdAt).format('YYYY년 MM월 DD일'),
     },
+    {
+      title: 'UUID',
+      dataIndex: 'userId',
+    },
   ];
 
   const onRequest = (opts) =>
@@ -49,15 +49,16 @@ export const Admins = () => {
 
   return (
     <BackofficeTable
-      title="관리자 목록"
+      title='관리자 목록'
       hasSearch={true}
       columns={columns}
       onRequest={onRequest}
       scroll={{ x: 1000 }}
-      dataSourceKey="users"
+      dataSourceKey='users'
+      rowKey='userId'
       buttons={
-        <Link to="/admins/add">
-          <Button icon={<UserAddOutlined />} type="primary">
+        <Link to='/admins/add'>
+          <Button icon={<UserAddOutlined />} type='primary'>
             관리자 추가
           </Button>
         </Link>

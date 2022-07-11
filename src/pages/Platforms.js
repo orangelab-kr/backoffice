@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
@@ -9,22 +8,21 @@ import { getClient } from '../tools';
 export const Platforms = () => {
   const columns = [
     {
-      title: 'UUID',
-      dataIndex: 'platformId',
-      render: (platformId) => (
-        <Link to={`/platforms/${platformId}`}>{platformId}</Link>
-      ),
-    },
-    {
       title: '이름',
       dataIndex: 'name',
-      key: 'name',
+      render: (name, platform) => (
+        <Link to={`/platforms/${platform.platformId}`}>{name}</Link>
+      ),
     },
     {
       title: '등록일자',
       dataIndex: 'createdAt',
       render: (createdAt) =>
         dayjs(createdAt).format('YYYY년 MM월 DD일 hh시 mm분 ss초'),
+    },
+    {
+      title: 'UUID',
+      dataIndex: 'platformId',
     },
   ];
 
@@ -33,15 +31,16 @@ export const Platforms = () => {
 
   return (
     <BackofficeTable
-      title="플랫폼 목록"
+      title='플랫폼 목록'
       hasSearch={true}
       columns={columns}
-      dataSourceKey="platforms"
+      dataSourceKey='platforms'
       scroll={{ x: 1000 }}
       onRequest={onRequest}
+      rowKey='platformId'
       buttons={
-        <Link to="/platforms/add">
-          <Button icon={<PlusOutlined />} type="primary">
+        <Link to='/platforms/add'>
+          <Button icon={<PlusOutlined />} type='primary'>
             플랫폼 추가
           </Button>
         </Link>
