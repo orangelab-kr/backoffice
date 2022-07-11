@@ -71,17 +71,19 @@ export const ProfilesDetails = withRouter(({ history }) => {
     form.setFieldsValue({ color });
   };
 
-  useEffect(loadProfiles, [form, profileId]);
+  useEffect(() => {
+    loadProfiles();
+  }, [form, profileId]);
   return (
     <>
       <Card>
         <Form
-          layout="vertical"
+          layout='vertical'
           onFinish={onSave}
           form={form}
           initialValues={{ franchiseIds: [] }}
         >
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
                 {profile ? profile.name : '새로운 프로파일'}
@@ -92,15 +94,15 @@ export const ProfilesDetails = withRouter(({ history }) => {
                 {profileId && (
                   <Col>
                     <Popconfirm
-                      title="정말로 삭제하시겠습니까?"
-                      okText="네"
-                      cancelText="아니요"
+                      title='정말로 삭제하시겠습니까?'
+                      okText='네'
+                      cancelText='아니요'
                       onConfirm={deleteProfiles}
                     >
                       <Button
                         icon={<DeleteOutlined />}
                         loading={isLoading}
-                        type="primary"
+                        type='primary'
                         danger
                       />
                     </Popconfirm>
@@ -110,8 +112,8 @@ export const ProfilesDetails = withRouter(({ history }) => {
                   <Button
                     icon={profileId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     {profileId ? '저장하기' : '생성하기'}
                   </Button>
@@ -119,31 +121,31 @@ export const ProfilesDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="name" label="이름">
+          <Form.Item name='name' label='이름'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="speed" label="최대 속도 ">
+          <Form.Item name='speed' label='최대 속도 '>
             <InputNumber disabled={isLoading} />
           </Form.Item>
           <Spin spinning={isLoading} style={{ width: '20%' }}>
-            <Form.Item name="color" label="지오펜스 색상" valuePropName="color">
+            <Form.Item name='color' label='지오펜스 색상' valuePropName='color'>
               <ChromePicker onChange={onChangeColorPicker} />
             </Form.Item>
           </Spin>
-          <Form.Item name="priority" label="우선순위">
+          <Form.Item name='priority' label='우선순위'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
           <Form.Item
-            name="canReturn"
-            label="반납 가능여부"
-            valuePropName="checked"
+            name='canReturn'
+            label='반납 가능여부'
+            valuePropName='checked'
           >
             <Checkbox disabled={isLoading} />
           </Form.Item>
           <Form.Item
-            name="hasSurcharge"
-            label="추가료 발생여부"
-            valuePropName="checked"
+            name='hasSurcharge'
+            label='추가료 발생여부'
+            valuePropName='checked'
           >
             <Checkbox disabled={isLoading} />
           </Form.Item>

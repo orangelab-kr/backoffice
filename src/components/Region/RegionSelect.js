@@ -1,6 +1,6 @@
 import { Select } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { getClient } from '../../tools';
 
 const { Option } = Select;
@@ -13,23 +13,28 @@ export const RegionSelect = ({
   ...options
 }) => {
   const [regions, setRegions] = useState([]);
-  const requestSearch = (search = value) => {
-    if (Array.isArray(search)) return;
-    const params = {
-      search,
-      take: 10,
-      skip: 0,
-      orderByField: 'name',
-      orderBySort: 'asc',
-    };
+  const requestSearch = useCallback(
+    (search = value) => {
+      if (Array.isArray(search)) return;
+      const params = {
+        search,
+        take: 10,
+        skip: 0,
+        orderByField: 'name',
+        orderBySort: 'asc',
+      };
 
-    getClient('openapi-location', true)
-      .then((c) => c.get('/regions', { params }))
-      .then(({ data }) => setRegions(data.regions));
-  };
+      getClient('openapi-location', true)
+        .then((c) => c.get('/regions', { params }))
+        .then(({ data }) => setRegions(data.regions));
+    },
+    [value]
+  );
 
   const delayedSearch = useRef(_.debounce(requestSearch, 500)).current;
-  useEffect(requestSearch, [value]);
+  useEffect(() => {
+    requestSearch();
+  }, [requestSearch, value]);
 
   return (
     <Select
@@ -39,7 +44,7 @@ export const RegionSelect = ({
       showSearch
       disabled={isLoading}
       defaultActiveFirstOption={true}
-      optionFilterProp="children"
+      optionFilterProp='children'
       onSearch={delayedSearch}
       onChange={onChange}
     >

@@ -1,14 +1,14 @@
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Input,
-  message,
-  Popconfirm,
-  Row,
-  Typography,
+    Button,
+    Card,
+    Col,
+    Form,
+    Input,
+    message,
+    Popconfirm,
+    Row,
+    Typography
 } from 'antd';
 import clipboard from 'copy-to-clipboard';
 import React, { useEffect, useState } from 'react';
@@ -86,7 +86,9 @@ export const PermissionGroupsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadPermissionGroup, [form, permissionGroupId]);
+  useEffect(() => {
+    loadPermissionGroup();
+  }, [form, permissionGroupId]);
   return (
     <>
       <Card>

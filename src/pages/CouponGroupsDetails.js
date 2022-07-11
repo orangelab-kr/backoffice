@@ -11,7 +11,7 @@ import {
   Row,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
 
@@ -25,7 +25,7 @@ export const CouponGroupsDetails = withRouter(({ history }) => {
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadCouponGroup = () => {
+  const loadCouponGroup = useCallback(() => {
     if (!couponGroupId) return;
     setLoading(true);
     getClient('coreservice-payments')
@@ -35,7 +35,7 @@ export const CouponGroupsDetails = withRouter(({ history }) => {
         setCouponGroup(data.couponGroup);
         form.setFieldsValue(data.couponGroup);
       });
-  };
+  }, [couponGroupId, form]);
 
   const deleteCouponGroup = () => {
     setLoading(true);
@@ -61,12 +61,15 @@ export const CouponGroupsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadCouponGroup, [form, couponGroupId]);
+  useEffect(() => {
+    loadCouponGroup();
+  }, [loadCouponGroup, form, couponGroupId]);
+
   return (
     <>
       <Card>
-        <Form layout="vertical" onFinish={onSave} form={form}>
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+        <Form layout='vertical' onFinish={onSave} form={form}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
                 {couponGroupId ? couponGroup.name : '새로운 쿠폰그룹'}
@@ -77,15 +80,15 @@ export const CouponGroupsDetails = withRouter(({ history }) => {
                 {couponGroupId && (
                   <Col>
                     <Popconfirm
-                      title="정말로 삭제하시겠습니까?"
-                      okText="네"
-                      cancelText="아니요"
+                      title='정말로 삭제하시겠습니까?'
+                      okText='네'
+                      cancelText='아니요'
                       onConfirm={deleteCouponGroup}
                     >
                       <Button
                         icon={<DeleteOutlined />}
                         loading={isLoading}
-                        type="primary"
+                        type='primary'
                         danger
                       />
                     </Popconfirm>
@@ -95,8 +98,8 @@ export const CouponGroupsDetails = withRouter(({ history }) => {
                   <Button
                     icon={couponGroupId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     {couponGroupId ? '저장하기' : '생성하기'}
                   </Button>
@@ -104,19 +107,19 @@ export const CouponGroupsDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="name" label="쿠폰그룹 이름">
+          <Form.Item name='name' label='쿠폰그룹 이름'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="description" label="설명">
+          <Form.Item name='description' label='설명'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="code" label="쿠폰 코드">
+          <Form.Item name='code' label='쿠폰 코드'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="validity" label="만료 시간">
+          <Form.Item name='validity' label='만료 시간'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="limit" label="1인당 제한 갯수">
+          <Form.Item name='limit' label='1인당 제한 갯수'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
         </Form>

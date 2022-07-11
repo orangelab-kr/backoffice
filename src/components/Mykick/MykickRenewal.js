@@ -19,13 +19,11 @@ export const MykickRenewal = ({ rent, setRent, onClose }) => {
     onClose();
   };
 
-  useEffect(
-    () =>
-      getClient('mykick')
-        .then((c) => c.get('/addons'))
-        .then((r) => setAddons(r.data.addons)),
-    [setAddons]
-  );
+  useEffect(() => {
+    getClient('mykick')
+      .then((c) => c.get('/addons'))
+      .then((r) => setAddons(r.data.addons));
+  }, [setAddons]);
 
   return (
     <Modal

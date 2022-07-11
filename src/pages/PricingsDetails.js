@@ -61,17 +61,19 @@ export const PricingsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadPricings, [form, pricingId]);
+  useEffect(() => {
+    loadPricings();
+  }, [form, pricingId]);
   return (
     <>
       <Card>
         <Form
-          layout="vertical"
+          layout='vertical'
           onFinish={onSave}
           form={form}
           initialValues={{ franchiseIds: [] }}
         >
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
                 {pricing ? pricing.name : '새로운 가격정책'}
@@ -82,15 +84,15 @@ export const PricingsDetails = withRouter(({ history }) => {
                 {pricingId && (
                   <Col>
                     <Popconfirm
-                      title="정말로 삭제하시겠습니까?"
-                      okText="네"
-                      cancelText="아니요"
+                      title='정말로 삭제하시겠습니까?'
+                      okText='네'
+                      cancelText='아니요'
                       onConfirm={deletePricings}
                     >
                       <Button
                         icon={<DeleteOutlined />}
                         loading={isLoading}
-                        type="primary"
+                        type='primary'
                         danger
                       />
                     </Popconfirm>
@@ -100,8 +102,8 @@ export const PricingsDetails = withRouter(({ history }) => {
                   <Button
                     icon={pricingId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     {pricingId ? '저장하기' : '생성하기'}
                   </Button>
@@ -109,31 +111,31 @@ export const PricingsDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="name" label="이름">
+          <Form.Item name='name' label='이름'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="standardTime" label="기본 제공시간 ">
+          <Form.Item name='standardTime' label='기본 제공시간 '>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="standardPrice" label="기본 이용료">
+          <Form.Item name='standardPrice' label='기본 이용료'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="perMinuteStandardPrice" label="기본 분당요금">
+          <Form.Item name='perMinuteStandardPrice' label='기본 분당요금'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="nightlyPrice" label="야간 이용료">
+          <Form.Item name='nightlyPrice' label='야간 이용료'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="perMinuteNightlyPrice" label="야간 분당요금">
+          <Form.Item name='perMinuteNightlyPrice' label='야간 분당요금'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="surchargePrice" label="추가 요금">
+          <Form.Item name='surchargePrice' label='추가 요금'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="helmetLostPrice" label="헬멧 분실 요금">
+          <Form.Item name='helmetLostPrice' label='헬멧 분실 요금'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="maxPrice" label="최대 금액">
+          <Form.Item name='maxPrice' label='최대 금액'>
             <InputNumber disabled={isLoading} />
           </Form.Item>
         </Form>

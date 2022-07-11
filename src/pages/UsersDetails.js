@@ -83,8 +83,14 @@ export const UsersDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadUser, [form, userId]);
-  useEffect(loadLicense, [userId]);
+  useEffect(() => {
+    loadUser();
+  }, [form, userId]);
+
+  useEffect(() => {
+    loadLicense();
+  }, [userId]);
+
   return (
     <Row gutter={[4, 4]}>
       <Col xl={12} span={24}>
@@ -105,8 +111,8 @@ export const UsersDetails = withRouter(({ history }) => {
           />
         )}
         <Card style={{ height: 495 }}>
-          <Form layout="vertical" onFinish={onSave} form={form}>
-            <Row justify="space-between" style={{ marginBottom: 20 }}>
+          <Form layout='vertical' onFinish={onSave} form={form}>
+            <Row justify='space-between' style={{ marginBottom: 20 }}>
               <Col>
                 <Title level={3}>
                   {user ? user.realname : '새로운 사용자'}
@@ -117,15 +123,15 @@ export const UsersDetails = withRouter(({ history }) => {
                   {userId && (
                     <Col>
                       <Popconfirm
-                        title="정말로 탈퇴하시겠습니까?"
-                        okText="네"
-                        cancelText="아니요"
+                        title='정말로 탈퇴하시겠습니까?'
+                        okText='네'
+                        cancelText='아니요'
                         onConfirm={deleteUser}
                       >
                         <Button
                           icon={<DeleteOutlined />}
                           loading={isLoading}
-                          type="primary"
+                          type='primary'
                           danger
                         />
                       </Popconfirm>
@@ -135,8 +141,8 @@ export const UsersDetails = withRouter(({ history }) => {
                     <Button
                       icon={userId ? <SaveOutlined /> : <PlusOutlined />}
                       loading={isLoading}
-                      type="primary"
-                      htmlType="submit"
+                      type='primary'
+                      htmlType='submit'
                     >
                       {userId ? '저장하기' : '생성하기'}
                     </Button>
@@ -144,24 +150,24 @@ export const UsersDetails = withRouter(({ history }) => {
                 </Row>
               </Col>
             </Row>
-            <Form.Item name="realname" label="사용자 이름:">
+            <Form.Item name='realname' label='사용자 이름:'>
               <Input disabled={isLoading} />
             </Form.Item>
-            <Form.Item name="email" label="이메일:">
+            <Form.Item name='email' label='이메일:'>
               <Input disabled={isLoading} />
             </Form.Item>
             <Row gutter={[8, 8]}>
               <Col flex={1}>
-                <Form.Item name="birthday" label="생년월일:">
+                <Form.Item name='birthday' label='생년월일:'>
                   <DatePicker
                     disabled={isLoading}
                     style={{ width: '100%' }}
-                    format="YYYY년 MM월 DD일"
+                    format='YYYY년 MM월 DD일'
                   />
                 </Form.Item>
               </Col>
               <Col flex={1}>
-                <Form.Item name="phoneNo" label="전화번호:">
+                <Form.Item name='phoneNo' label='전화번호:'>
                   <Input
                     disabled={isLoading}
                     readOnly={true}
@@ -170,7 +176,7 @@ export const UsersDetails = withRouter(({ history }) => {
                 </Form.Item>
               </Col>
             </Row>
-            <Form.Item label="운전면허:">
+            <Form.Item label='운전면허:'>
               <Input
                 value={license ? license.licenseStr : '인증 안됨'}
                 disabled={isLoading}
@@ -178,7 +184,7 @@ export const UsersDetails = withRouter(({ history }) => {
                 onClick={setShowLicenseChange(true)}
               />
             </Form.Item>
-            <Form.Item hidden={true} name="phone" />
+            <Form.Item hidden={true} name='phone' />
           </Form>
         </Card>
       </Col>

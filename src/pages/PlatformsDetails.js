@@ -1,15 +1,15 @@
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Input,
-  message,
-  Popconfirm,
-  Row,
-  Tabs,
-  Typography,
+    Button,
+    Card,
+    Col,
+    Form,
+    Input,
+    message,
+    Popconfirm,
+    Row,
+    Tabs,
+    Typography
 } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
@@ -62,7 +62,9 @@ export const PlatformsDetails = withRouter(({ history }) => {
       c.get(`/platforms/${platformId}/users`, opts)
     );
 
-  useEffect(loadPlatform, [platformForm, platformId]);
+  useEffect(() => {
+    loadPlatform();
+  }, [platformForm, platformId]);
   return (
     <>
       <Row gutter={[8, 8]}>

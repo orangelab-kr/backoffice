@@ -1,24 +1,24 @@
 import {
-  PlusOutlined,
-  PlusSquareOutlined,
-  SaveOutlined,
+    PlusOutlined,
+    PlusSquareOutlined,
+    SaveOutlined
 } from '@ant-design/icons';
 import {
-  Alert,
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Popconfirm,
-  Row,
-  Select,
-  Tag,
-  Typography,
+    Alert,
+    Button,
+    Card,
+    Checkbox,
+    Col,
+    DatePicker,
+    Form,
+    Input,
+    InputNumber,
+    message,
+    Popconfirm,
+    Row,
+    Select,
+    Tag,
+    Typography
 } from 'antd';
 import dayjs from 'dayjs';
 import moment from 'moment';
@@ -86,8 +86,12 @@ export const MykickDetails = withRouter(({ history }) => {
     });
   };
 
-  useEffect(loadMykick, [form, rentId]);
-  useEffect(onUpdateRent, [form, rent]);
+  useEffect(() => {
+    loadMykick();
+  }, [form, rentId]);
+  useEffect(() => {
+    onUpdateRent();
+  }, [form, rent]);
   return (
     <Row gutter={[8, 8]}>
       <Col>

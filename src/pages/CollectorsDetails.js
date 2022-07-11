@@ -10,7 +10,7 @@ import {
   Row,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { FranchisesSelect } from '../components/FranchisesSelect';
 import { getClient } from '../tools';
@@ -24,7 +24,7 @@ export const CollectorsDetails = withRouter(({ history }) => {
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadCollector = () => {
+  const loadCollector = useCallback(() => {
     if (!userId) return;
     setLoading(true);
     getClient('openapi-collector')
@@ -37,7 +37,7 @@ export const CollectorsDetails = withRouter(({ history }) => {
         setCollector(user);
         form.setFieldsValue(user);
       });
-  };
+  }, [userId, form, setLoading]);
 
   const deleteCollector = () => {
     setLoading(true);
@@ -64,17 +64,20 @@ export const CollectorsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadCollector, [form, userId]);
+  useEffect(() => {
+    loadCollector();
+  }, [loadCollector, form, userId]);
+
   return (
     <>
       <Card>
         <Form
-          layout="vertical"
+          layout='vertical'
           onFinish={onSave}
           form={form}
           initialValues={{ franchiseIds: [] }}
         >
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
                 {userId ? collector.username : '새로운 수거팀'}
@@ -85,15 +88,15 @@ export const CollectorsDetails = withRouter(({ history }) => {
                 {userId && (
                   <Col>
                     <Popconfirm
-                      title="정말로 삭제하시겠습니까?"
-                      okText="네"
-                      cancelText="아니요"
+                      title='정말로 삭제하시겠습니까?'
+                      okText='네'
+                      cancelText='아니요'
                       onConfirm={deleteCollector}
                     >
                       <Button
                         icon={<DeleteOutlined />}
                         loading={isLoading}
-                        type="primary"
+                        type='primary'
                         danger
                       />
                     </Popconfirm>
@@ -103,8 +106,8 @@ export const CollectorsDetails = withRouter(({ history }) => {
                   <Button
                     icon={userId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     {userId ? '저장하기' : '생성하기'}
                   </Button>
@@ -112,13 +115,13 @@ export const CollectorsDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="username" label="이름">
+          <Form.Item name='username' label='이름'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="phoneNo" label="전화번호">
+          <Form.Item name='phoneNo' label='전화번호'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="franchiseIds" label="프렌차이즈">
+          <Form.Item name='franchiseIds' label='프렌차이즈'>
             <FranchisesSelect isLoading={isLoading} />
           </Form.Item>
         </Form>

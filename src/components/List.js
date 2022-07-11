@@ -8,9 +8,9 @@ import {
   Skeleton,
   Typography,
 } from 'antd';
-import { useEffect, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import _ from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export const BackofficeList = ({
   title,
@@ -36,7 +36,7 @@ export const BackofficeList = ({
     setSearch(value);
   };
 
-  const requestDataSource = () => {
+  const requestDataSource = useCallback(() => {
     if (refresh !== undefined && !refresh) return;
     setLoading(true);
     const params = { ...defaultParams, take, skip, search };
@@ -53,14 +53,27 @@ export const BackofficeList = ({
         setTotal(data.total);
         if (setRefresh) setRefresh(false);
       });
-  };
+  }, [
+    indexKey,
+    defaultParams,
+    dataSourceKey,
+    onRequest,
+    refresh,
+    setRefresh,
+    search,
+    skip,
+    take,
+  ]);
 
   const requestMoreData = () => {
     if (setRefresh) setRefresh(true);
     setSkip(skip + take);
   };
 
-  useEffect(requestDataSource, [
+  useEffect(() => {
+    requestDataSource();
+  }, [
+    requestDataSource,
     dataSourceKey,
     defaultParams,
     indexKey,
@@ -73,18 +86,18 @@ export const BackofficeList = ({
 
   return (
     <Card>
-      <Row justify="space-between" gutter={[8, 8]}>
+      <Row justify='space-between' gutter={[8, 8]}>
         <Col>
           <Typography.Title level={3}>
             {title}({total || dataSource.length})
           </Typography.Title>
         </Col>
         <Col>
-          <Row gutter={[8, 8]} justify="end">
+          <Row gutter={[8, 8]} justify='end'>
             {hasSearch && (
               <Col>
                 <Input.Search
-                  placeholder="검색"
+                  placeholder='검색'
                   defaultValue={search}
                   loading={isLoading}
                   onSearch={onSearch}
@@ -117,7 +130,7 @@ export const BackofficeList = ({
           }
         >
           <List
-            itemLayout="vertical"
+            itemLayout='vertical'
             dataSource={dataSource}
             renderItem={renderItem}
           />

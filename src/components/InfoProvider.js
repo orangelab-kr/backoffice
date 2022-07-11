@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
-import { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 
 const dataSource = {};
 const isLoadingDataSource = {};
@@ -35,7 +35,7 @@ export const InfoProvider = ({
     onRequest(dataId).then(setFinalData).catch(setFinalData);
   }, [dataId, dataSourceKey, onRequest]);
 
-  const getData = () => {
+  const getData = useCallback(() => {
     if (dataSource[dataSourceKey][dataId] !== undefined) {
       loadData(dataSource[dataSourceKey][dataId]);
       return;
@@ -43,13 +43,16 @@ export const InfoProvider = ({
 
     if (!isLoadingDataSource[dataSourceKey][dataId]) getDataByNetwork();
     dataSourceEvent[dataSourceKey].on(dataId, loadData);
-  };
+  }, [dataId, dataSourceKey, getDataByNetwork]);
 
   const loadData = (data) => {
     setLoading(false);
     setData(data);
   };
 
-  useEffect(getData, [getDataByNetwork, isLoading, dataId, dataSourceKey]);
+  useEffect(() => {
+    getData();
+  }, [getData, isLoading, dataId, dataSourceKey]);
+
   return isLoading ? renderLoading() : data ? render(data) : renderFailed();
 };

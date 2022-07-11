@@ -11,7 +11,7 @@ import {
   Typography,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
 
@@ -20,7 +20,7 @@ export const ServicesDetails = withRouter(({ history }) => {
   const serviceForm = useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const requestService = () => {
+  const requestService = useCallback(() => {
     if (!serviceId) return;
     setLoading(true);
 
@@ -28,7 +28,7 @@ export const ServicesDetails = withRouter(({ history }) => {
       .then((c) => c.get(`/services/${serviceId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => serviceForm.setFieldsValue(data.service));
-  };
+  }, [serviceId, serviceForm, setLoading]);
 
   const saveService = (body) => {
     setLoading(true);
@@ -52,12 +52,15 @@ export const ServicesDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(requestService, [serviceForm, serviceId]);
+  useEffect(() => {
+    requestService();
+  }, [requestService, serviceForm, serviceId]);
+
   return (
     <>
       <Card>
-        <Form layout="vertical" onFinish={saveService} form={serviceForm}>
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+        <Form layout='vertical' onFinish={saveService} form={serviceForm}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Typography.Title level={3} copyable={serviceId}>
                 {serviceId}
@@ -67,15 +70,15 @@ export const ServicesDetails = withRouter(({ history }) => {
               <Row gutter={[4, 0]}>
                 <Col>
                   <Popconfirm
-                    title="정말로 삭제하시겠습니까?"
-                    okText="네"
-                    cancelText="아니요"
+                    title='정말로 삭제하시겠습니까?'
+                    okText='네'
+                    cancelText='아니요'
                     onConfirm={deleteService}
                   >
                     <Button
                       icon={<DeleteOutlined />}
                       loading={isLoading}
-                      type="primary"
+                      type='primary'
                       danger
                     />
                   </Popconfirm>
@@ -84,8 +87,8 @@ export const ServicesDetails = withRouter(({ history }) => {
                   <Button
                     icon={<SaveOutlined />}
                     disabled={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     서비스 저장
                   </Button>
@@ -94,8 +97,8 @@ export const ServicesDetails = withRouter(({ history }) => {
             </Col>
           </Row>
           <Form.Item
-            name="serviceId"
-            label="서비스 이름"
+            name='serviceId'
+            label='서비스 이름'
             rules={[
               {
                 required: true,
@@ -110,8 +113,8 @@ export const ServicesDetails = withRouter(({ history }) => {
             <Input disabled={isLoading} />
           </Form.Item>
           <Form.Item
-            name="endpoint"
-            label="엔드포인트"
+            name='endpoint'
+            label='엔드포인트'
             rules={[
               {
                 required: true,
@@ -125,10 +128,10 @@ export const ServicesDetails = withRouter(({ history }) => {
           >
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="secretKey" label="시크릿 키">
+          <Form.Item name='secretKey' label='시크릿 키'>
             <Input.Password
               disabled={isLoading}
-              placeholder="시크릿 키 값은 존재하지만 확인할 수 없습니다."
+              placeholder='시크릿 키 값은 존재하지만 확인할 수 없습니다.'
             />
           </Form.Item>
         </Form>

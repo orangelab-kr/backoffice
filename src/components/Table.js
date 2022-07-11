@@ -1,5 +1,5 @@
 import { Card, Col, Input, Row, Table, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   NumberParam,
   StringParam,
@@ -32,7 +32,7 @@ export const BackofficeTable = ({
     setSkip((page - 1) * pageSize);
   };
 
-  const requestDataSource = () => {
+  const requestDataSource = useCallback(() => {
     if (refresh !== undefined && !refresh) return;
     setLoading(true);
     const params = { take, skip, search, ...defaultParams };
@@ -45,9 +45,22 @@ export const BackofficeTable = ({
         setTotal(data.total);
         if (setRefresh) setRefresh(false);
       });
-  };
+  }, [
+    dataSourceKey,
+    defaultParams,
+    onRequest,
+    refresh,
+    search,
+    setRefresh,
+    setSkip,
+    skip,
+    take,
+  ]);
 
-  useEffect(requestDataSource, [
+  useEffect(() => {
+    requestDataSource();
+  }, [
+    requestDataSource,
     dataSourceKey,
     defaultParams,
     onRequest,
@@ -61,16 +74,16 @@ export const BackofficeTable = ({
 
   return (
     <Card>
-      <Row justify="space-between" gutter={[8, 8]}>
+      <Row justify='space-between' gutter={[8, 8]}>
         <Col>
           <Typography.Title level={3}>{title}</Typography.Title>
         </Col>
         <Col>
-          <Row gutter={[8, 8]} justify="end">
+          <Row gutter={[8, 8]} justify='end'>
             {hasSearch && (
               <Col>
                 <Input.Search
-                  placeholder="검색"
+                  placeholder='검색'
                   defaultValue={search}
                   loading={isLoading}
                   onSearch={setSearch}
@@ -83,8 +96,8 @@ export const BackofficeTable = ({
         </Col>
       </Row>
       {columns.length > 0 && (
-        <Row justify="space-between" gutter={[8, 8]}>
-          <Col flex="auto">
+        <Row justify='space-between' gutter={[8, 8]}>
+          <Col flex='auto'>
             <Table
               columns={columns}
               dataSource={dataSource}

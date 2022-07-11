@@ -1,22 +1,22 @@
 import {
-  DeleteOutlined,
-  DeploymentUnitOutlined,
-  PlusOutlined,
-  SaveOutlined,
+    DeleteOutlined,
+    DeploymentUnitOutlined,
+    PlusOutlined,
+    SaveOutlined
 } from '@ant-design/icons';
 import {
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  Form,
-  Input,
-  message,
-  Popconfirm,
-  Row,
-  Switch,
-  Tabs,
-  Typography,
+    Button,
+    Card,
+    Checkbox,
+    Col,
+    Form,
+    Input,
+    message,
+    Popconfirm,
+    Row,
+    Switch,
+    Tabs,
+    Typography
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
@@ -81,7 +81,9 @@ export const RegionsDetails = withRouter(({ history }) => {
       .then(() => message.success(`배포되었습니다.`));
   };
 
-  useEffect(loadRegions, [form, regionId]);
+  useEffect(() => {
+    loadRegions();
+  }, [form, regionId]);
   return (
     <Tabs activeKey={tab} defaultActiveKey='general' onChange={setTab}>
       <Tabs.TabPane tab='기본 정보' key='general'>

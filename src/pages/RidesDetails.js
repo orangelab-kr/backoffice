@@ -1,31 +1,31 @@
 import {
-  EditOutlined,
-  PlusOutlined,
-  SmileOutlined,
-  StopOutlined,
+    EditOutlined,
+    PlusOutlined,
+    SmileOutlined,
+    StopOutlined
 } from '@ant-design/icons';
 import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  DatePicker,
-  Descriptions,
-  Form,
-  Image,
-  Input,
-  InputNumber,
-  List,
-  message,
-  Modal,
-  Popconfirm,
-  Radio,
-  Result,
-  Row,
-  Select,
-  Tabs,
-  Typography,
+    Badge,
+    Button,
+    Card,
+    Checkbox,
+    Col,
+    DatePicker,
+    Descriptions,
+    Form,
+    Image,
+    Input,
+    InputNumber,
+    List,
+    message,
+    Modal,
+    Popconfirm,
+    Radio,
+    Result,
+    Row,
+    Select,
+    Tabs,
+    Typography
 } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -250,9 +250,15 @@ export const RidesDetails = withRouter(() => {
       .then(() => loadRide());
   };
 
-  useEffect(loadRide, [loadRide]);
-  useEffect(loadOpenapiRide, [loadOpenapiRide]);
-  useEffect(onSearchCoupons, [ride?.userId]);
+  useEffect(() => {
+    loadRide();
+  }, [loadRide]);
+  useEffect(() => {
+    loadOpenapiRide();
+  }, [loadOpenapiRide]);
+  useEffect(() => {
+    onSearchCoupons();
+  }, [ride?.userId]);
   useEffect(calculateTerminatePricing, [
     ride,
     debouncedTerminateLocation,

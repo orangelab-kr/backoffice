@@ -18,7 +18,10 @@ export const MonitoringLog = ({ ride, setRefresh, refresh }) => {
     if (setRefresh) setRefresh(false);
   }, [refresh, setRefresh, ride.rideId]);
 
-  useEffect(getLogs, [getLogs]);
+  useEffect(() => {
+    getLogs();
+  }, [getLogs]);
+
   if (loading) return <Skeleton />;
   return (
     <Typography.Paragraph style={{ fontSize: 20 }}>

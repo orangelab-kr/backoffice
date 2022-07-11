@@ -107,7 +107,10 @@ export const RegionGeofenceMap = ({
     [geofence, map, naverMaps.Polygon, polygons, setGeofence]
   );
 
-  useEffect(() => getGeofences(), [getGeofences, refresh]);
+  useEffect(() => {
+    getGeofences();
+  }, [getGeofences, refresh]);
+
   useEffect(() => {
     if (!map) return;
     naverMaps.Event.clearListeners(map, 'click');
@@ -169,7 +172,7 @@ export const RegionGeofenceMap = ({
 
   return (
     <Card>
-      <Row justify="space-between" gutter={[8, 8]}>
+      <Row justify='space-between' gutter={[8, 8]}>
         <Col>
           <Typography.Title level={3}>
             {region.name} / 지오펜스 지도
@@ -177,7 +180,7 @@ export const RegionGeofenceMap = ({
         </Col>
         <Col>
           <Button
-            type="primary"
+            type='primary'
             icon={<PlusOutlined />}
             onClick={() => setGeofence({})}
             disabled={geofence && !geofence.geofenceId}
@@ -186,10 +189,10 @@ export const RegionGeofenceMap = ({
           </Button>
         </Col>
       </Row>
-      <Row justify="space-between" gutter={[8, 8]} style={{ height: '80vh' }}>
-        <Col flex="auto">
+      <Row justify='space-between' gutter={[8, 8]} style={{ height: '80vh' }}>
+        <Col flex='auto'>
           <NaverMap
-            id="map"
+            id='map'
             naverRef={setMap}
             style={{ height: '100%' }}
             defaultZoom={8}

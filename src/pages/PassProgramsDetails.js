@@ -1,15 +1,15 @@
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Input,
-  message,
-  Popconfirm,
-  Row,
-  Switch,
-  Typography,
+    Button,
+    Card,
+    Col,
+    Form,
+    Input,
+    message,
+    Popconfirm,
+    Row,
+    Switch,
+    Typography
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
@@ -62,7 +62,9 @@ export const PassProgramsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadPassPrograms, [form, passProgramId]);
+  useEffect(() => {
+    loadPassPrograms();
+  }, [form, passProgramId]);
   return (
     <>
       <Card>

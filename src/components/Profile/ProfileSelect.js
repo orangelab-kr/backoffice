@@ -22,7 +22,9 @@ export const ProfileSelect = ({ id, isLoading, onChange, value }) => {
   };
 
   const delayedSearch = useRef(_.debounce(requestSearch, 500)).current;
-  useEffect(requestSearch, [value]);
+  useEffect(() => {
+    requestSearch();
+  }, [value]);
 
   return (
     <Select
@@ -31,7 +33,7 @@ export const ProfileSelect = ({ id, isLoading, onChange, value }) => {
       showSearch
       disabled={isLoading}
       defaultActiveFirstOption={true}
-      optionFilterProp="children"
+      optionFilterProp='children'
       onSearch={delayedSearch}
       onChange={onChange}
     >

@@ -10,7 +10,7 @@ import {
   Row,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { PermissionGroupsSelect } from '../components';
 import { getClient } from '../tools';
@@ -24,7 +24,7 @@ export const AdminsDetails = withRouter(({ history }) => {
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadAdmin = () => {
+  const loadAdmin = useCallback(() => {
     if (!userId) return;
     setLoading(true);
     getClient('backoffice')
@@ -34,7 +34,7 @@ export const AdminsDetails = withRouter(({ history }) => {
         setAdmin(data.user);
         form.setFieldsValue(data.user);
       });
-  };
+  }, [userId, form]);
 
   const deleteAdmin = () => {
     setLoading(true);
@@ -61,12 +61,15 @@ export const AdminsDetails = withRouter(({ history }) => {
       });
   };
 
-  useEffect(loadAdmin, [form, isLoading, userId]);
+  useEffect(() => {
+    loadAdmin();
+  }, [loadAdmin, form, isLoading, userId]);
+
   return (
     <>
       <Card>
-        <Form layout="vertical" onFinish={onSave} form={form}>
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+        <Form layout='vertical' onFinish={onSave} form={form}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
                 {userId ? admin.username : '새로운 관리자'}
@@ -77,15 +80,15 @@ export const AdminsDetails = withRouter(({ history }) => {
                 {userId && (
                   <Col>
                     <Popconfirm
-                      title="정말로 삭제하시겠습니까?"
-                      okText="네"
-                      cancelText="아니요"
+                      title='정말로 삭제하시겠습니까?'
+                      okText='네'
+                      cancelText='아니요'
                       onConfirm={deleteAdmin}
                     >
                       <Button
                         icon={<DeleteOutlined />}
                         loading={isLoading}
-                        type="primary"
+                        type='primary'
                         danger
                       />
                     </Popconfirm>
@@ -95,8 +98,8 @@ export const AdminsDetails = withRouter(({ history }) => {
                   <Button
                     icon={userId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     {userId ? '저장하기' : '생성하기'}
                   </Button>
@@ -104,19 +107,19 @@ export const AdminsDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="username" label="관리자 이름">
+          <Form.Item name='username' label='관리자 이름'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="email" label="이메일">
+          <Form.Item name='email' label='이메일'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="phone" label="전화번호">
+          <Form.Item name='phone' label='전화번호'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="password" label="비밀번호">
+          <Form.Item name='password' label='비밀번호'>
             <Input.Password disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="permissionGroupId" label="권한 그룹">
+          <Form.Item name='permissionGroupId' label='권한 그룹'>
             <PermissionGroupsSelect
               isLoading={isLoading}
               defaultPermissionGroup={admin.permissionGroup}

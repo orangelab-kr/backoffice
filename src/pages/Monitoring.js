@@ -86,7 +86,9 @@ export const Monitoring = () => {
     });
   };
 
-  useEffect(getRides, [getRides]);
+  useEffect(() => {
+    getRides();
+  }, [getRides]);
   useEffect(() => searchForm.setFieldsValue(query));
   return (
     <Card>
@@ -100,28 +102,28 @@ export const Monitoring = () => {
       </Typography.Title>
       <Card style={{ marginBottom: 10 }}>
         <Form onFinish={onSearch} form={searchForm}>
-          <Row gutter={[10, 4]} justify="space-between">
+          <Row gutter={[10, 4]} justify='space-between'>
             <Col span={24} lg={11}>
-              <Form.Item name="range" label="기간">
+              <Form.Item name='range' label='기간'>
                 <DatePicker.RangePicker
                   showTime
                   style={{ width: '100%' }}
-                  format="YYYY년 MM월 DD일 H시 m분"
+                  format='YYYY년 MM월 DD일 H시 m분'
                   ranges={rangeAutocomplete}
                 />
               </Form.Item>
             </Col>
             <Col span={24} lg={13}>
-              <Form.Item name="regionId" label="지역">
+              <Form.Item name='regionId' label='지역'>
                 <RegionSelect
-                  mode="multiple"
-                  placeholder="미선택시 모든 지역"
+                  mode='multiple'
+                  placeholder='미선택시 모든 지역'
                 />
               </Form.Item>
             </Col>
             <Col span={24} lg={10}>
-              <Form.Item name="monitoringStatus" label="구분">
-                <Select mode="multiple" placeholder="미선택시 모든 킥보드">
+              <Form.Item name='monitoringStatus' label='구분'>
+                <Select mode='multiple' placeholder='미선택시 모든 킥보드'>
                   {MonitoringStatus.map(({ type, name, icon }) => (
                     <Select.Option value={type} key={type}>
                       {icon} {name}
@@ -131,15 +133,15 @@ export const Monitoring = () => {
               </Form.Item>
             </Col>
             <Col span={24} lg={14} xl={10}>
-              <Form.Item name="search" label="검색">
-                <Input placeholder="이름, 전화번호, 킥보드 코드" />
+              <Form.Item name='search' label='검색'>
+                <Input placeholder='이름, 전화번호, 킥보드 코드' />
               </Form.Item>
             </Col>
             <Col>
               <Form.Item
-                name="onlyPhoto"
-                label="반납사진"
-                valuePropName="checked"
+                name='onlyPhoto'
+                label='반납사진'
+                valuePropName='checked'
               >
                 <Switch />
               </Form.Item>
@@ -147,8 +149,8 @@ export const Monitoring = () => {
             <Col span={24} xl={2}>
               <Button
                 icon={<SearchOutlined />}
-                type="primary"
-                htmlType="submit"
+                type='primary'
+                htmlType='submit'
                 block
               >
                 검색
@@ -166,7 +168,7 @@ export const Monitoring = () => {
             </Card>
           ))}
 
-      <Row justify="end">
+      <Row justify='end'>
         <Col>
           <Pagination
             total={total}
