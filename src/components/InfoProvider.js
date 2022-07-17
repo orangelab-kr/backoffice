@@ -20,6 +20,7 @@ export const InfoProvider = ({
     dataSource[dataSourceKey] = {};
     isLoadingDataSource[dataSourceKey] = {};
     dataSourceEvent[dataSourceKey] = new EventEmitter();
+    dataSourceEvent[dataSourceKey].setMaxListeners(30);
   }
 
   const getDataByNetwork = useCallback(() => {

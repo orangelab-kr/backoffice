@@ -39,6 +39,7 @@ export const Kickboards = () => {
   return (
     <BackofficeTable
       title="킥보드 목록"
+      rowKey='kickboardCode'
       hasSearch={true}
       columns={columns}
       onRequest={onRequest}

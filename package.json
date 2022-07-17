@@ -1,6 +1,6 @@
 {
   "name": "backoffice",
-  "version": "1.7.8",
+  "version": "1.7.9",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.7.0",

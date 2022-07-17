@@ -33,7 +33,6 @@ export const BackofficeTable = ({
   };
 
   const requestDataSource = useCallback(() => {
-    if (refresh !== undefined && !refresh) return;
     setLoading(true);
     const params = { take, skip, search, ...defaultParams };
     onRequest({ params })
@@ -49,7 +48,6 @@ export const BackofficeTable = ({
     dataSourceKey,
     defaultParams,
     onRequest,
-    refresh,
     search,
     setRefresh,
     setSkip,

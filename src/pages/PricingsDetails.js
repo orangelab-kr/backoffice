@@ -63,7 +63,8 @@ export const PricingsDetails = withRouter(({ history }) => {
 
   useEffect(() => {
     loadPricings();
-  }, [form, pricingId]);
+  }, [loadPricings, form, pricingId]);
+
   return (
     <>
       <Card>
