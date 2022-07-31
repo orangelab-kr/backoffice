@@ -153,9 +153,23 @@ export const UsersDetails = withRouter(({ history }) => {
             <Form.Item name='realname' label='사용자 이름:'>
               <Input disabled={isLoading} />
             </Form.Item>
-            <Form.Item name='email' label='이메일:'>
-              <Input disabled={isLoading} />
-            </Form.Item>
+            <Row gutter={[8, 8]}>
+              <Col flex={1}>
+                <Form.Item name='email' label='이메일:'>
+                  <Input disabled={isLoading} />
+                </Form.Item>
+              </Col>
+              <Col flex={1}>
+                <Form.Item label='운전면허:'>
+                  <Input
+                    value={license ? license.licenseStr : '인증 안됨'}
+                    disabled={isLoading}
+                    readOnly={true}
+                    onClick={setShowLicenseChange(true)}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
             <Row gutter={[8, 8]}>
               <Col flex={1}>
                 <Form.Item name='birthday' label='생년월일:'>
@@ -176,14 +190,19 @@ export const UsersDetails = withRouter(({ history }) => {
                 </Form.Item>
               </Col>
             </Row>
-            <Form.Item label='운전면허:'>
-              <Input
-                value={license ? license.licenseStr : '인증 안됨'}
-                disabled={isLoading}
-                readOnly={true}
-                onClick={setShowLicenseChange(true)}
-              />
-            </Form.Item>
+            <Row gutter={[8, 8]}>
+              <Col flex={3}>
+                <Form.Item name='centercoinAddress' label='센터코인 지갑주소:'>
+                  <Input disabled={isLoading} />
+                </Form.Item>
+              </Col>
+              <Col flex={1}>
+                <Form.Item name='centercoinBalance' label='센터코인 밸런스:'>
+                  <Input disabled={isLoading} readOnly={true} />
+                </Form.Item>
+              </Col>
+            </Row>
+
             <Form.Item hidden={true} name='phone' />
           </Form>
         </Card>
