@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Row, Typography } from 'antd';
+import { Button, Card, Col, Row, Select, Typography } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { NaverMap } from 'react-naver-maps';
 import { getClient, useInterval } from '../../tools';
@@ -19,6 +19,8 @@ export const RegionGeofenceMap = ({
   const { regionId } = region;
   const [polygons, setPolygons] = useState({});
   const [geofences, setGeofences] = useState([]);
+  const [profiles, setProfiles] = useState([]);
+  const [showProfiles, setShowProfiles] = useState([]);
   const getOpacity = (geofence) =>
     parseInt(geofence.profile.color.substr(7, 2) || '1a', 16) / 255;
 
@@ -56,6 +58,15 @@ export const RegionGeofenceMap = ({
       }),
     []
   );
+
+  const getProfiles = useCallback(async () => {
+    const { profiles } = await getClient('openapi-location')
+      .then((c) => c.get('/profiles', { take: 1000 }))
+      .then((r) => r.data);
+
+    setShowProfiles(profiles.map((profile) => profile.profileId));
+    setProfiles(profiles);
+  }, []);
 
   const getGeofences = useCallback(async () => {
     if (refresh !== null && !refresh) return;
@@ -108,8 +119,9 @@ export const RegionGeofenceMap = ({
   );
 
   useEffect(() => {
+    getProfiles();
     getGeofences();
-  }, [getGeofences, refresh]);
+  }, [getGeofences, getProfiles, refresh]);
 
   useEffect(() => {
     if (!map) return;
@@ -141,7 +153,15 @@ export const RegionGeofenceMap = ({
 
   useEffect(() => {
     const updatedPolygons = {};
+    if (profiles.length <= 0) return;
+    setPolygons((polygons) => {
+      const values = Object.values(polygons);
+      values.forEach((polygon) => polygon.setMap(null));
+      return {};
+    });
+
     geofences.forEach((geofence) => {
+      if (!showProfiles.includes(geofence.profile.profileId)) return;
       const polygon = new naverMaps.Polygon({
         map,
         clickable: true,
@@ -161,7 +181,15 @@ export const RegionGeofenceMap = ({
     });
 
     setPolygons(updatedPolygons);
-  }, [geofences, map, naverMaps.Event, naverMaps.Polygon, onClickPolygon]);
+  }, [
+    geofences,
+    map,
+    naverMaps.Event,
+    naverMaps.Polygon,
+    onClickPolygon,
+    profiles.length,
+    showProfiles,
+  ]);
 
   useEffect(() => {
     if (!polygons) return;
@@ -189,6 +217,21 @@ export const RegionGeofenceMap = ({
           </Button>
         </Col>
       </Row>
+      <Select
+        showSearch
+        mode='multiple'
+        placeholder='프로파일 선택'
+        optionFilterProp='children'
+        style={{ width: '100%', marginBottom: 10 }}
+        onChange={setShowProfiles}
+        value={showProfiles}
+      >
+        {profiles.map((profile) => (
+          <Select.Option value={profile.profileId} key={profile.profileId}>
+            {profile.name}
+          </Select.Option>
+        ))}
+      </Select>
       <Row justify='space-between' gutter={[8, 8]} style={{ height: '80vh' }}>
         <Col flex='auto'>
           <NaverMap
