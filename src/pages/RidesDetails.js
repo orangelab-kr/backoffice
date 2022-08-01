@@ -65,8 +65,11 @@ export const RidesDetails = withRouter(() => {
     return `<div\
   style="\
     background-color: #fff;\n
-    border-radius: 10%;\
-    padding: 2px 5px;
+    border-radius: 50px;\
+    border-width: 2px;\
+    border-color: #ff0000;\
+    border-style: solid;\
+    padding: 2px 5px;\
     text-align: center;\
     font-weight: 700"
   onMouseOver="${showTime}"
@@ -110,7 +113,7 @@ export const RidesDetails = withRouter(() => {
         .finally(() => setLoading(false))
         .then(({ data }) => setCoupons(data.coupons));
     },
-    [ride.userId]
+    [ride?.userId]
   );
 
   const onSearchCouponsWithDebounce = _.debounce(onSearchCoupons, 500);
@@ -263,7 +266,7 @@ export const RidesDetails = withRouter(() => {
 
   useEffect(() => {
     onSearchCoupons();
-  }, [onSearchCoupons, ride.userId]);
+  }, [onSearchCoupons, ride?.userId]);
 
   useEffect(calculateTerminatePricing, [
     ride,
@@ -695,7 +698,7 @@ export const RidesDetails = withRouter(() => {
                           id='timeline'
                           style={{
                             width: '100%',
-                            height: '400px',
+                            height: '900px',
                           }}
                           defaultZoom={14}
                           defaultCenter={
@@ -727,7 +730,7 @@ export const RidesDetails = withRouter(() => {
                                   )
                               ),
                             ]}
-                            strokeColor={'#303030'}
+                            strokeColor={'#ff0000'}
                             strokeStyle={'solid'}
                             strokeOpacity={0.5}
                             strokeWeight={2}
