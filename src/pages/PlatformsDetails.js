@@ -1,18 +1,18 @@
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-    Button,
-    Card,
-    Col,
-    Form,
-    Input,
-    message,
-    Popconfirm,
-    Row,
-    Tabs,
-    Typography
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  message,
+  Popconfirm,
+  Row,
+  Tabs,
+  Typography,
 } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams, withRouter } from 'react-router-dom';
 import { BackofficeTable } from '../components';
 import { getClient } from '../tools';
@@ -24,7 +24,7 @@ export const PlatformsDetails = withRouter(({ history }) => {
   const [platform, setPlatform] = useState(null);
   const [isLoading, setLoading] = useState(false);
 
-  const loadPlatform = () => {
+  const loadPlatform = useCallback(() => {
     setLoading(true);
     getClient('openapi-platform')
       .then((c) => c.get(`/platforms/${platformId}`))
@@ -33,7 +33,7 @@ export const PlatformsDetails = withRouter(({ history }) => {
         setPlatform(data.platform);
         platformForm.setFieldsValue(data.platform);
       });
-  };
+  }, [platformForm, platformId]);
 
   const savePlatform = (body) => {
     setLoading(true);
@@ -64,14 +64,15 @@ export const PlatformsDetails = withRouter(({ history }) => {
 
   useEffect(() => {
     loadPlatform();
-  }, [platformForm, platformId]);
+  }, [loadPlatform, platformForm, platformId]);
+
   return (
     <>
       <Row gutter={[8, 8]}>
         <Col span={24}>
           <Card>
-            <Form layout="vertical" onFinish={savePlatform} form={platformForm}>
-              <Row justify="space-between" style={{ marginBottom: 20 }}>
+            <Form layout='vertical' onFinish={savePlatform} form={platformForm}>
+              <Row justify='space-between' style={{ marginBottom: 20 }}>
                 <Col>
                   <Typography.Title level={3} copyable={platformId}>
                     {platform ? platform.name : '새로운 플랫폼'}
@@ -82,15 +83,15 @@ export const PlatformsDetails = withRouter(({ history }) => {
                     {platform && (
                       <Col>
                         <Popconfirm
-                          title="정말로 삭제하시겠습니까?"
-                          okText="네"
-                          cancelText="아니요"
+                          title='정말로 삭제하시겠습니까?'
+                          okText='네'
+                          cancelText='아니요'
                           onConfirm={deletePlatform}
                         >
                           <Button
                             icon={<DeleteOutlined />}
                             loading={isLoading}
-                            type="primary"
+                            type='primary'
                             danger
                           />
                         </Popconfirm>
@@ -100,8 +101,8 @@ export const PlatformsDetails = withRouter(({ history }) => {
                       <Button
                         icon={platformId ? <SaveOutlined /> : <PlusOutlined />}
                         loading={isLoading}
-                        type="primary"
-                        htmlType="submit"
+                        type='primary'
+                        htmlType='submit'
                       >
                         {platformId ? '저장' : '생성'}
                       </Button>
@@ -109,7 +110,7 @@ export const PlatformsDetails = withRouter(({ history }) => {
                   </Row>
                 </Col>
               </Row>
-              <Form.Item name="name" label="플랫폼 이름:">
+              <Form.Item name='name' label='플랫폼 이름:'>
                 <Input />
               </Form.Item>
             </Form>
@@ -118,13 +119,13 @@ export const PlatformsDetails = withRouter(({ history }) => {
         {platformId && (
           <Col span={24}>
             <Card>
-              <Tabs defaultActiveKey="users">
-                <Tabs.TabPane tab="사용자 목록" key="users">
+              <Tabs defaultActiveKey='users'>
+                <Tabs.TabPane tab='사용자 목록' key='users'>
                   <BackofficeTable
-                    title="사용자 목록"
+                    title='사용자 목록'
                     hasSearch={true}
                     scroll={{ x: 1000 }}
-                    dataSourceKey="platformUsers"
+                    dataSourceKey='platformUsers'
                     onRequest={onPlatformUsersRequest}
                     columns={[
                       {

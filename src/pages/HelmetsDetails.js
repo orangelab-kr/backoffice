@@ -12,7 +12,7 @@ import {
   Select,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
 
@@ -23,7 +23,7 @@ export const HelmetsDetails = withRouter(({ history }) => {
   const [helmet, setHelmet] = useState(null);
   const [isLoading, setLoading] = useState(false);
 
-  const loadHelmet = () => {
+  const loadHelmet = useCallback(() => {
     setLoading(true);
     getClient('openapi-kickboard')
       .then((c) => c.get(`/helmets/${helmetId}`))
@@ -32,7 +32,7 @@ export const HelmetsDetails = withRouter(({ history }) => {
         setHelmet(data.helmet);
         helmetForm.setFieldsValue(data.helmet);
       });
-  };
+  }, [helmetForm, helmetId]);
 
   const saveHelmet = (body) => {
     setLoading(true);
@@ -58,7 +58,8 @@ export const HelmetsDetails = withRouter(({ history }) => {
 
   useEffect(() => {
     loadHelmet();
-  }, [helmetForm, helmetId]);
+  }, [helmetForm, helmetId, loadHelmet]);
+
   return (
     <>
       <Card>

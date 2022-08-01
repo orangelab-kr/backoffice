@@ -1,28 +1,28 @@
 import {
-    PlusOutlined,
-    PlusSquareOutlined,
-    SaveOutlined
+  PlusOutlined,
+  PlusSquareOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
 import {
-    Alert,
-    Button,
-    Card,
-    Checkbox,
-    Col,
-    DatePicker,
-    Form,
-    Input,
-    InputNumber,
-    message,
-    Popconfirm,
-    Row,
-    Select,
-    Tag,
-    Typography
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Popconfirm,
+  Row,
+  Select,
+  Tag,
+  Typography,
 } from 'antd';
 import dayjs from 'dayjs';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { KickboardSelect } from '../components/Kickboard/KickboardSelect';
 import { MykickPayment } from '../components/Mykick/MykickPayment';
@@ -44,14 +44,14 @@ export const MykickDetails = withRouter(({ history }) => {
   const [showRenewal, setShowRenewal] = useToggle(false);
   const [status, setStatus] = useState();
 
-  const loadMykick = () => {
+  const loadMykick = useCallback(() => {
     if (!rentId) return;
     setLoading(true);
     getClient('mykick')
       .then((c) => c.get(`/rents/${rentId}`))
       .finally(() => setLoading(false))
       .then(({ data }) => setRent(data.rent));
-  };
+  }, [rentId]);
 
   const onSave = (body) => {
     if (isLoading) return;
@@ -77,21 +77,23 @@ export const MykickDetails = withRouter(({ history }) => {
       });
   };
 
-  const onUpdateRent = () => {
+  const onUpdateRent = useCallback(() => {
     if (!rent) return;
     setStatus(rent.status);
     form.setFieldsValue({
       ...rent,
       expiredAt: moment(rent.expiredAt),
     });
-  };
+  }, [form, rent]);
 
   useEffect(() => {
     loadMykick();
-  }, [form, rentId]);
+  }, [form, loadMykick, rentId]);
+
   useEffect(() => {
     onUpdateRent();
-  }, [form, rent]);
+  }, [form, onUpdateRent, rent]);
+
   return (
     <Row gutter={[8, 8]}>
       <Col>

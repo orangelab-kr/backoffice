@@ -12,7 +12,7 @@ import {
   Typography,
 } from 'antd';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import {
   UserCards,
@@ -38,7 +38,7 @@ export const UsersDetails = withRouter(({ history }) => {
   const [showPhoneChange, setShowPhoneChange] = useToggle(false);
   const [showLicenseChange, setShowLicenseChange] = useToggle(false);
 
-  const loadUser = () => {
+  const loadUser = useCallback(() => {
     if (!userId) return;
     setLoading(true);
     getClient('coreservice-accounts')
@@ -51,17 +51,17 @@ export const UsersDetails = withRouter(({ history }) => {
         setUser(user);
         form.setFieldsValue(user);
       });
-  };
+  }, [form, userId]);
 
-  const loadLicense = () => {
+  const loadLicense = useCallback(() => {
     if (!userId) return;
     setLoading(true);
     getClient('coreservice-accounts')
       .then((c) => c.get(`/users/${userId}/license`))
       .then(({ data }) => setLicense(data.license));
-  };
+  }, [userId]);
 
-  const deleteUser = () => {
+  const deleteUser = useCallback(() => {
     setLoading(true);
     getClient('coreservice-accounts')
       .then((c) => c.delete(`/users/${userId}/secession`))
@@ -70,26 +70,29 @@ export const UsersDetails = withRouter(({ history }) => {
         message.success(`탈퇴되었습니다.`);
         history.push(`/users`);
       });
-  };
+  }, [history, userId]);
 
-  const onSave = (body) => {
-    setLoading(true);
-    getClient('coreservice-accounts')
-      .then((c) => c.post(`/users/${userId}`, body))
-      .finally(() => setLoading(false))
-      .then(({ data }) => {
-        message.success(`${userId ? '수정' : '생성'}되었습니다.`);
-        if (data.userId) history.push(`/users/${data.userId}`);
-      });
-  };
+  const onSave = useCallback(
+    (body) => {
+      setLoading(true);
+      getClient('coreservice-accounts')
+        .then((c) => c.post(`/users/${userId}`, body))
+        .finally(() => setLoading(false))
+        .then(({ data }) => {
+          message.success(`${userId ? '수정' : '생성'}되었습니다.`);
+          if (data.userId) history.push(`/users/${data.userId}`);
+        });
+    },
+    [history, userId]
+  );
 
   useEffect(() => {
     loadUser();
-  }, [form, userId]);
+  }, [loadUser, form, userId]);
 
   useEffect(() => {
     loadLicense();
-  }, [userId]);
+  }, [loadLicense, userId]);
 
   return (
     <Row gutter={[4, 4]}>

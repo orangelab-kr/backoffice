@@ -11,7 +11,7 @@ import {
   Row,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
 
@@ -24,7 +24,7 @@ export const PricingsDetails = withRouter(({ history }) => {
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadPricings = () => {
+  const loadPricings = useCallback(() => {
     if (!pricingId) return;
     setLoading(true);
     getClient('openapi-location')
@@ -34,7 +34,7 @@ export const PricingsDetails = withRouter(({ history }) => {
         setPricing(data.pricing);
         form.setFieldsValue(data.pricing);
       });
-  };
+  }, [form, pricingId]);
 
   const deletePricings = () => {
     setLoading(true);

@@ -13,7 +13,7 @@ import {
   Spin,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ChromePicker } from 'react-color';
 import { useParams, withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
@@ -27,7 +27,7 @@ export const ProfilesDetails = withRouter(({ history }) => {
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadProfiles = () => {
+  const loadProfiles = useCallback(() => {
     if (!profileId) return;
     setLoading(true);
     getClient('openapi-location')
@@ -37,7 +37,7 @@ export const ProfilesDetails = withRouter(({ history }) => {
         setProfile(data.profile);
         form.setFieldsValue(data.profile);
       });
-  };
+  }, [form, profileId]);
 
   const deleteProfiles = () => {
     setLoading(true);
@@ -73,7 +73,8 @@ export const ProfilesDetails = withRouter(({ history }) => {
 
   useEffect(() => {
     loadProfiles();
-  }, [form, profileId]);
+  }, [form, loadProfiles, profileId]);
+
   return (
     <>
       <Card>

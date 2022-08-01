@@ -1,17 +1,17 @@
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-    Button,
-    Card,
-    Col,
-    Form,
-    Input,
-    message,
-    Popconfirm,
-    Row,
-    Switch,
-    Typography
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  message,
+  Popconfirm,
+  Row,
+  Switch,
+  Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { getClient } from '../tools';
 
@@ -25,7 +25,7 @@ export const PassProgramsDetails = withRouter(({ history }) => {
   const form = Form.useForm()[0];
   const [isLoading, setLoading] = useState(false);
 
-  const loadPassPrograms = () => {
+  const loadPassPrograms = useCallback(() => {
     if (!passProgramId) return;
     setLoading(true);
     getClient('coreservice-accounts')
@@ -35,7 +35,7 @@ export const PassProgramsDetails = withRouter(({ history }) => {
         setPassProgram(data.passProgram);
         form.setFieldsValue(data.passProgram);
       });
-  };
+  }, [form, passProgramId]);
 
   const deletePassProgram = () => {
     setLoading(true);
@@ -64,17 +64,18 @@ export const PassProgramsDetails = withRouter(({ history }) => {
 
   useEffect(() => {
     loadPassPrograms();
-  }, [form, passProgramId]);
+  }, [form, loadPassPrograms, passProgramId]);
+
   return (
     <>
       <Card>
         <Form
-          layout="vertical"
+          layout='vertical'
           onFinish={onSave}
           form={form}
           initialValues={{ franchiseIds: [] }}
         >
-          <Row justify="space-between" style={{ marginBottom: 20 }}>
+          <Row justify='space-between' style={{ marginBottom: 20 }}>
             <Col>
               <Title level={3}>
                 {passProgram ? passProgram.name : '새로운 패스 프로그램'}
@@ -85,15 +86,15 @@ export const PassProgramsDetails = withRouter(({ history }) => {
                 {passProgramId && (
                   <Col>
                     <Popconfirm
-                      title="정말로 삭제하시겠습니까?"
-                      okText="네"
-                      cancelText="아니요"
+                      title='정말로 삭제하시겠습니까?'
+                      okText='네'
+                      cancelText='아니요'
                       onConfirm={deletePassProgram}
                     >
                       <Button
                         icon={<DeleteOutlined />}
                         loading={isLoading}
-                        type="primary"
+                        type='primary'
                         danger
                       />
                     </Popconfirm>
@@ -103,8 +104,8 @@ export const PassProgramsDetails = withRouter(({ history }) => {
                   <Button
                     icon={passProgramId ? <SaveOutlined /> : <PlusOutlined />}
                     loading={isLoading}
-                    type="primary"
-                    htmlType="submit"
+                    type='primary'
+                    htmlType='submit'
                   >
                     {passProgramId ? '저장하기' : '생성하기'}
                   </Button>
@@ -112,28 +113,28 @@ export const PassProgramsDetails = withRouter(({ history }) => {
               </Row>
             </Col>
           </Row>
-          <Form.Item name="name" label="이름">
+          <Form.Item name='name' label='이름'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="description" label="설명">
+          <Form.Item name='description' label='설명'>
             <Input.TextArea disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="couponGroupId" label="쿠폰 그룹 ID">
+          <Form.Item name='couponGroupId' label='쿠폰 그룹 ID'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="price" label="가격">
+          <Form.Item name='price' label='가격'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="validity" label="기간">
+          <Form.Item name='validity' label='기간'>
             <Input disabled={isLoading} />
           </Form.Item>
-          <Form.Item name="isSale" label="판매 여부" valuePropName="checked">
+          <Form.Item name='isSale' label='판매 여부' valuePropName='checked'>
             <Switch disabled={isLoading} />
           </Form.Item>
           <Form.Item
-            name="allowRenew"
-            label="연장 가능"
-            valuePropName="checked"
+            name='allowRenew'
+            label='연장 가능'
+            valuePropName='checked'
           >
             <Switch disabled={isLoading} />
           </Form.Item>

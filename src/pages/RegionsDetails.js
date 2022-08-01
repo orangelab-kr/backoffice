@@ -1,24 +1,24 @@
 import {
-    DeleteOutlined,
-    DeploymentUnitOutlined,
-    PlusOutlined,
-    SaveOutlined
+  DeleteOutlined,
+  DeploymentUnitOutlined,
+  PlusOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
 import {
-    Button,
-    Card,
-    Checkbox,
-    Col,
-    Form,
-    Input,
-    message,
-    Popconfirm,
-    Row,
-    Switch,
-    Tabs,
-    Typography
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  message,
+  Popconfirm,
+  Row,
+  Switch,
+  Tabs,
+  Typography,
 } from 'antd';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, withRouter } from 'react-router-dom';
 import { BooleanParam, StringParam, useQueryParam } from 'use-query-params';
 import { PricingSelect, RegionGeofence } from '../components';
@@ -35,7 +35,7 @@ export const RegionsDetails = withRouter(({ history }) => {
   const [tab, setTab] = useQueryParam('tab', StringParam);
   const [map, setMap] = useQueryParam('map', BooleanParam);
 
-  const loadRegions = () => {
+  const loadRegions = useCallback(() => {
     if (!regionId) return;
     setLoading(true);
     getClient('openapi-location')
@@ -45,7 +45,7 @@ export const RegionsDetails = withRouter(({ history }) => {
         setRegion(data.region);
         form.setFieldsValue(data.region);
       });
-  };
+  }, [form, regionId]);
 
   const deleteRegions = () => {
     setLoading(true);
@@ -83,7 +83,8 @@ export const RegionsDetails = withRouter(({ history }) => {
 
   useEffect(() => {
     loadRegions();
-  }, [form, regionId]);
+  }, [form, loadRegions, regionId]);
+
   return (
     <Tabs activeKey={tab} defaultActiveKey='general' onChange={setTab}>
       <Tabs.TabPane tab='기본 정보' key='general'>
