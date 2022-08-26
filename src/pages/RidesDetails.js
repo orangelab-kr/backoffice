@@ -13,7 +13,6 @@ import {
   DatePicker,
   Descriptions,
   Form,
-  Image,
   Input,
   InputNumber,
   List,
@@ -34,6 +33,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Marker, NaverMap, Polyline } from 'react-naver-maps';
 import { useParams, withRouter } from 'react-router-dom';
 import { CouponInfoProvider, PaymentItem, RefundModal } from '../components';
+import { PhotoViewer } from '../components/PhotoViewer';
 import { getClient, useDebounce, useInterval } from '../tools';
 
 export const RidesDetails = withRouter(() => {
@@ -115,6 +115,22 @@ export const RidesDetails = withRouter(() => {
     },
     [ride?.userId]
   );
+
+  const uploadTerminatePhoto = async (url) => {
+    if (!ride?.userId) return;
+
+    try {
+      setLoading(true);
+      await getClient('coreservice-ride').then((c) =>
+        c.post(`/rides/${ride.rideId}/photo`, { photo: url })
+      );
+
+      setRide((r) => ({ ...r, photo: url }));
+      await loadRide();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onSearchCouponsWithDebounce = _.debounce(onSearchCoupons, 500);
   const onChangeCoupon = ({ couponId }) => {
@@ -613,14 +629,11 @@ export const RidesDetails = withRouter(() => {
                         <Descriptions.Item label='반납 사진' span={2}>
                           {!openapiRide.terminatedAt ? (
                             '라이드 중...'
-                          ) : openapiRide.photo ? (
-                            <Image
-                              src={openapiRide.photo}
-                              width={100}
-                              alt='이미지를 로드할 수 없음'
-                            />
                           ) : (
-                            '업로드 하지 않음'
+                            <PhotoViewer
+                              image={openapiRide.photo}
+                              setImage={uploadTerminatePhoto}
+                            />
                           )}
                         </Descriptions.Item>
                         <Descriptions.Item label='할인' span={1}>
