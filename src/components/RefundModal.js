@@ -1,15 +1,14 @@
 import { Col, Form, Input, InputNumber, Modal, Row } from 'antd';
 import { useState } from 'react';
 
-export const RefundModal = ({ payment, refundPayment, onClose }) => {
+export const RefundModal = ({ record, refundPayment, onClose }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(true);
   const onRefund = async (props) => {
     try {
       setLoading(true);
-      const { paymentId } = payment;
-      refundPayment(paymentId, props);
+      refundPayment(record, props);
     } finally {
       setLoading(false);
       close();
@@ -35,7 +34,7 @@ export const RefundModal = ({ payment, refundPayment, onClose }) => {
         form={form}
         layout="vertical"
         onFinish={onRefund}
-        initialValues={payment}
+        initialValues={record}
       >
         <Row gutter={[4, 0]}>
           <Col flex="auto">
@@ -50,7 +49,7 @@ export const RefundModal = ({ payment, refundPayment, onClose }) => {
                 },
                 {
                   type: 'number',
-                  max: payment.amount,
+                  max: record.amount,
                   message: '결제 금액을 초과할 수 없습니다.',
                 },
               ]}

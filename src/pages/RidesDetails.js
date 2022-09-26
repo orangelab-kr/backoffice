@@ -39,7 +39,7 @@ import { getClient, useDebounce, useInterval } from '../tools';
 export const RidesDetails = withRouter(() => {
   const [ride, setRide] = useState(null);
   const [openapiRide, setOpenapiRide] = useState(null);
-  const [ridePayments, setRidePayments] = useState([]);
+  const [records, setRecords] = useState([]);
   const [timeline, setTimeline] = useState([]);
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showRefund, setShowRefund] = useState(null);
@@ -144,18 +144,20 @@ export const RidesDetails = withRouter(() => {
       });
   };
 
-  const loadRidePayments = () => {
+  const loadPaymentRecords = () => {
     setLoading(true);
+    const { rideId } = ride;
 
-    getClient('openapi-ride')
-      .then((c) => c.get(`/rides/${ride.properties.openapi.rideId}/payments`))
+    getClient('coreservice-payments')
+      .then((c) => c.get(`/records`, { params: { rideId } }))
       .finally(() => setLoading(false))
-      .then(({ data }) => setRidePayments(data.payments));
+
+      .then(({ data }) => setRecords(data.records.reverse()));
   };
 
   const onReceiptChange = (key) => {
     if (key !== 'histories') return;
-    loadRidePayments();
+    loadPaymentRecords();
   };
 
   const onInfoChange = (key) => {
@@ -163,18 +165,18 @@ export const RidesDetails = withRouter(() => {
     getTimeline();
   };
 
-  const refundPayment = (paymentId, data) => {
+  const refundPayment = (record, data) => {
     setLoading(true);
 
     getClient('openapi-ride')
       .then((c) =>
         c.delete(
-          `/rides/${ride.properties.openapi.rideId}/payments/${paymentId}`,
+          `/rides/${ride.properties.openapi.rideId}/payments/${record.properties.openapi.paymentId}`,
           { data }
         )
       )
       .finally(() => setLoading(false))
-      .then(() => loadRidePayments());
+      .then(() => loadPaymentRecords());
   };
 
   const onAddPayment = (paymentInfo) => {
@@ -186,7 +188,7 @@ export const RidesDetails = withRouter(() => {
       )
       .finally(() => setLoading(false))
       .then(() => {
-        loadRidePayments();
+        loadPaymentRecords();
         setShowAddPayment(false);
       });
   };
@@ -300,7 +302,7 @@ export const RidesDetails = withRouter(() => {
             <Row justify='space-between'>
               <Col>
                 <Typography.Title level={3} copyable={openapiRide}>
-                  {openapiRide ? ride.properties.openapi.rideId : '로딩 중...'}
+                  {ride ? ride.rideId : '로딩 중...'}
                 </Typography.Title>
               </Col>
 
@@ -793,7 +795,7 @@ export const RidesDetails = withRouter(() => {
                     </Col>
                     {showRefund && (
                       <RefundModal
-                        payment={showRefund}
+                        record={showRefund}
                         refundPayment={refundPayment}
                         onClose={() => setShowRefund(null)}
                       />
@@ -823,7 +825,7 @@ export const RidesDetails = withRouter(() => {
                             initialValues={{
                               paymentType: 'SERVICE',
                               amount: 1000,
-                              description: '관리자에 의해 결제되었습니다.',
+                              description: '',
                             }}
                           >
                             <Row gutter={[4, 0]}>
@@ -1022,11 +1024,12 @@ export const RidesDetails = withRouter(() => {
                           bordered
                           loading={isLoading}
                           itemLayout='vertical'
-                          dataSource={ridePayments}
-                          renderItem={(payment) => (
+                          dataSource={records}
+                          renderItem={(record) => (
                             <PaymentItem
-                              payment={payment}
-                              showRefundModel={() => setShowRefund(payment)}
+                              record={record}
+                              showRefundModel={() => setShowRefund(record)}
+                              reload={loadPaymentRecords}
                             />
                           )}
                         />

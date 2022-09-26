@@ -1,21 +1,30 @@
-import { StopOutlined } from '@ant-design/icons';
+import { ReloadOutlined, StopOutlined } from '@ant-design/icons';
 import { Button, Col, List, Row, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
+import { getClient } from '../tools';
 
-export const PaymentItem = ({ payment, showRefundModel }) => {
+export const PaymentItem = ({ record, showRefundModel, reload }) => {
   const {
     amount,
     initialAmount,
-    paymentType,
     createdAt,
     processedAt,
     refundedAt,
     description,
-  } = payment;
+    properties,
+  } = record;
+
+  const { paymentType } = properties.openapi;
+  const onRetry = () => {
+    if (processedAt) return;
+    getClient('coreservice-payments', false).then((c) =>
+      c.get(`/records/${record.recordId}/retry`).then(() => reload())
+    );
+  };
 
   return (
     <List.Item>
-      <Row justify="space-between">
+      <Row justify='space-between'>
         <Col>
           {refundedAt ? (
             <Tag>
@@ -33,11 +42,11 @@ export const PaymentItem = ({ payment, showRefundModel }) => {
         </Col>
         <Col>
           {paymentType === 'SERVICE' ? (
-            <Tag color="success" style={{ margin: 0 }}>
+            <Tag color='success' style={{ margin: 0 }}>
               서비스 요금
             </Tag>
           ) : paymentType === 'SURCHARGE' ? (
-            <Tag color="processing" style={{ margin: 0 }}>
+            <Tag color='processing' style={{ margin: 0 }}>
               추가 요금
             </Tag>
           ) : (
@@ -45,7 +54,7 @@ export const PaymentItem = ({ payment, showRefundModel }) => {
           )}
         </Col>
       </Row>
-      <Row justify="space-between">
+      <Row justify='space-between'>
         <Col>
           <Row>
             <Col span={24}>
@@ -66,7 +75,7 @@ export const PaymentItem = ({ payment, showRefundModel }) => {
         </Col>
         <Col>
           <Button
-            size="small"
+            size='small'
             icon={<StopOutlined />}
             disabled={refundedAt && !amount}
             onClick={showRefundModel}
@@ -77,6 +86,17 @@ export const PaymentItem = ({ payment, showRefundModel }) => {
               : (amount > 0 ? '부분 환불됨' : '환불됨') +
                 dayjs(refundedAt).format(': M월 D일 H시 m분')}
           </Button>
+          {!processedAt && (
+            <Button
+              size='small'
+              icon={<ReloadOutlined />}
+              style={{ marginLeft: 5 }}
+              onClick={onRetry}
+              type='primary'
+            >
+              재요청
+            </Button>
+          )}
         </Col>
       </Row>
     </List.Item>

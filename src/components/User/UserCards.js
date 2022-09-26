@@ -21,22 +21,22 @@ export const UserCards = ({ user }) => {
 
   return (
     <BackofficeList
-      title="카드 목록"
-      indexKey="cardId"
+      title='카드 목록'
+      indexKey='cardId'
       onRequest={onRequest}
-      dataSourceKey="cards"
+      dataSourceKey='cards'
       refresh={refresh}
       setRefresh={setRefresh}
       renderItem={(card) => (
         <List.Item>
-          <Row justify="space-between">
+          <Row justify='space-between'>
             <Col>
               <Typography.Title level={5} copyable={true}>
                 {card.cardName}
               </Typography.Title>
             </Col>
           </Row>
-          <Row justify="space-between">
+          <Row justify='space-between'>
             <Col>
               <b>등록 시점: </b>
               <Typography.Text copyable={true}>
@@ -45,12 +45,12 @@ export const UserCards = ({ user }) => {
             </Col>
             <Col>
               <Popconfirm
-                title="정말로 연결을 해제하시겠습니까?"
+                title='정말로 연결을 해제하시겠습니까?'
                 onConfirm={deleteCard(card)}
-                okText="해제"
-                cancelText="취소"
+                okText='해제'
+                cancelText='취소'
               >
-                <Button size="small" icon={<StopOutlined />} danger>
+                <Button size='small' icon={<StopOutlined />} danger>
                   카드 삭제
                 </Button>
               </Popconfirm>
