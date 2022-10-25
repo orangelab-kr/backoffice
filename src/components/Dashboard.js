@@ -3,6 +3,7 @@ import {
   BlockOutlined,
   CarFilled,
   CarOutlined,
+  CreditCardOutlined,
   CrownOutlined,
   FileOutlined,
   HeatMapOutlined,
@@ -46,6 +47,9 @@ export const Dashboard = withRouter(({ history, children }) => {
           </Menu.Item>
           <Menu.Item key='/users' icon={<TeamOutlined />}>
             사용자
+          </Menu.Item>
+          <Menu.Item key='/records' icon={<CreditCardOutlined />}>
+            결제내역
           </Menu.Item>
           <Menu.Item key='/mykick' icon={<CarFilled />}>
             마이킥

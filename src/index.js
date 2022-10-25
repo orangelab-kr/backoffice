@@ -39,6 +39,7 @@ import {
 } from './pages';
 import { Mykick } from './pages/Mykick';
 import { MykickDetails } from './pages/MykickDetails';
+import { Records } from './pages/Records';
 
 ReactDOM.render(
   <div className='App'>
@@ -116,6 +117,9 @@ ReactDOM.render(
                   </Route>
                   <Route path='/couponGroups/:couponGroupId'>
                     <CouponGroupsDetails />
+                  </Route>
+                  <Route path='/records' exact>
+                    <Records />
                   </Route>
                   <Route path='/rides' exact>
                     <Rides />
