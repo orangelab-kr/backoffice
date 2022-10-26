@@ -1,18 +1,74 @@
-import { Button, Drawer } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Drawer,
+  Form,
+  Input,
+  Row,
+  Select,
+} from 'antd';
 import React, { useState } from 'react';
+import {
+  BooleanParam,
+  DateTimeParam,
+  StringParam,
+  useQueryParams,
+} from 'use-query-params';
 
+import { SearchOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import _ from 'lodash';
+import moment from 'moment';
 import { BackofficeTable } from '../components';
 import { RecordStatus } from '../components/Record/RecordStatus';
 import { RideInfo } from '../components/Ride/RideInfo';
 import { UserInfoProvider } from '../components/User/UserInfoProvider';
-import dayjs from 'dayjs';
+import { UserSelect } from '../components/User/UserSelect';
 import { getClient } from '../tools';
 
 export const Records = () => {
+  const searchForm = Form.useForm()[0];
   const [selectedRideId, setSelectedRideId] = useState();
+  const [query, setQuery] = useQueryParams({
+    userId: StringParam, //
+    startedAt: DateTimeParam, //
+    endedAt: DateTimeParam, //
+    search: StringParam, //
+    onlyUnpaid: BooleanParam,
+    onlyPaid: BooleanParam,
+  });
+
+  const rangeAutocomplete = {
+    '최근 3시간': [moment().subtract(3, 'hours'), moment()],
+    오늘: [moment().startOf('day'), moment().endOf('day')],
+    '이번 주': [moment().startOf('week'), moment().endOf('week')],
+    '이번 달': [moment().startOf('month'), moment().endOf('month')],
+    '저번 달': [
+      moment().subtract(1, 'month').startOf('month'),
+      moment().subtract(1, 'month').endOf('month'),
+    ],
+  };
+
+  const onSearch = (form) => {
+    const { range, userId, search, status } = form;
+    const startedAt = range && range[0].toDate();
+    const endedAt = range && range[1].toDate();
+    const onlyPaid = status === true;
+    const onlyUnpaid = status === false;
+    setQuery({
+      startedAt,
+      endedAt,
+      userId,
+      search,
+      onlyPaid,
+      onlyUnpaid,
+    });
+  };
+
   const onClickName = (record) => () =>
     setSelectedRideId(record.properties?.coreservice?.rideId);
-  console.log(selectedRideId);
   const columns = [
     {
       title: '상태',
@@ -66,10 +122,57 @@ export const Records = () => {
   ];
 
   const onRequest = (opts) =>
-    getClient('coreservice-payments').then((c) => c.get('/records', opts));
+    getClient('coreservice-payments').then((c) =>
+      c.get('/records', { ...opts, params: _.merge(query, opts.params) }),
+    );
 
   return (
     <>
+      <Card style={{ marginBottom: 10 }}>
+        <Form onFinish={onSearch} form={searchForm}>
+          <Row gutter={[10, 4]} justify="space-between">
+            <Col span={24} lg={11}>
+              <Form.Item name="range" label="기간">
+                <DatePicker.RangePicker
+                  showTime
+                  style={{ width: '100%' }}
+                  format="YYYY년 MM월 DD일 H시 m분"
+                  ranges={rangeAutocomplete}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={24} lg={13}>
+              <Form.Item name="userId" label="사용자 ID">
+                <UserSelect />
+              </Form.Item>
+            </Col>
+            <Col span={24} lg={14} xl={10}>
+              <Form.Item name="search" label="검색">
+                <Input placeholder="검색어를 입력하세요." />
+              </Form.Item>
+            </Col>
+            <Col span={24} lg={10}>
+              <Form.Item name="status" label="상태">
+                <Select placeholder="상태를 선택하세요.">
+                  <Select.Option value={null}>모든 상태</Select.Option>
+                  <Select.Option value={true}>결제성공 내역만</Select.Option>
+                  <Select.Option value={false}>미수금 내역만</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24} xl={2}>
+              <Button
+                icon={<SearchOutlined />}
+                type="primary"
+                htmlType="submit"
+                block
+              >
+                검색
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
       <BackofficeTable
         title="결제내역 목록"
         hasSearch={true}
@@ -87,7 +190,7 @@ export const Records = () => {
         visible={selectedRideId}
         width={'80%'}
       >
-        <RideInfo rideId={selectedRideId} />
+        {selectedRideId && <RideInfo rideId={selectedRideId} />}
       </Drawer>
     </>
   );
