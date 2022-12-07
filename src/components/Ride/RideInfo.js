@@ -99,6 +99,9 @@ export const RideInfo = ({ rideId }) => {
     if (!showTerminate && data.ride.terminatedKickboardLocation) {
       const { latitude, longitude } = data.ride.terminatedKickboardLocation;
       setTerminateLocation(new window.naver.maps.LatLng(latitude, longitude));
+    } else {
+      const { latitude, longitude } = data.ride.startedKickboardLocation;
+      setTerminateLocation(new window.naver.maps.LatLng(latitude, longitude));
     }
   }, [ride, showTerminate]);
 
@@ -224,7 +227,7 @@ export const RideInfo = ({ rideId }) => {
         }),
       )
       .finally(() => setLoading(false))
-      .then(({ data }) => setTerminateReceipt(data.pricing));
+      .then(({ data }) => setTerminateReceipt(data.receipt));
   };
 
   const setTerminateLocation = (location) => {
@@ -385,64 +388,64 @@ export const RideInfo = ({ rideId }) => {
                                     : '적용 안됨'}
                                 </Descriptions.Item>
 
-                                {terminateReceipt.standard.price !== 0 && (
+                                {terminateReceipt.standard?.price !== 0 && (
                                   <Descriptions.Item
                                     label="기본요금 결제 금액"
                                     span={3}
                                   >
-                                    {terminateReceipt.standard.price.toLocaleString()}
+                                    {terminateReceipt.standard?.price.toLocaleString()}
                                     원
                                   </Descriptions.Item>
                                 )}
 
-                                {terminateReceipt.standard.discount !== 0 && (
+                                {terminateReceipt.standard?.discount !== 0 && (
                                   <Descriptions.Item
                                     label="기본요금 할인 금액"
                                     span={3}
                                   >
                                     -
-                                    {terminateReceipt.standard.discount.toLocaleString()}
+                                    {terminateReceipt.standard?.discount.toLocaleString()}
                                     원
                                   </Descriptions.Item>
                                 )}
 
-                                {terminateReceipt.standard.total !== 0 && (
+                                {terminateReceipt.standard?.total !== 0 && (
                                   <Descriptions.Item
                                     label="기본요금 최종 금액"
                                     span={3}
                                   >
-                                    {terminateReceipt.standard.total.toLocaleString()}
+                                    {terminateReceipt.standard?.total.toLocaleString()}
                                     원
                                   </Descriptions.Item>
                                 )}
 
-                                {terminateReceipt.perMinute.price !== 0 && (
+                                {terminateReceipt.perMinute?.price !== 0 && (
                                   <Descriptions.Item
                                     label="분당요금 결제 금액"
                                     span={3}
                                   >
-                                    {terminateReceipt.perMinute.price.toLocaleString()}
+                                    {terminateReceipt.perMinute?.price.toLocaleString()}
                                     원
                                   </Descriptions.Item>
                                 )}
 
-                                {terminateReceipt.perMinute.discount !== 0 && (
+                                {terminateReceipt.perMinute?.discount !== 0 && (
                                   <Descriptions.Item
                                     label="분당요금 할인 금액"
                                     span={3}
                                   >
                                     -
-                                    {terminateReceipt.perMinute.discount.toLocaleString()}
+                                    {terminateReceipt.perMinute?.discount.toLocaleString()}
                                     원
                                   </Descriptions.Item>
                                 )}
 
-                                {terminateReceipt.perMinute.total !== 0 && (
+                                {terminateReceipt.perMinute?.total !== 0 && (
                                   <Descriptions.Item
                                     label="분당요금 최종 금액"
                                     span={3}
                                   >
-                                    {terminateReceipt.perMinute.total.toLocaleString()}
+                                    {terminateReceipt.perMinute?.total.toLocaleString()}
                                     원
                                   </Descriptions.Item>
                                 )}
